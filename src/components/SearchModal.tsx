@@ -12,7 +12,7 @@ interface SearchModalProps {
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: printfulProducts } = usePrintfulProducts();
+  const { data: printfulProducts, isLoading } = usePrintfulProducts();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,24 +49,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
       ).slice(0, 5)
     : [];
-
-  // Create sample search results if no products are found or available
-  const noResultsContent = [
-    { name: "Performance Tech Tee", id: 1, image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-    { name: "Compression Leggings", id: 2, image: "https://images.unsplash.com/photo-1565084888279-aca607ecce0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-    { name: "Seamless Sports Bra", id: 3, image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
-  ];
-
-  // Use printful products if available, otherwise use sample data
-  const displayResults = (searchTerm && filteredProducts.length > 0) 
-    ? filteredProducts.map(product => ({
-        name: product.name,
-        id: product.id,
-        image: product.thumbnail_url
-      }))
-    : (searchTerm && searchTerm.length > 0 && filteredProducts.length === 0)
-      ? []  // No results found
-      : noResultsContent;  // Default/trending content when no search
 
   const quickLinks = [
     { name: "New Arrivals", href: "/shop" },
@@ -107,24 +89,24 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         <div className="flex-grow overflow-auto p-6">
           {searchTerm && searchTerm.length > 0 && (
             <h3 className="text-lg font-medium mb-4">
-              {displayResults.length > 0 
+              {filteredProducts.length > 0 
                 ? `Results for "${searchTerm}"` 
                 : `No results found for "${searchTerm}"`}
             </h3>
           )}
           
-          {displayResults.length > 0 ? (
+          {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayResults.map((result, index) => (
+              {filteredProducts.map((result) => (
                 <Link 
-                  key={index} 
+                  key={result.id} 
                   to={`/product/${result.id}`}
                   className="group"
                   onClick={onClose}
                 >
                   <div className="aspect-square overflow-hidden bg-secondary/50">
                     <img 
-                      src={result.image} 
+                      src={result.thumbnail_url} 
                       alt={result.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -155,6 +137,10 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
             </div>
+          ) : isLoading ? (
+            <div className="text-center py-8">
+              <p>Loading products...</p>
+            </div>
           ) : (
             <div>
               <h3 className="text-lg font-medium mb-4">Quick Links</h3>
@@ -171,24 +157,24 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 ))}
               </div>
               
-              <h3 className="text-lg font-medium mb-4 mt-8">Trending Now</h3>
+              <h3 className="text-lg font-medium mb-4 mt-8">Trending Products</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {noResultsContent.map((result, index) => (
+                {printfulProducts && printfulProducts.slice(0, 3).map((product) => (
                   <Link 
-                    key={index} 
-                    to={`/product/${result.id}`}
+                    key={product.id} 
+                    to={`/product/${product.id}`}
                     className="group"
                     onClick={onClose}
                   >
                     <div className="aspect-square overflow-hidden bg-secondary/50">
                       <img 
-                        src={result.image} 
-                        alt={result.name}
+                        src={product.thumbnail_url} 
+                        alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     <h3 className="mt-2 font-medium group-hover:text-black/70 transition-colors">
-                      {result.name}
+                      {product.name}
                     </h3>
                   </Link>
                 ))}

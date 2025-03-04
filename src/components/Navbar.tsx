@@ -1,12 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, User, Search } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import SearchModal from './SearchModal';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLogoAnimated, setIsLogoAnimated] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -23,10 +26,10 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Home', href: '#' },
-    { name: 'Shop', href: '#' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' }
+    { name: 'Home', href: '/' },
+    { name: 'Shop', href: '/shop' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' }
   ];
 
   return (
@@ -38,8 +41,8 @@ const Navbar = () => {
     >
       <nav className="peak-container flex items-center justify-between h-20">
         {/* Logo */}
-        <a 
-          href="#" 
+        <Link 
+          to="/" 
           className={cn(
             "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all text-foreground",
             isLogoAnimated && "animate-letter-spacing"
@@ -47,18 +50,18 @@ const Navbar = () => {
           onClick={handleLogoClick}
         >
           PEAK | MODE
-        </a>
+        </Link>
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <a 
+            <Link 
               key={link.name} 
-              href={link.href} 
+              to={link.href} 
               className="nav-link hover:opacity-80 transition-colors text-foreground"
             >
               {link.name}
-            </a>
+            </Link>
           ))}
         </div>
         
@@ -67,16 +70,12 @@ const Navbar = () => {
           <button 
             className="hover:opacity-70 transition-colors text-foreground" 
             aria-label="Search"
+            onClick={() => setSearchModalOpen(true)}
           >
             <Search className="h-5 w-5" />
           </button>
-          <button 
-            className="hover:opacity-70 transition-colors text-foreground" 
-            aria-label="Account"
-          >
-            <User className="h-5 w-5" />
-          </button>
-          <button 
+          <Link 
+            to="/cart"
             className="hover:opacity-70 transition-colors relative text-foreground" 
             aria-label="Cart"
           >
@@ -84,7 +83,7 @@ const Navbar = () => {
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
               0
             </span>
-          </button>
+          </Link>
         </div>
         
         {/* Mobile Menu Button */}
@@ -108,35 +107,44 @@ const Navbar = () => {
       >
         <div className="flex flex-col px-4 pt-8 pb-6 space-y-8">
           {navLinks.map((link) => (
-            <a 
+            <Link 
               key={link.name} 
-              href={link.href} 
+              to={link.href} 
               className="text-lg font-medium py-2 border-b border-border text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               {link.name}
-            </a>
+            </Link>
           ))}
           
           <div className="flex items-center justify-around pt-6">
-            <button className="flex flex-col items-center space-y-1 text-foreground">
+            <button 
+              className="flex flex-col items-center space-y-1 text-foreground"
+              onClick={() => {
+                setSearchModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+            >
               <Search className="h-6 w-6" />
               <span className="text-sm">Search</span>
             </button>
-            <button className="flex flex-col items-center space-y-1 text-foreground">
-              <User className="h-6 w-6" />
-              <span className="text-sm">Account</span>
-            </button>
-            <button className="flex flex-col items-center space-y-1 relative text-foreground">
+            <Link 
+              to="/cart"
+              className="flex flex-col items-center space-y-1 relative text-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               <ShoppingBag className="h-6 w-6" />
               <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
                 0
               </span>
               <span className="text-sm">Cart</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
+      
+      {/* Search Modal */}
+      <SearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
     </header>
   );
 };

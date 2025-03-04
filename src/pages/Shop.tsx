@@ -1,15 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
 import Newsletter from '../components/Newsletter';
+import { useLocation } from 'react-router-dom';
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const { data: printfulProducts, isLoading, error } = usePrintfulProducts();
+  const location = useLocation();
   
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const search = searchParams.get('search');
+    setSearchQuery(search);
+  }, [location.search]);
+
   const categories = [
     { name: 'All', value: null },
     { name: 'T-Shirts', value: 'shirt' },
@@ -30,9 +39,17 @@ const Shop = () => {
       }))
     : [];
 
-  const filteredProducts = activeCategory 
+  // Apply category filter
+  let filteredProducts = activeCategory 
     ? products.filter(p => p.category.toLowerCase().includes(activeCategory.toLowerCase()))
     : products;
+    
+  // Apply search filter if exists
+  if (searchQuery) {
+    filteredProducts = filteredProducts.filter(p => 
+      p.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -44,6 +61,12 @@ const Shop = () => {
             <p className="mt-4 text-lg text-foreground/70 max-w-3xl">
               Discover our premium performance apparel designed for peak athleticism and everyday style.
             </p>
+            
+            {searchQuery && (
+              <div className="mt-4 py-2 px-4 bg-secondary/50 inline-block w-fit">
+                <p>Search results for: <span className="font-semibold">{searchQuery}</span></p>
+              </div>
+            )}
             
             <div className="mt-8 flex justify-between flex-wrap gap-4">
               <div className="flex gap-2 overflow-x-auto pb-2">
@@ -89,7 +112,7 @@ const Shop = () => {
                 ))}
                 {filteredProducts.length === 0 && (
                   <div className="col-span-full text-center py-12">
-                    <p>No products found. Try a different category.</p>
+                    <p>No products found. Try a different category or search term.</p>
                   </div>
                 )}
               </div>

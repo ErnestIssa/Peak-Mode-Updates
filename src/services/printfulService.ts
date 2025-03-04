@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 // Types for product data
@@ -30,6 +29,7 @@ export interface PrintfulVariant {
   size?: string;
   color?: string;
   price: string;
+  retail_price?: string;
   currency: string;
   files: any[];
 }
@@ -97,7 +97,7 @@ const dummyProducts: PrintfulProduct[] = [
   }
 ];
 
-// Dummy product details
+// Update dummyProductDetails to include retail_price in all variants
 const dummyProductDetails: Record<number, PrintfulProductDetail> = {
   1: {
     sync_product: {
@@ -118,6 +118,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Black',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -128,6 +129,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Black',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -138,6 +140,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'L',
         color: 'Black',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -148,6 +151,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Gray',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -158,6 +162,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Gray',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -168,6 +173,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'L',
         color: 'Gray',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       }
@@ -192,6 +198,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Blue',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       },
@@ -202,6 +209,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Blue',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       },
@@ -212,6 +220,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Red',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       },
@@ -222,6 +231,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Red',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       }
@@ -246,6 +256,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Black',
         price: '79.99',
+        retail_price: '79.99',
         currency: 'USD',
         files: []
       },
@@ -256,6 +267,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Black',
         price: '79.99',
+        retail_price: '79.99',
         currency: 'USD',
         files: []
       }
@@ -280,6 +292,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Blue',
         price: '49.99',
+        retail_price: '49.99',
         currency: 'USD',
         files: []
       },
@@ -290,6 +303,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Blue',
         price: '49.99',
+        retail_price: '49.99',
         currency: 'USD',
         files: []
       },
@@ -300,6 +314,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Black',
         price: '49.99',
+        retail_price: '49.99',
         currency: 'USD',
         files: []
       }
@@ -324,6 +339,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Gray',
         price: '89.99',
+        retail_price: '89.99',
         currency: 'USD',
         files: []
       },
@@ -334,6 +350,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Gray',
         price: '89.99',
+        retail_price: '89.99',
         currency: 'USD',
         files: []
       },
@@ -344,6 +361,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'L',
         color: 'Gray',
         price: '89.99',
+        retail_price: '89.99',
         currency: 'USD',
         files: []
       }
@@ -369,8 +387,8 @@ export const fetchPrintfulProducts = async (): Promise<PrintfulProduct[]> => {
   }
 }
 
-// Function to fetch a specific product's details from the API
-export const fetchProductDetails = async (productId: number): Promise<PrintfulProductDetail | null> => {
+// Update fetchProductDetails function to accept both number and string types
+export const fetchProductDetails = async (productId: number | string): Promise<PrintfulProductDetail | null> => {
   try {
     const response = await fetch(`https://peak-mode-server.vercel.app/api/products/${productId}`);
     
@@ -386,6 +404,6 @@ export const fetchProductDetails = async (productId: number): Promise<PrintfulPr
     
     // Fallback to dummy data if API fails
     console.log("Falling back to dummy data");
-    return dummyProductDetails[productId] || null;
+    return dummyProductDetails[Number(productId)] || null;
   }
 }

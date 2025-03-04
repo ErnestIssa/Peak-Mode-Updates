@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search as SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 
 interface SearchModalProps {
@@ -13,6 +13,7 @@ interface SearchModalProps {
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const { data: printfulProducts } = usePrintfulProducts();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -31,6 +32,14 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       document.body.style.overflow = '';
     };
   }, [isOpen, onClose]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchTerm.trim())}`);
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -74,7 +83,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       >
         {/* Search Input */}
         <div className="p-6 border-b border-border">
-          <div className="relative">
+          <form onSubmit={handleSearch} className="relative">
             <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
             <input
               type="text"
@@ -85,12 +94,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               autoFocus
             />
             <button 
+              type="button"
               className="absolute right-4 top-1/2 -translate-y-1/2"
               onClick={onClose}
             >
               <X className="h-5 w-5 text-foreground/70 hover:text-foreground" />
             </button>
-          </div>
+          </form>
         </div>
         
         {/* Search Results */}

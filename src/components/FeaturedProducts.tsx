@@ -6,7 +6,6 @@ import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link } from 'react-router-dom';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -80,10 +79,10 @@ const FeaturedProducts = () => {
             </h2>
           </div>
           
-          <Link to="/shop" className="mt-6 md:mt-0 inline-flex items-center text-sm font-medium group">
+          <a href="#" className="mt-6 md:mt-0 inline-flex items-center text-sm font-medium group">
             View All Products
             <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+          </a>
         </div>
         
         {isLoading ? (

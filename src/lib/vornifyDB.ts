@@ -142,36 +142,45 @@ export async function sendContactConfirmationEmail(
 ): Promise<VornifyEmailResponse> {
   const subject = "Thank you for contacting Peak Mode";
   const htmlBody = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <img src="https://b2c2e695-7170-4d63-864f-561e769e2cb2.lovableproject.com/peak-mode-logo.png" alt="Peak Mode Logo" style="max-width: 150px;">
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #9b87f5; padding-bottom: 20px;">
+        <h1 style="font-family: 'Montserrat', Arial, sans-serif; color: #1A1F2C; margin: 0; letter-spacing: 5px; font-weight: 700; font-size: 28px;">PEAK | MODE</h1>
       </div>
       
-      <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
-        <h2 style="color: #333; margin-top: 0;">Thank You for Contacting Us!</h2>
+      <div style="padding: 20px; background-color: #F1F0FB; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #6E59A5; margin-top: 0; font-family: 'Montserrat', Arial, sans-serif; font-weight: 600;">Thank You for Contacting Us!</h2>
         
-        <p style="color: #555; line-height: 1.6;">
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
           Hello ${name},
         </p>
         
-        <p style="color: #555; line-height: 1.6;">
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
           Thank you for reaching out to Peak Mode. We have received your message and our team will review it shortly.
           We aim to respond to all inquiries within 24-48 hours.
         </p>
         
-        <p style="color: #555; line-height: 1.6;">
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
           In the meantime, feel free to browse our latest collections on our website.
         </p>
         
-        <p style="color: #555; line-height: 1.6; margin-top: 20px;">
-          Best regards,<br>
-          The Peak Mode Team
-        </p>
+        <div style="margin-top: 30px; background-color: #ffffff; border-radius: 8px; padding: 15px; border-left: 4px solid #9b87f5;">
+          <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin: 0;">
+            Best regards,<br>
+            <strong>The Peak Mode Team</strong>
+          </p>
+        </div>
       </div>
       
-      <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #888; font-size: 12px;">
-        <p>© ${new Date().getFullYear()} Peak Mode. All rights reserved.</p>
-        <p>Stockholmsvägen 25, 746 32 Bålsta, Sweden</p>
+      <a href="https://peakmode.com" style="display: block; text-align: center; margin: 25px auto; background-color: #9b87f5; color: white; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; letter-spacing: 0.5px; font-family: 'Montserrat', Arial, sans-serif; max-width: 200px;">Visit Our Website</a>
+      
+      <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #8E9196; font-size: 13px;">
+        <p style="margin-bottom: 10px;">© ${new Date().getFullYear()} Peak Mode. All rights reserved.</p>
+        <p style="margin-bottom: 10px;">Stockholmsvägen 25, 746 32 Bålsta, Sweden</p>
+        <div style="margin-top: 15px;">
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Instagram</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Facebook</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Twitter</a>
+        </div>
       </div>
     </div>
   `;
@@ -187,34 +196,54 @@ export async function sendSubscriptionConfirmationEmail(
 ): Promise<VornifyEmailResponse> {
   const subject = "Welcome to the Peak Mode Newsletter";
   const htmlBody = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <img src="https://b2c2e695-7170-4d63-864f-561e769e2cb2.lovableproject.com/peak-mode-logo.png" alt="Peak Mode Logo" style="max-width: 150px;">
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #9b87f5; padding-bottom: 20px;">
+        <h1 style="font-family: 'Montserrat', Arial, sans-serif; color: #1A1F2C; margin: 0; letter-spacing: 5px; font-weight: 700; font-size: 28px;">PEAK | MODE</h1>
       </div>
       
-      <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
-        <h2 style="color: #333; margin-top: 0;">Thanks for Subscribing!</h2>
+      <div style="padding: 25px; background-color: #E5DEFF; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #6E59A5; margin-top: 0; font-family: 'Montserrat', Arial, sans-serif; font-weight: 600;">Thanks for Subscribing!</h2>
         
-        <p style="color: #555; line-height: 1.6;">
-          Hello,
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
+          Hello there,
         </p>
         
-        <p style="color: #555; line-height: 1.6;">
-          Thank you for subscribing to the Peak Mode newsletter. You'll now be the first to know about our new collections, exclusive offers, and upcoming events.
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 20px;">
+          Thank you for subscribing to the Peak Mode newsletter. You'll now be the first to know about:
         </p>
         
-        <p style="color: #555; line-height: 1.6; margin-top: 20px;">
-          Best regards,<br>
-          The Peak Mode Team
-        </p>
+        <ul style="color: #403E43; line-height: 1.8; font-size: 16px; margin-bottom: 20px; padding-left: 20px;">
+          <li>New clothing collections and drops</li>
+          <li>Exclusive subscriber-only offers</li>
+          <li>Limited edition items and collaborations</li>
+          <li>Fashion tips and styling advice</li>
+        </ul>
+        
+        <div style="margin-top: 25px; background-color: #ffffff; border-radius: 8px; padding: 15px; border-left: 4px solid #9b87f5;">
+          <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin: 0;">
+            Stay elevated,<br>
+            <strong>The Peak Mode Team</strong>
+          </p>
+        </div>
       </div>
       
-      <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #888; font-size: 12px;">
-        <p>© ${new Date().getFullYear()} Peak Mode. All rights reserved.</p>
-        <p>Stockholmsvägen 25, 746 32 Bålsta, Sweden</p>
-        <p>
+      <div style="text-align: center; margin: 25px 0;">
+        <a href="https://peakmode.com/shop" style="display: inline-block; background-color: #9b87f5; color: white; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; letter-spacing: 0.5px; font-family: 'Montserrat', Arial, sans-serif; margin: 0 10px;">Shop Now</a>
+        <a href="https://peakmode.com/account" style="display: inline-block; background-color: #ffffff; border: 2px solid #9b87f5; color: #9b87f5; text-decoration: none; padding: 10px 25px; border-radius: 6px; font-weight: 600; letter-spacing: 0.5px; font-family: 'Montserrat', Arial, sans-serif; margin: 0 10px;">My Account</a>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #8E9196; font-size: 13px;">
+        <p style="margin-bottom: 10px;">© ${new Date().getFullYear()} Peak Mode. All rights reserved.</p>
+        <p style="margin-bottom: 10px;">Stockholmsvägen 25, 746 32 Bålsta, Sweden</p>
+        <p style="margin-bottom: 15px; font-style: italic;">
           If you didn't subscribe to our newsletter, please ignore this email.
         </p>
+        <div style="margin-top: 15px;">
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Instagram</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Facebook</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Twitter</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Unsubscribe</a>
+        </div>
       </div>
     </div>
   `;

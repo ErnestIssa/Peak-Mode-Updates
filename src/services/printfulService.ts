@@ -31,6 +31,7 @@ export interface PrintfulVariant {
   color?: string;
   price: string;
   currency: string;
+  retail_price: string; // Added this property to match the API response
   files: any[];
 }
 
@@ -370,7 +371,7 @@ export const fetchPrintfulProducts = async (): Promise<PrintfulProduct[]> => {
 }
 
 // Function to fetch a specific product's details from the API
-export const fetchProductDetails = async (productId: number): Promise<PrintfulProductDetail | null> => {
+export const fetchProductDetails = async (productId: string): Promise<PrintfulProductDetail | null> => {
   try {
     const response = await fetch(`https://peak-mode-server.vercel.app/api/products/${productId}`);
     
@@ -386,6 +387,6 @@ export const fetchProductDetails = async (productId: number): Promise<PrintfulPr
     
     // Fallback to dummy data if API fails
     console.log("Falling back to dummy data");
-    return dummyProductDetails[productId] || null;
+    return dummyProductDetails[parseInt(productId)] || null;
   }
 }

@@ -34,8 +34,8 @@ const Contact = () => {
     setTimeout(() => {
       setIsSubmitting(false);
       toast({
-        title: "Meddelande skickat",
-        description: "Vi återkommer till dig så snart som möjligt.",
+        title: "Message Sent",
+        description: "We'll get back to you as soon as possible.",
       });
       setFormData({
         name: '',
@@ -49,20 +49,20 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: <Mail className="h-6 w-6" />,
-      title: "E-post",
+      title: "Email",
       details: "support@peakmode.se",
       link: "mailto:support@peakmode.se"
     },
     {
       icon: <Phone className="h-6 w-6" />,
-      title: "Ring oss",
+      title: "Call Us",
       details: "+46 70 123 45 67",
       link: "tel:+46701234567"
     },
     {
       icon: <MapPin className="h-6 w-6" />,
-      title: "Besök oss",
-      details: "Stockholmsvägen 25, 746 32 Bålsta, Sverige",
+      title: "Visit Us",
+      details: "Stockholmsvägen 25, 746 32 Bålsta, Sweden",
       link: "https://maps.google.com"
     }
   ];
@@ -79,8 +79,8 @@ const Contact = () => {
             backgroundPosition: "center"
           }}></div>
           <div className="text-center text-white relative z-10 px-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Kontakta oss</h1>
-            <p className="text-xl max-w-2xl mx-auto">Vi vill gärna höra från dig. Hör av dig med frågor, feedback eller supportbehov.</p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+            <p className="text-xl max-w-2xl mx-auto">We'd love to hear from you. Reach out with questions, feedback, or support needs.</p>
           </div>
         </div>
 
@@ -96,15 +96,15 @@ const Contact = () => {
             >
               {/* Contact Form */}
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold">Skicka ett meddelande</h2>
+                <h2 className="text-2xl md:text-3xl font-bold">Send a Message</h2>
                 <p className="mt-4 text-foreground/70">
-                  Fyll i formuläret nedan så återkommer vårt team så snart som möjligt.
+                  Fill out the form below and our team will get back to you as soon as possible.
                 </p>
                 
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium mb-2">Ditt namn</label>
+                      <label htmlFor="name" className="block text-sm font-medium mb-2">Your Name</label>
                       <input
                         type="text"
                         id="name"
@@ -116,7 +116,7 @@ const Contact = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium mb-2">Din e-post</label>
+                      <label htmlFor="email" className="block text-sm font-medium mb-2">Your Email</label>
                       <input
                         type="email"
                         id="email"
@@ -130,7 +130,7 @@ const Contact = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium mb-2">Ämne</label>
+                    <label htmlFor="subject" className="block text-sm font-medium mb-2">Subject</label>
                     <select
                       id="subject"
                       name="subject"
@@ -139,17 +139,17 @@ const Contact = () => {
                       className="w-full p-3 border border-border focus:outline-none focus:ring-2 focus:ring-black"
                       required
                     >
-                      <option value="">Välj ett ämne</option>
-                      <option value="order">Orderförfrågan</option>
-                      <option value="product">Produktinformation</option>
-                      <option value="returns">Returer & Byten</option>
+                      <option value="">Select a subject</option>
+                      <option value="order">Order Inquiry</option>
+                      <option value="product">Product Information</option>
+                      <option value="returns">Returns & Exchanges</option>
                       <option value="feedback">Feedback</option>
-                      <option value="other">Annat</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                   
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium mb-2">Ditt meddelande</label>
+                    <label htmlFor="message" className="block text-sm font-medium mb-2">Your Message</label>
                     <textarea
                       id="message"
                       name="message"
@@ -167,16 +167,16 @@ const Contact = () => {
                     className={`w-full py-3 px-6 bg-black text-white font-medium transition-all duration-300 
                     ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black/90'}`}
                   >
-                    {isSubmitting ? 'Skickar...' : 'Skicka meddelande'}
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               </div>
               
               {/* Contact Information */}
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold">Kontaktinformation</h2>
+                <h2 className="text-2xl md:text-3xl font-bold">Contact Information</h2>
                 <p className="mt-4 text-foreground/70">
-                  Har du frågor eller behöver hjälp? Kontakta oss via någon av kanalerna nedan.
+                  Have questions or need assistance? Contact us through any of the channels below.
                 </p>
                 
                 <div className="mt-8 space-y-6">
@@ -190,8 +190,8 @@ const Contact = () => {
                         <a 
                           href={info.link} 
                           className="text-foreground/70 hover:text-foreground transition-colors"
-                          target={info.title === "Besök oss" ? "_blank" : undefined}
-                          rel={info.title === "Besök oss" ? "noopener noreferrer" : undefined}
+                          target={info.title === "Visit Us" ? "_blank" : undefined}
+                          rel={info.title === "Visit Us" ? "noopener noreferrer" : undefined}
                         >
                           {info.details}
                         </a>
@@ -201,25 +201,25 @@ const Contact = () => {
                 </div>
                 
                 <div className="mt-12">
-                  <h3 className="text-lg font-medium mb-4">Öppettider</h3>
+                  <h3 className="text-lg font-medium mb-4">Opening Hours</h3>
                   <ul className="space-y-2">
                     <li className="flex justify-between">
-                      <span>Måndag - Fredag:</span>
+                      <span>Monday - Friday:</span>
                       <span>09:00 - 18:00</span>
                     </li>
                     <li className="flex justify-between">
-                      <span>Lördag:</span>
+                      <span>Saturday:</span>
                       <span>10:00 - 16:00</span>
                     </li>
                     <li className="flex justify-between">
-                      <span>Söndag:</span>
-                      <span>Stängt</span>
+                      <span>Sunday:</span>
+                      <span>Closed</span>
                     </li>
                   </ul>
                 </div>
                 
                 <div className="mt-12">
-                  <h3 className="text-lg font-medium mb-4">Följ oss</h3>
+                  <h3 className="text-lg font-medium mb-4">Follow Us</h3>
                   <div className="flex space-x-4">
                     <a href="#" className="p-2 bg-secondary hover:bg-secondary/80 transition-colors">
                       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>

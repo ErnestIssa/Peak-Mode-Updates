@@ -10,6 +10,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLogoAnimated, setIsLogoAnimated] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +19,34 @@ const Navbar = () => {
     
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Update cart count whenever localStorage changes
+    const updateCartCount = () => {
+      const cart = localStorage.getItem('cart');
+      if (cart) {
+        const cartItems = JSON.parse(cart);
+        const itemCount = cartItems.reduce((count: number, item: any) => count + item.quantity, 0);
+        setCartCount(itemCount);
+      } else {
+        setCartCount(0);
+      }
+    };
+    
+    // Call immediately to set initial value
+    updateCartCount();
+    
+    // Listen for changes to localStorage
+    window.addEventListener('storage', updateCartCount);
+    
+    // Custom event for cart updates that happen in the same window
+    window.addEventListener('cartUpdated', updateCartCount);
+    
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
   }, []);
 
   useEffect(() => {
@@ -94,7 +123,7 @@ const Navbar = () => {
           >
             <ShoppingBag className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
-              0
+              {cartCount}
             </span>
           </Link>
         </div>
@@ -108,7 +137,7 @@ const Navbar = () => {
           >
             <ShoppingBag className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
-              0
+              {cartCount}
             </span>
           </Link>
           

@@ -1,18 +1,88 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  size: string | null;
+  color: string | null;
+  quantity: number;
+  currency: string;
+}
 
 const Cart = () => {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartTotal, setCartTotal] = useState(0);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
+    loadCartItems();
   }, []);
-
-  const cartIsEmpty = true;
   
-  if (cartIsEmpty) {
+  const loadCartItems = () => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      const items = JSON.parse(savedCart);
+      setCartItems(items);
+      
+      // Calculate total
+      const total = items.reduce((sum: number, item: CartItem) => {
+        return sum + (item.price * item.quantity);
+      }, 0);
+      
+      setCartTotal(total);
+    }
+  };
+  
+  const updateQuantity = (index: number, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    
+    const updatedItems = [...cartItems];
+    updatedItems[index].quantity = newQuantity;
+    
+    setCartItems(updatedItems);
+    localStorage.setItem('cart', JSON.stringify(updatedItems));
+    
+    // Recalculate total
+    const total = updatedItems.reduce((sum, item) => {
+      return sum + (item.price * item.quantity);
+    }, 0);
+    
+    setCartTotal(total);
+  };
+  
+  const removeItem = (index: number) => {
+    const updatedItems = [...cartItems];
+    updatedItems.splice(index, 1);
+    
+    setCartItems(updatedItems);
+    localStorage.setItem('cart', JSON.stringify(updatedItems));
+    
+    // Recalculate total
+    const total = updatedItems.reduce((sum, item) => {
+      return sum + (item.price * item.quantity);
+    }, 0);
+    
+    setCartTotal(total);
+    
+    toast.success("Item removed from cart");
+  };
+  
+  const clearCart = () => {
+    setCartItems([]);
+    setCartTotal(0);
+    localStorage.removeItem('cart');
+    toast.success("Cart cleared");
+  };
+
+  if (cartItems.length === 0) {
     return (
       <Layout>
         <div className="peak-container py-20 min-h-screen">
@@ -43,17 +113,79 @@ const Cart = () => {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <div className="border border-border rounded-md">
-              <div className="p-4 border-b border-border bg-secondary/30">
+              <div className="p-4 border-b border-border bg-secondary/30 flex justify-between items-center">
                 <h2 className="font-medium">
-                  Cart Items (3)
+                  Cart Items ({cartItems.length})
                 </h2>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={clearCart}
+                  className="text-xs"
+                >
+                  Clear Cart
+                </Button>
               </div>
               
               <div className="divide-y divide-border">
-                {/* Cart items would go here */}
-                <div className="p-4">
-                  <p>Your cart items will be displayed here.</p>
-                </div>
+                {cartItems.map((item, index) => (
+                  <div key={`${item.id}-${item.size}-${item.color}`} className="p-4 md:p-6 flex flex-col md:flex-row gap-4">
+                    <div className="w-full md:w-24 h-24 bg-secondary/50 relative flex-shrink-0">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    <div className="flex-grow flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div>
+                        <h3 className="font-medium">{item.name}</h3>
+                        {item.size && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Size: {item.size}
+                          </p>
+                        )}
+                        {item.color && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Color: {item.color}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-6">
+                        <div className="flex items-center border border-border">
+                          <button 
+                            className="px-3 py-2 border-r border-border"
+                            onClick={() => updateQuantity(index, item.quantity - 1)}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="w-10 text-center py-2">
+                            {item.quantity}
+                          </span>
+                          <button 
+                            className="px-3 py-2 border-l border-border"
+                            onClick={() => updateQuantity(index, item.quantity + 1)}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+                        
+                        <div className="font-medium ml-auto md:ml-0">
+                          {(item.price * item.quantity).toFixed(2)} {item.currency}
+                        </div>
+                        
+                        <button 
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                          onClick={() => removeItem(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -69,7 +201,7 @@ const Cart = () => {
               <div className="p-4 space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>$0.00</span>
+                  <span>${cartTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -83,7 +215,7 @@ const Cart = () => {
                 <div className="pt-4 border-t border-border">
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>$0.00</span>
+                    <span>${cartTotal.toFixed(2)}</span>
                   </div>
                 </div>
                 

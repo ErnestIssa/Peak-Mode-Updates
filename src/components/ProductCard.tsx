@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   id: number;
@@ -23,6 +24,40 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation to product detail page
+    
+    const cartItem = {
+      id: id,
+      name: name,
+      price: parseFloat(price.replace(/[^0-9.]/g, '')),
+      image: image,
+      size: null, // Default values since quick add doesn't specify size/color
+      color: null,
+      quantity: 1,
+      currency: price.includes('SEK') ? 'SEK' : 'USD'
+    };
+    
+    const existingCart = localStorage.getItem('cart');
+    let cartItems = existingCart ? JSON.parse(existingCart) : [];
+    
+    const existingItemIndex = cartItems.findIndex((item: any) => 
+      item.id === cartItem.id && 
+      item.size === cartItem.size && 
+      item.color === cartItem.color
+    );
+    
+    if (existingItemIndex >= 0) {
+      cartItems[existingItemIndex].quantity += 1;
+    } else {
+      cartItems.push(cartItem);
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    
+    toast.success("Added to cart successfully!");
+  };
 
   return (
     <div 
@@ -52,7 +87,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
         
         {/* Quick Add */}
-        <div 
+        <button 
+          onClick={handleQuickAdd}
           className={cn(
             "absolute bottom-0 left-0 right-0 bg-black text-white py-3 flex justify-center items-center space-x-2 transition-all duration-300",
             isHovered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
@@ -60,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
           <ShoppingCart className="h-4 w-4" />
           <span className="text-sm font-medium">Quick Add</span>
-        </div>
+        </button>
       </Link>
       
       <div className="p-4 flex flex-col flex-grow">

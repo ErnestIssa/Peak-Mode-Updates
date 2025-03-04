@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 import { Mail, MapPin, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { sendContactMessage } from "@/lib/vornifyDB";
+import { sendContactMessage, sendContactConfirmationEmail } from "@/lib/vornifyDB";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -44,6 +45,7 @@ const Contact = () => {
     setIsSuccess(false);
     
     try {
+      // First send message to database
       const result = await sendContactMessage(
         formData.name,
         formData.email,
@@ -52,6 +54,9 @@ const Contact = () => {
       );
       
       if (result.success || result.status) {
+        // Then send confirmation email
+        await sendContactConfirmationEmail(formData.name, formData.email);
+        
         setIsSuccess(true);
         toast({
           title: "Message Sent",

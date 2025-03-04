@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { addSubscriber } from '@/lib/vornifyDB';
+import { addSubscriber, sendSubscriptionConfirmationEmail } from '@/lib/vornifyDB';
 
 const Newsletter = () => {
   const { ref, inView } = useInView({
@@ -34,9 +34,13 @@ const Newsletter = () => {
     setIsSuccess(false);
     
     try {
+      // First add subscriber to database
       const result = await addSubscriber(email);
       
       if (result.success || result.status) {
+        // Then send confirmation email
+        await sendSubscriptionConfirmationEmail(email);
+        
         setIsSuccess(true);
         toast({
           title: "Success!",

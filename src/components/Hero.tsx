@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -74,13 +75,13 @@ const Hero = () => {
             "mt-10 flex space-x-4 transition-all duration-700 delay-900",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            <a 
-              href="#collections" 
+            <Link 
+              to="/shop" 
               className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
             >
-              <span>Shop Collection</span>
+              <span>Shop Now</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
+            </Link>
             <a 
               href="#about" 
               className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"

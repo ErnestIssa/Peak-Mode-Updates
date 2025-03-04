@@ -26,10 +26,38 @@ export interface PrintfulResponse {
   };
 }
 
+export interface PrintfulVariant {
+  id: number;
+  product_id: number;
+  name: string;
+  size?: string;
+  color?: string;
+  price: string;
+  currency: string;
+  files: any[];
+}
+
+export interface PrintfulProductDetail {
+  sync_product: {
+    id: number;
+    external_id: string;
+    name: string;
+    variants: number;
+    synced: number;
+    thumbnail_url: string;
+    is_ignored: boolean;
+    description?: string;
+  };
+  sync_variants: PrintfulVariant[];
+}
+
+// Using a CORS proxy to avoid CORS issues
+const CORS_PROXY = "https://corsproxy.io/?";
+
 // Function to fetch all products from Printful store
 export const fetchPrintfulProducts = async (): Promise<PrintfulProduct[]> => {
   try {
-    const response = await fetch("https://api.printful.com/store/products", {
+    const response = await fetch(`${CORS_PROXY}https://api.printful.com/store/products`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
@@ -52,9 +80,9 @@ export const fetchPrintfulProducts = async (): Promise<PrintfulProduct[]> => {
 }
 
 // Function to fetch a specific product's details
-export const fetchProductDetails = async (productId: number): Promise<any> => {
+export const fetchProductDetails = async (productId: number): Promise<PrintfulProductDetail | null> => {
   try {
-    const response = await fetch(`https://api.printful.com/store/products/${productId}`, {
+    const response = await fetch(`${CORS_PROXY}https://api.printful.com/store/products/${productId}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,

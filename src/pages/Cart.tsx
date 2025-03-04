@@ -82,6 +82,15 @@ const Cart = () => {
     toast.success("Cart cleared");
   };
 
+  // Determine the predominant currency
+  const getCurrency = () => {
+    if (cartItems.length === 0) return 'SEK';
+    
+    const currencies = cartItems.map(item => item.currency);
+    // Default to SEK as requested
+    return currencies.includes('SEK') ? 'SEK' : currencies[0] || 'SEK';
+  };
+
   if (cartItems.length === 0) {
     return (
       <Layout>
@@ -201,7 +210,7 @@ const Cart = () => {
               <div className="p-4 space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span>{cartTotal.toFixed(2)} {getCurrency()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -215,7 +224,7 @@ const Cart = () => {
                 <div className="pt-4 border-t border-border">
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>${cartTotal.toFixed(2)}</span>
+                    <span>{cartTotal.toFixed(2)} {getCurrency()}</span>
                   </div>
                 </div>
                 

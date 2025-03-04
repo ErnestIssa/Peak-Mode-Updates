@@ -28,6 +28,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation to product detail page
     
+    // Determine currency - default to SEK as requested by the user
+    const currency = price.includes('SEK') ? 'SEK' : (price.includes('$') ? 'USD' : 'SEK');
+    
     const cartItem = {
       id: id,
       name: name,
@@ -36,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       size: null, // Default values since quick add doesn't specify size/color
       color: null,
       quantity: 1,
-      currency: price.includes('SEK') ? 'SEK' : 'USD'
+      currency: currency
     };
     
     const existingCart = localStorage.getItem('cart');

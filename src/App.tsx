@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, BrowserRouter } from 'react-router-dom'
 import './App.css'
 import Home from '@/pages/Home'
 import About from '@/pages/About'
@@ -12,7 +12,7 @@ import Cart from '@/pages/Cart'
 import OrderConfirmation from '@/pages/OrderConfirmation'
 import { Toaster } from '@/components/ui/sonner'
 
-function App() {
+function AppContent() {
   const location = useLocation()
 
   useEffect(() => {
@@ -33,6 +33,14 @@ function App() {
       </Routes>
       <Toaster position="top-center" />
     </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   )
 }
 

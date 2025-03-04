@@ -43,7 +43,8 @@ const Navbar = () => {
           href="#" 
           className={cn(
             "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all",
-            isLogoAnimated && "animate-letter-spacing"
+            isLogoAnimated && "animate-letter-spacing",
+            isScrolled ? "text-foreground" : "text-white"
           )}
           onClick={handleLogoClick}
         >
@@ -53,7 +54,14 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <a key={link.name} href={link.href} className="nav-link">
+            <a 
+              key={link.name} 
+              href={link.href} 
+              className={cn(
+                "nav-link",
+                isScrolled ? "nav-link-scrolled" : "nav-link-transparent"
+              )}
+            >
               {link.name}
             </a>
           ))}
@@ -61,13 +69,31 @@ const Navbar = () => {
         
         {/* Icons */}
         <div className="hidden md:flex items-center space-x-6">
-          <button className="text-foreground hover:text-foreground/70 transition-colors" aria-label="Search">
+          <button 
+            className={cn(
+              "hover:opacity-70 transition-colors",
+              isScrolled ? "text-foreground" : "text-white"
+            )} 
+            aria-label="Search"
+          >
             <Search className="h-5 w-5" />
           </button>
-          <button className="text-foreground hover:text-foreground/70 transition-colors" aria-label="Account">
+          <button 
+            className={cn(
+              "hover:opacity-70 transition-colors",
+              isScrolled ? "text-foreground" : "text-white"
+            )} 
+            aria-label="Account"
+          >
             <User className="h-5 w-5" />
           </button>
-          <button className="text-foreground hover:text-foreground/70 transition-colors relative" aria-label="Cart">
+          <button 
+            className={cn(
+              "hover:opacity-70 transition-colors relative",
+              isScrolled ? "text-foreground" : "text-white"
+            )} 
+            aria-label="Cart"
+          >
             <ShoppingBag className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
               0
@@ -78,7 +104,10 @@ const Navbar = () => {
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
           <button 
-            className="text-foreground p-2" 
+            className={cn(
+              "p-2",
+              isScrolled ? "text-foreground" : "text-white"
+            )} 
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -99,7 +128,7 @@ const Navbar = () => {
             <a 
               key={link.name} 
               href={link.href} 
-              className="text-lg font-medium py-2 border-b border-border"
+              className="text-lg font-medium py-2 border-b border-border text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               {link.name}
@@ -107,15 +136,15 @@ const Navbar = () => {
           ))}
           
           <div className="flex items-center justify-around pt-6">
-            <button className="flex flex-col items-center space-y-1">
+            <button className="flex flex-col items-center space-y-1 text-foreground">
               <Search className="h-6 w-6" />
               <span className="text-sm">Search</span>
             </button>
-            <button className="flex flex-col items-center space-y-1">
+            <button className="flex flex-col items-center space-y-1 text-foreground">
               <User className="h-6 w-6" />
               <span className="text-sm">Account</span>
             </button>
-            <button className="flex flex-col items-center space-y-1 relative">
+            <button className="flex flex-col items-center space-y-1 relative text-foreground">
               <ShoppingBag className="h-6 w-6" />
               <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
                 0

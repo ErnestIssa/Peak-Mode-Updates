@@ -1,181 +1,269 @@
 
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Minus, Plus, ShoppingBag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
 import { fetchProductDetails } from '@/services/printfulService';
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: string;
-  currency: string;
-  size: string;
-  color: string;
-  quantity: number;
-  thumbnail_url: string;
-}
+import Navbar from '@/components/Navbar';
+import { ArrowLeft, ShoppingCart, Heart } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   
-  const { data: productData, isLoading, error } = useQuery({
+  const { data: product, isLoading, error } = useQuery({
     queryKey: ['product', id],
-    queryFn: () => fetchProductDetails(id as string),
+    queryFn: () => fetchProductDetails(Number(id)),
     enabled: !!id,
   });
-  
-  const availableSizes = productData?.sync_variants.map(variant => variant.size) || [];
-  const uniqueSizes = [...new Set(availableSizes)];
-  
-  const selectedVariant = productData?.sync_variants.find(variant => variant.size === selectedSize);
-  
+
+  useEffect(() => {
+    // Set default size and color when product loads
+    if (product && product.sync_variants.length > 0) {
+      const availableSizes = [...new Set(
+        product.sync_variants
+          .map(v => v.size)
+          .filter(Boolean)
+      )];
+      
+      const availableColors = [...new Set(
+        product.sync_variants
+          .map(v => v.color)
+          .filter(Boolean)
+      )];
+      
+      if (availableSizes.length > 0 && !selectedSize) {
+        setSelectedSize(availableSizes[0] as string);
+      }
+      
+      if (availableColors.length > 0 && !selectedColor) {
+        setSelectedColor(availableColors[0] as string);
+      }
+    }
+  }, [product, selectedSize, selectedColor]);
+
   const handleAddToCart = () => {
-    if (!selectedVariant || !productData) return;
+    if (!product) return;
     
-    const cartItem: CartItem = {
-      id: productData.sync_product.id,
-      name: productData.sync_product.name,
-      price: selectedVariant.retail_price,
-      currency: selectedVariant.currency,
+    // Create cart item from selected product
+    const cartItem = {
+      id: product.sync_product.id,
+      name: product.sync_product.name,
+      price: parseFloat(variant ? variant.retail_price : "0"),
+      image: product.sync_product.thumbnail_url,
       size: selectedSize,
-      color: selectedVariant.color || 'Default',
+      color: selectedColor,
       quantity: quantity,
-      thumbnail_url: productData.sync_product.thumbnail_url,
+      currency: variant ? variant.currency : "USD"
     };
     
-    // Get existing cart from localStorage
+    // Get current cart items from localStorage
     const existingCart = localStorage.getItem('cart');
-    const cart = existingCart ? JSON.parse(existingCart) : [];
+    let cartItems = existingCart ? JSON.parse(existingCart) : [];
     
-    // Add new item
-    cart.push(cartItem);
+    // Check if this product is already in cart (same product, size and color)
+    const existingItemIndex = cartItems.findIndex((item: any) => 
+      item.id === cartItem.id && 
+      item.size === cartItem.size && 
+      item.color === cartItem.color
+    );
     
-    // Save back to localStorage
-    localStorage.setItem('cart', JSON.stringify(cart));
+    if (existingItemIndex >= 0) {
+      // If product already in cart, update quantity
+      cartItems[existingItemIndex].quantity += quantity;
+    } else {
+      // If not in cart, add new item
+      cartItems.push(cartItem);
+    }
     
-    toast.success('Added to cart successfully');
+    // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    
+    toast.success("Added to cart successfully!");
   };
-  
+
   if (isLoading) {
     return (
-      <div className="container mx-auto py-24 text-center">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full inline-block"></div>
-        <p className="mt-4">Loading product details...</p>
-      </div>
-    );
-  }
-  
-  if (error || !productData) {
-    return (
-      <div className="container mx-auto py-24 text-center">
-        <h2 className="text-2xl font-bold">Error loading product</h2>
-        <p className="mt-4">Sorry, we couldn't load this product.</p>
-        <Button onClick={() => navigate('/shop')} className="mt-8">
-          Return to Shop
-        </Button>
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="peak-container mt-28 mb-16">
+          <Link to="/" className="inline-flex items-center text-sm mb-8">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to products
+          </Link>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <Skeleton className="w-full aspect-square" />
+            <div className="space-y-6">
+              <Skeleton className="h-8 w-3/4" />
+              <Skeleton className="h-6 w-1/4" />
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
+  if (error || !product) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="peak-container mt-28 mb-16 text-center py-12">
+          <p className="text-red-500 mb-4">Failed to load product details.</p>
+          <Link to="/" className="peak-button inline-flex items-center">
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Extract product details
+  const { sync_product, sync_variants } = product;
+  const productName = sync_product.name;
+  const productDescription = sync_product.description || "No description available.";
+  const thumbnail = sync_product.thumbnail_url;
+  
+  // Extract variants info
+  const variants = sync_variants || [];
+  
+  // Get unique colors from variants
+  const availableColors = [...new Set(
+    variants
+      .map(v => v.color)
+      .filter(Boolean)
+  )];
+  
+  // Get unique sizes from variants
+  const sizes = [...new Set(
+    variants
+      .map(v => v.size)
+      .filter(Boolean)
+  )];
+  
+  // Get product price (use first variant)
+  const variant = variants.find(v => 
+    (!selectedSize || v.size === selectedSize) && 
+    (!selectedColor || v.color === selectedColor)
+  ) || variants[0];
+  
+  const price = variant ? 
+    `${variant.retail_price} ${variant.currency}` : 
+    "$59.99 USD";
+
   return (
-    <div className="container mx-auto py-12 px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="flex justify-center items-start">
-          <div className="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-lg">
-            <img
-              src={productData.sync_product.thumbnail_url}
-              alt={productData.sync_product.name}
-              className="w-full h-auto object-cover"
+    <div className="min-h-screen">
+      <Navbar />
+      <div className="peak-container mt-28 mb-16">
+        <Link to="/shop" className="inline-flex items-center text-sm mb-8 hover:underline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to products
+        </Link>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* Product Image */}
+          <div className="aspect-square bg-secondary relative overflow-hidden">
+            <img 
+              src={thumbnail} 
+              alt={productName} 
+              className="w-full h-full object-cover"
             />
           </div>
-        </div>
-        
-        <div>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">{productData.sync_product.name}</h1>
-            {selectedVariant && (
-              <p className="text-2xl font-medium mt-4">
-                {selectedVariant.retail_price} {selectedVariant.currency}
-              </p>
-            )}
-          </div>
           
-          <Separator className="my-6" />
-          
+          {/* Product Details */}
           <div className="space-y-6">
-            <div>
-              <label className="text-sm font-medium">Size</label>
-              <Select
-                value={selectedSize}
-                onValueChange={setSelectedSize}
-              >
-                <SelectTrigger className="w-full mt-1">
-                  <SelectValue placeholder="Select a size" />
-                </SelectTrigger>
-                <SelectContent>
-                  {uniqueSizes.map((size) => (
-                    <SelectItem key={size} value={size}>
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <h1 className="text-3xl font-bold">{productName}</h1>
+            <p className="text-2xl font-medium">{price}</p>
             
+            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: productDescription }} />
+            
+            {/* Color Selection */}
+            {availableColors.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium mb-3">Color</h3>
+                <div className="flex space-x-2">
+                  {availableColors.map((color, index) => (
+                    <button
+                      key={index}
+                      className={`w-10 h-10 rounded-full border-2 ${
+                        selectedColor === color ? 'border-black' : 'border-transparent'
+                      }`}
+                      style={{ backgroundColor: color?.toLowerCase() || "#ccc" }}
+                      onClick={() => setSelectedColor(color as string)}
+                      aria-label={`Select ${color} color`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Size Selection */}
+            {sizes.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium mb-3">Size</h3>
+                <div className="flex flex-wrap gap-2">
+                  {sizes.map((size, index) => (
+                    <button
+                      key={index}
+                      className={`px-4 py-2 border ${
+                        selectedSize === size 
+                          ? 'border-black bg-black text-white' 
+                          : 'border-gray-300 hover:border-black'
+                      }`}
+                      onClick={() => setSelectedSize(size as string)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Quantity Selection */}
             <div>
-              <label className="text-sm font-medium">Quantity</label>
-              <div className="flex items-center mt-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              <h3 className="text-sm font-medium mb-3">Quantity</h3>
+              <div className="flex items-center border border-gray-300 w-32">
+                <button 
+                  className="px-3 py-2 border-r border-gray-300"
+                  onClick={() => setQuantity(prev => (prev > 1 ? prev - 1 : 1))}
                 >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="mx-4 font-medium">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setQuantity(quantity + 1)}
+                  -
+                </button>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-full text-center py-2 focus:outline-none"
+                />
+                <button 
+                  className="px-3 py-2 border-l border-gray-300"
+                  onClick={() => setQuantity(prev => prev + 1)}
                 >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                  +
+                </button>
               </div>
             </div>
             
-            <Button
-              className="w-full mt-8"
-              size="lg"
-              onClick={handleAddToCart}
-              disabled={!selectedSize}
-            >
-              <ShoppingBag className="mr-2 h-5 w-5" /> Add to Cart
-            </Button>
+            {/* Add to Cart Button */}
+            <div className="flex space-x-4">
+              <button 
+                className="peak-button flex-1 flex items-center justify-center"
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Add to Cart
+              </button>
+              <button className="p-3 border border-gray-300 hover:border-black">
+                <Heart className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-          
-          <Card className="mt-12 p-6">
-            <h3 className="font-medium mb-4">Product Details</h3>
-            <p className="text-muted-foreground">
-              Premium quality {productData.sync_product.name.toLowerCase()}. 
-              Perfect for everyday wear and special occasions. 
-              Each item is made with high-quality materials and printed with care.
-            </p>
-          </Card>
         </div>
       </div>
     </div>

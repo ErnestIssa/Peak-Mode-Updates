@@ -1,181 +1,244 @@
 
 import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import { Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Trash } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from "sonner";
 
+// Type for cart items
 interface CartItem {
   id: number;
   name: string;
-  price: string;
-  currency: string;
+  price: number;
+  image: string;
   size: string;
   color: string;
   quantity: number;
-  thumbnail_url: string;
+  currency: string;
 }
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
+  
+  // Load cart items from localStorage on component mount
   useEffect(() => {
-    // Load cart items from localStorage
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        setCartItems(parsedCart);
+      } catch (error) {
+        console.error("Failed to parse cart data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load your cart. It may be corrupted.",
+        });
+      }
     }
-    setIsLoading(false);
   }, []);
-
-  const updateQuantity = (index: number, newQuantity: number) => {
+  
+  // Save to localStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }, [cartItems]);
+  
+  const updateQuantity = (id: number, size: string, color: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     
-    const updatedCart = [...cartItems];
-    updatedCart[index].quantity = newQuantity;
-    setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    setCartItems(items => 
+      items.map(item => 
+        (item.id === id && item.size === size && item.color === color) 
+          ? { ...item, quantity: newQuantity } 
+          : item
+      )
+    );
+  };
+  
+  const removeItem = (id: number, size: string, color: string) => {
+    setCartItems(items => items.filter(item => 
+      !(item.id === id && item.size === size && item.color === color)
+    ));
     
     toast({
-      description: "Cart updated successfully",
+      title: "Item Removed",
+      description: "Item has been removed from your cart.",
     });
   };
-
-  const removeItem = (index: number) => {
-    const updatedCart = cartItems.filter((_, i) => i !== index);
-    setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-    
-    toast({
-      description: "Item removed from cart",
-    });
-  };
-
+  
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('cart');
     
     toast({
-      description: "Cart cleared successfully",
+      title: "Cart Cleared",
+      description: "All items have been removed from your cart.",
     });
   };
-
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => {
-      const price = parseFloat(item.price);
-      return total + price * item.quantity;
-    }, 0).toFixed(2);
-  };
-
-  if (isLoading) {
-    return <div className="container mx-auto py-12 text-center">Loading...</div>;
-  }
+  
+  // Calculate totals
+  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const shipping = subtotal > 100 ? 0 : 9.99;
+  const tax = subtotal * 0.08; // 8% tax
+  const total = subtotal + shipping + tax;
 
   return (
-    <div className="container mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-      
-      {cartItems.length === 0 ? (
-        <div className="text-center py-16">
-          <h2 className="text-2xl font-medium mb-4">Your cart is empty</h2>
-          <p className="text-muted-foreground mb-8">Looks like you haven't added anything to your cart yet.</p>
-          <Button asChild>
-            <Link to="/shop">Continue Shopping</Link>
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            {cartItems.map((item, index) => (
-              <Card key={`${item.id}-${item.size}-${index}`} className="mb-4">
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="w-full sm:w-24 h-24 bg-secondary rounded overflow-hidden">
-                      <img 
-                        src={item.thumbnail_url} 
-                        alt={item.name} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row justify-between">
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Size: {item.size} | Color: {item.color}
-                          </p>
-                        </div>
-                        <div className="text-right mt-2 sm:mt-0">
-                          <p className="font-medium">
-                            {item.price} {item.currency}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center mt-4">
-                        <div className="flex items-center">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => updateQuantity(index, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                          >
-                            -
-                          </Button>
-                          <span className="mx-3">{item.quantity}</span>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => updateQuantity(index, item.quantity + 1)}
-                          >
-                            +
-                          </Button>
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => removeItem(index)}
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            <div className="mt-4">
-              <Button variant="outline" onClick={clearCart}>
-                Clear Cart
-              </Button>
+    <div className="min-h-screen">
+      <Navbar />
+      <main className="pt-32 pb-16">
+        <div className="peak-container">
+          <h1 className="text-3xl md:text-4xl font-bold mb-8">Your Cart</h1>
+          
+          {cartItems.length === 0 ? (
+            <div className="text-center py-16">
+              <ShoppingBag className="h-16 w-16 mx-auto text-foreground/50" />
+              <h2 className="text-2xl font-medium mt-4">Your cart is empty</h2>
+              <p className="text-foreground/60 mt-2">Looks like you haven't added any items to your cart yet.</p>
+              <Link
+                to="/shop"
+                className="inline-block mt-8 px-8 py-3 bg-black text-white font-medium hover:bg-black/90 transition-colors"
+              >
+                Continue Shopping
+              </Link>
             </div>
-          </div>
-
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-medium mb-4">Order Summary</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Total Items</span>
-                    <span>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Cart Items */}
+              <div className="lg:col-span-2">
+                <div className="bg-white border border-border">
+                  <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-border bg-secondary/50 font-medium">
+                    <div className="col-span-6">Product</div>
+                    <div className="col-span-2 text-center">Price</div>
+                    <div className="col-span-2 text-center">Quantity</div>
+                    <div className="col-span-2 text-center">Total</div>
                   </div>
-                  <Separator />
-                  <div className="flex justify-between font-medium text-lg pt-2">
-                    <span>Total</span>
-                    <span>{calculateTotal()} {cartItems[0]?.currency || 'SEK'}</span>
+                  
+                  {cartItems.map((item, index) => (
+                    <div key={`${item.id}-${item.size}-${item.color}-${index}`} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border-b border-border items-center">
+                      {/* Product Info */}
+                      <div className="col-span-6 flex items-center">
+                        <div className="w-20 h-20 flex-shrink-0">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="ml-4">
+                          <h3 className="font-medium">{item.name}</h3>
+                          <div className="text-sm text-foreground/70 mt-1">
+                            <span>Size: {item.size}</span>
+                            <span className="mx-2">|</span>
+                            <span>Color: {item.color}</span>
+                          </div>
+                          <button 
+                            onClick={() => removeItem(item.id, item.size, item.color)}
+                            className="text-sm text-foreground/70 hover:text-red-600 transition-colors mt-2 flex items-center md:hidden"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Price - Mobile & Desktop */}
+                      <div className="md:col-span-2 md:text-center flex justify-between md:block">
+                        <span className="md:hidden">Price:</span>
+                        <span>{item.price.toFixed(2)} {item.currency}</span>
+                      </div>
+                      
+                      {/* Quantity - Mobile & Desktop */}
+                      <div className="md:col-span-2 md:text-center flex justify-between md:block">
+                        <span className="md:hidden">Quantity:</span>
+                        <div className="flex items-center border border-border md:justify-center">
+                          <button
+                            onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity - 1)}
+                            className="px-3 py-1 hover:bg-secondary transition-colors"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </button>
+                          <span className="w-10 text-center">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity + 1)}
+                            className="px-3 py-1 hover:bg-secondary transition-colors"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Total - Mobile & Desktop */}
+                      <div className="md:col-span-2 md:text-center flex justify-between md:block items-center">
+                        <span className="md:hidden">Total:</span>
+                        <span className="font-medium">{(item.price * item.quantity).toFixed(2)} {item.currency}</span>
+                        <button
+                          onClick={() => removeItem(item.id, item.size, item.color)}
+                          className="text-foreground/70 hover:text-red-600 transition-colors hidden md:inline-block ml-2"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div className="p-4 flex justify-between">
+                    <button
+                      onClick={clearCart}
+                      className="text-sm text-foreground/70 hover:text-foreground transition-colors"
+                    >
+                      Clear Cart
+                    </button>
+                    <Link
+                      to="/shop"
+                      className="text-sm text-foreground/70 hover:text-foreground transition-colors"
+                    >
+                      Continue Shopping
+                    </Link>
                   </div>
                 </div>
-              </CardContent>
-              <CardFooter className="p-6 pt-0">
-                <Button className="w-full">Proceed to Checkout</Button>
-              </CardFooter>
-            </Card>
-          </div>
+              </div>
+              
+              {/* Order Summary */}
+              <div className="lg:col-span-1">
+                <div className="bg-white border border-border p-6">
+                  <h2 className="text-xl font-bold mb-6">Order Summary</h2>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Shipping</span>
+                      <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tax (8%)</span>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <div className="h-px bg-border my-4"></div>
+                    <div className="flex justify-between font-bold text-lg">
+                      <span>Total</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  
+                  <button
+                    className="w-full mt-6 py-3 bg-black text-white font-medium hover:bg-black/90 transition-colors"
+                  >
+                    Proceed to Checkout
+                  </button>
+                  
+                  <div className="mt-6">
+                    <h3 className="font-medium mb-2">We Accept</h3>
+                    <div className="flex space-x-2">
+                      <div className="w-10 h-6 bg-secondary"></div>
+                      <div className="w-10 h-6 bg-secondary"></div>
+                      <div className="w-10 h-6 bg-secondary"></div>
+                      <div className="w-10 h-6 bg-secondary"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </main>
     </div>
   );
 };

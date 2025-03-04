@@ -119,6 +119,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Black',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -129,6 +130,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Black',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -139,6 +141,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'L',
         color: 'Black',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -149,6 +152,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Gray',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -159,6 +163,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Gray',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       },
@@ -169,6 +174,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'L',
         color: 'Gray',
         price: '59.99',
+        retail_price: '59.99',
         currency: 'USD',
         files: []
       }
@@ -193,6 +199,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Blue',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       },
@@ -203,6 +210,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Blue',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       },
@@ -213,6 +221,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Red',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       },
@@ -223,6 +232,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Red',
         price: '34.99',
+        retail_price: '34.99',
         currency: 'USD',
         files: []
       }
@@ -247,6 +257,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Black',
         price: '79.99',
+        retail_price: '79.99',
         currency: 'USD',
         files: []
       },
@@ -257,6 +268,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Black',
         price: '79.99',
+        retail_price: '79.99',
         currency: 'USD',
         files: []
       }
@@ -281,6 +293,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Blue',
         price: '49.99',
+        retail_price: '49.99',
         currency: 'USD',
         files: []
       },
@@ -291,6 +304,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Blue',
         price: '49.99',
+        retail_price: '49.99',
         currency: 'USD',
         files: []
       },
@@ -301,6 +315,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Black',
         price: '49.99',
+        retail_price: '49.99',
         currency: 'USD',
         files: []
       }
@@ -325,6 +340,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'S',
         color: 'Gray',
         price: '89.99',
+        retail_price: '89.99',
         currency: 'USD',
         files: []
       },
@@ -335,6 +351,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'M',
         color: 'Gray',
         price: '89.99',
+        retail_price: '89.99',
         currency: 'USD',
         files: []
       },
@@ -345,6 +362,7 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
         size: 'L',
         color: 'Gray',
         price: '89.99',
+        retail_price: '89.99',
         currency: 'USD',
         files: []
       }

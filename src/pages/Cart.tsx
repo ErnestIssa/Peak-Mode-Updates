@@ -16,8 +16,6 @@ const Cart = () => {
     return (
       <Layout>
         <div className="peak-container py-20 min-h-screen">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">Your Cart</h1>
-          
           <div className="bg-secondary/30 rounded-lg p-8 flex flex-col items-center justify-center text-center">
             <div className="bg-white p-6 rounded-full mb-4">
               <svg className="w-16 h-16 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,8 +40,6 @@ const Cart = () => {
   return (
     <Layout>
       <div className="peak-container py-20 min-h-screen">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8">Your Cart</h1>
-        
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <div className="border border-border rounded-md">

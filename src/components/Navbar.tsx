@@ -32,10 +32,8 @@ const Navbar = () => {
   return (
     <header 
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-sm text-foreground' 
-          : 'bg-black/70 backdrop-blur-md text-white'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full bg-white shadow-sm text-foreground',
+        isScrolled && 'shadow-md'
       )}
     >
       <nav className="peak-container flex items-center justify-between h-20">
@@ -43,7 +41,7 @@ const Navbar = () => {
         <a 
           href="#" 
           className={cn(
-            "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all",
+            "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all text-foreground",
             isLogoAnimated && "animate-letter-spacing"
           )}
           onClick={handleLogoClick}
@@ -57,7 +55,7 @@ const Navbar = () => {
             <a 
               key={link.name} 
               href={link.href} 
-              className="nav-link hover:opacity-80 transition-colors"
+              className="nav-link hover:opacity-80 transition-colors text-foreground"
             >
               {link.name}
             </a>
@@ -67,23 +65,23 @@ const Navbar = () => {
         {/* Icons */}
         <div className="hidden md:flex items-center space-x-6">
           <button 
-            className="hover:opacity-70 transition-colors" 
+            className="hover:opacity-70 transition-colors text-foreground" 
             aria-label="Search"
           >
             <Search className="h-5 w-5" />
           </button>
           <button 
-            className="hover:opacity-70 transition-colors" 
+            className="hover:opacity-70 transition-colors text-foreground" 
             aria-label="Account"
           >
             <User className="h-5 w-5" />
           </button>
           <button 
-            className="hover:opacity-70 transition-colors relative" 
+            className="hover:opacity-70 transition-colors relative text-foreground" 
             aria-label="Cart"
           >
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
               0
             </span>
           </button>
@@ -92,7 +90,7 @@ const Navbar = () => {
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
           <button 
-            className="p-2" 
+            className="p-2 text-foreground" 
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >

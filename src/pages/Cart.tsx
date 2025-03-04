@@ -1,49 +1,64 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import { cn } from '@/lib/utils';
 import { Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
-// Sample cart data - in a real app, this would come from a state management solution
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Performance Tech Tee",
-    price: 49.99,
-    image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    size: "M",
-    color: "Black",
-    quantity: 1
-  },
-  {
-    id: 2,
-    name: "Compression Leggings",
-    price: 79.99,
-    image: "https://images.unsplash.com/photo-1565084888279-aca607ecce0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    size: "L",
-    color: "Navy",
-    quantity: 2
-  }
-];
+// Type for cart items
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  size: string;
+  color: string;
+  quantity: number;
+  currency: string;
+}
 
 const Cart = () => {
-  const { toast } = useToast();
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   
-  const updateQuantity = (id: number, newQuantity: number) => {
+  // Load cart items from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        setCartItems(parsedCart);
+      } catch (error) {
+        console.error("Failed to parse cart data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load your cart. It may be corrupted.",
+        });
+      }
+    }
+  }, []);
+  
+  // Save to localStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }, [cartItems]);
+  
+  const updateQuantity = (id: number, size: string, color: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     
     setCartItems(items => 
       items.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        (item.id === id && item.size === size && item.color === color) 
+          ? { ...item, quantity: newQuantity } 
+          : item
       )
     );
   };
   
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+  const removeItem = (id: number, size: string, color: string) => {
+    setCartItems(items => items.filter(item => 
+      !(item.id === id && item.size === size && item.color === color)
+    ));
+    
     toast({
       title: "Item Removed",
       description: "Item has been removed from your cart.",
@@ -52,6 +67,8 @@ const Cart = () => {
   
   const clearCart = () => {
     setCartItems([]);
+    localStorage.removeItem('cart');
+    
     toast({
       title: "Cart Cleared",
       description: "All items have been removed from your cart.",
@@ -95,8 +112,8 @@ const Cart = () => {
                     <div className="col-span-2 text-center">Total</div>
                   </div>
                   
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border-b border-border items-center">
+                  {cartItems.map((item, index) => (
+                    <div key={`${item.id}-${item.size}-${item.color}-${index}`} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border-b border-border items-center">
                       {/* Product Info */}
                       <div className="col-span-6 flex items-center">
                         <div className="w-20 h-20 flex-shrink-0">
@@ -110,7 +127,7 @@ const Cart = () => {
                             <span>Color: {item.color}</span>
                           </div>
                           <button 
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItem(item.id, item.size, item.color)}
                             className="text-sm text-foreground/70 hover:text-red-600 transition-colors mt-2 flex items-center md:hidden"
                           >
                             <X className="h-4 w-4 mr-1" />
@@ -122,7 +139,7 @@ const Cart = () => {
                       {/* Price - Mobile & Desktop */}
                       <div className="md:col-span-2 md:text-center flex justify-between md:block">
                         <span className="md:hidden">Price:</span>
-                        <span>${item.price.toFixed(2)}</span>
+                        <span>{item.price.toFixed(2)} {item.currency}</span>
                       </div>
                       
                       {/* Quantity - Mobile & Desktop */}
@@ -130,14 +147,14 @@ const Cart = () => {
                         <span className="md:hidden">Quantity:</span>
                         <div className="flex items-center border border-border md:justify-center">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity - 1)}
                             className="px-3 py-1 hover:bg-secondary transition-colors"
                           >
                             <Minus className="h-4 w-4" />
                           </button>
                           <span className="w-10 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity + 1)}
                             className="px-3 py-1 hover:bg-secondary transition-colors"
                           >
                             <Plus className="h-4 w-4" />
@@ -148,9 +165,9 @@ const Cart = () => {
                       {/* Total - Mobile & Desktop */}
                       <div className="md:col-span-2 md:text-center flex justify-between md:block items-center">
                         <span className="md:hidden">Total:</span>
-                        <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-medium">{(item.price * item.quantity).toFixed(2)} {item.currency}</span>
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.id, item.size, item.color)}
                           className="text-foreground/70 hover:text-red-600 transition-colors hidden md:inline-block ml-2"
                         >
                           <X className="h-5 w-5" />

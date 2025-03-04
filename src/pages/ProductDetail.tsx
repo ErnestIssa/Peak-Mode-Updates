@@ -46,13 +46,41 @@ const ProductDetail = () => {
   }, [product, selectedSize, selectedColor]);
 
   const handleAddToCart = () => {
-    // Would handle cart logic here
-    console.log('Added to cart:', {
-      product,
+    if (!product) return;
+    
+    // Create cart item from selected product
+    const cartItem = {
+      id: product.sync_product.id,
+      name: product.sync_product.name,
+      price: parseFloat(variant ? variant.retail_price : "0"),
+      image: product.sync_product.thumbnail_url,
       size: selectedSize,
       color: selectedColor,
-      quantity
-    });
+      quantity: quantity,
+      currency: variant ? variant.currency : "USD"
+    };
+    
+    // Get current cart items from localStorage
+    const existingCart = localStorage.getItem('cart');
+    let cartItems = existingCart ? JSON.parse(existingCart) : [];
+    
+    // Check if this product is already in cart (same product, size and color)
+    const existingItemIndex = cartItems.findIndex((item: any) => 
+      item.id === cartItem.id && 
+      item.size === cartItem.size && 
+      item.color === cartItem.color
+    );
+    
+    if (existingItemIndex >= 0) {
+      // If product already in cart, update quantity
+      cartItems[existingItemIndex].quantity += quantity;
+    } else {
+      // If not in cart, add new item
+      cartItems.push(cartItem);
+    }
+    
+    // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cartItems));
     
     toast.success("Added to cart successfully!");
   };
@@ -125,7 +153,7 @@ const ProductDetail = () => {
   ) || variants[0];
   
   const price = variant ? 
-    `${variant.price} ${variant.currency}` : 
+    `${variant.retail_price} ${variant.currency}` : 
     "$59.99 USD";
 
   return (

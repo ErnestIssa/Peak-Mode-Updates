@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import Checkout from '@/components/Checkout';
 
 interface CartItem {
   id: number;
@@ -20,6 +20,7 @@ interface CartItem {
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -82,13 +83,16 @@ const Cart = () => {
     toast.success("Cart cleared");
   };
 
-  // Determine the predominant currency
   const getCurrency = () => {
     if (cartItems.length === 0) return 'SEK';
     
     const currencies = cartItems.map(item => item.currency);
     // Default to SEK as requested
     return currencies.includes('SEK') ? 'SEK' : currencies[0] || 'SEK';
+  };
+
+  const handleCheckout = () => {
+    setIsCheckoutOpen(true);
   };
 
   if (cartItems.length === 0) {
@@ -228,7 +232,7 @@ const Cart = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full mt-6">
+                <Button className="w-full mt-6" onClick={handleCheckout}>
                   Checkout
                 </Button>
               </div>
@@ -236,6 +240,14 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      
+      <Checkout
+        open={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        cartItems={cartItems}
+        cartTotal={cartTotal}
+        currency={getCurrency()}
+      />
     </Layout>
   );
 };

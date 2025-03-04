@@ -20,6 +20,19 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Prevent scrolling when mobile menu is open
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const handleLogoClick = () => {
     setIsLogoAnimated(true);
     setTimeout(() => setIsLogoAnimated(false), 1000);
@@ -89,7 +102,7 @@ const Navbar = () => {
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
           <button 
-            className="p-2 text-foreground" 
+            className="p-2 text-foreground hover:bg-gray-100 rounded-full transition-colors" 
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -98,47 +111,85 @@ const Navbar = () => {
         </div>
       </nav>
       
+      {/* Mobile Menu Overlay */}
+      <div 
+        className={cn(
+          'fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden',
+          mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        )}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+      
       {/* Mobile Menu */}
       <div 
         className={cn(
-          'fixed inset-0 top-20 bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col',
+          'fixed inset-y-0 right-0 w-full max-w-xs bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out md:hidden',
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
-        <div className="flex flex-col px-4 pt-8 pb-6 space-y-8">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              to={link.href} 
-              className="text-lg font-medium py-2 border-b border-border text-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
-          
-          <div className="flex items-center justify-around pt-6">
+        <div className="flex flex-col h-full">
+          {/* Mobile menu header */}
+          <div className="flex items-center justify-between px-6 h-20 border-b border-gray-100">
+            <span className="font-display font-bold text-lg">Menu</span>
             <button 
-              className="flex flex-col items-center space-y-1 text-foreground"
-              onClick={() => {
-                setSearchModalOpen(true);
-                setMobileMenuOpen(false);
-              }}
-            >
-              <Search className="h-6 w-6" />
-              <span className="text-sm">Search</span>
-            </button>
-            <Link 
-              to="/cart"
-              className="flex flex-col items-center space-y-1 relative text-foreground"
+              className="p-2 text-foreground hover:bg-gray-100 rounded-full transition-colors" 
               onClick={() => setMobileMenuOpen(false)}
             >
-              <ShoppingBag className="h-6 w-6" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
-                0
-              </span>
-              <span className="text-sm">Cart</span>
-            </Link>
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          
+          {/* Mobile menu links */}
+          <div className="flex-1 overflow-y-auto py-6">
+            <div className="px-6 space-y-2">
+              {navLinks.map((link, index) => (
+                <Link 
+                  key={link.name} 
+                  to={link.href} 
+                  className={cn(
+                    "block py-3 px-4 text-lg font-medium border-l-2 hover:bg-gray-50 transition-all rounded-r-lg",
+                    link.href === window.location.pathname 
+                      ? "border-black text-black font-semibold" 
+                      : "border-transparent text-gray-600 hover:text-black hover:border-gray-300"
+                  )}
+                  style={{ 
+                    animationDelay: `${index * 75}ms`,
+                    animation: mobileMenuOpen ? 'fade-in 0.3s forwards' : 'none' 
+                  }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+          
+          {/* Mobile menu footer */}
+          <div className="border-t border-gray-100 px-6 py-6">
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                className="flex flex-col items-center justify-center py-3 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                onClick={() => {
+                  setSearchModalOpen(true);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Search className="h-6 w-6 mb-1" />
+                <span className="text-sm font-medium">Search</span>
+              </button>
+              
+              <Link 
+                to="/cart"
+                className="flex flex-col items-center justify-center py-3 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors relative"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ShoppingBag className="h-6 w-6 mb-1" />
+                <span className="absolute -top-1 right-8 w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">
+                  0
+                </span>
+                <span className="text-sm font-medium">Cart</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

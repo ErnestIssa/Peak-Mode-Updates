@@ -100,7 +100,18 @@ const Navbar = () => {
         </div>
         
         {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center space-x-4">
+          <Link 
+            to="/cart"
+            className="hover:opacity-70 transition-colors relative text-foreground" 
+            aria-label="Cart"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
+              0
+            </span>
+          </Link>
+          
           <button 
             className="p-2 text-foreground hover:bg-gray-100 rounded-full transition-colors" 
             aria-label="Toggle menu"
@@ -120,77 +131,58 @@ const Navbar = () => {
         onClick={() => setMobileMenuOpen(false)}
       />
       
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <div 
         className={cn(
-          'fixed inset-y-0 right-0 w-full max-w-xs bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out md:hidden',
-          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          'absolute top-20 left-0 right-0 bg-white shadow-lg z-40 transition-all duration-300 md:hidden overflow-hidden',
+          mobileMenuOpen ? 'max-h-[70vh] opacity-100' : 'max-h-0 opacity-0'
         )}
       >
-        <div className="flex flex-col h-full">
-          {/* Mobile menu header */}
-          <div className="flex items-center justify-between px-6 h-20 border-b border-gray-100">
-            <span className="font-display font-bold text-lg">Menu</span>
-            <button 
-              className="p-2 text-foreground hover:bg-gray-100 rounded-full transition-colors" 
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          
-          {/* Mobile menu links */}
-          <div className="flex-1 overflow-y-auto py-6">
-            <div className="px-6 space-y-2">
-              {navLinks.map((link, index) => (
-                <Link 
-                  key={link.name} 
-                  to={link.href} 
-                  className={cn(
-                    "block py-3 px-4 text-lg font-medium border-l-2 hover:bg-gray-50 transition-all rounded-r-lg",
-                    link.href === window.location.pathname 
-                      ? "border-black text-black font-semibold" 
-                      : "border-transparent text-gray-600 hover:text-black hover:border-gray-300"
-                  )}
-                  style={{ 
-                    animationDelay: `${index * 75}ms`,
-                    animation: mobileMenuOpen ? 'fade-in 0.3s forwards' : 'none' 
-                  }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-          
-          {/* Mobile menu footer */}
-          <div className="border-t border-gray-100 px-6 py-6">
-            <div className="grid grid-cols-2 gap-4">
-              <button 
-                className="flex flex-col items-center justify-center py-3 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                onClick={() => {
-                  setSearchModalOpen(true);
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <Search className="h-6 w-6 mb-1" />
-                <span className="text-sm font-medium">Search</span>
-              </button>
-              
+        <div className="flex flex-col divide-y divide-gray-100">
+          {navLinks.map((link, index) => {
+            const isActive = window.location.pathname === link.href;
+            return (
               <Link 
-                to="/cart"
-                className="flex flex-col items-center justify-center py-3 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors relative"
+                key={link.name} 
+                to={link.href} 
+                className={cn(
+                  "py-4 px-6 font-medium transition-all",
+                  isActive 
+                    ? "bg-secondary text-foreground" 
+                    : "text-gray-600 hover:bg-gray-50 hover:text-foreground"
+                )}
+                style={{ 
+                  animationDelay: `${index * 50}ms`,
+                  animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+                }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <ShoppingBag className="h-6 w-6 mb-1" />
-                <span className="absolute -top-1 right-8 w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">
-                  0
-                </span>
-                <span className="text-sm font-medium">Cart</span>
+                <div className="flex items-center justify-between">
+                  <span>{link.name}</span>
+                  {isActive && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
+                  )}
+                </div>
               </Link>
+            );
+          })}
+          
+          <button 
+            className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
+            onClick={() => {
+              setSearchModalOpen(true);
+              setMobileMenuOpen(false);
+            }}
+            style={{ 
+              animationDelay: `${navLinks.length * 50}ms`,
+              animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              <span>Search</span>
             </div>
-          </div>
+          </button>
         </div>
       </div>
       

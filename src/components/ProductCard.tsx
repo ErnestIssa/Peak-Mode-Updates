@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
@@ -61,16 +61,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <ShoppingCart className="h-4 w-4" />
           <span className="text-sm font-medium">Quick Add</span>
         </div>
-        
-        {/* Wishlist */}
-        <button 
-          className={cn(
-            "absolute top-4 right-4 w-8 h-8 rounded-full bg-white flex items-center justify-center transition-all duration-300",
-            isHovered ? "opacity-100" : "opacity-0"
-          )}
-        >
-          <Heart className="h-4 w-4" />
-        </button>
       </Link>
       
       <div className="p-4 flex flex-col flex-grow">

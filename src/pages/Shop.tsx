@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Filter, SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 import Newsletter from '../components/Newsletter';
 
 const Shop = () => {
@@ -23,16 +23,16 @@ const Shop = () => {
         id: product.id,
         name: product.name,
         price: "$59.99",
-        category: product.name.includes("Hoodie") ? "Hoodies" : 
-                 product.name.includes("Shirt") ? "T-Shirts" : 
-                 product.name.includes("rash guard") ? "Athletic Wear" : "Accessories",
+        category: product.name.toLowerCase().includes("hoodie") ? "Hoodies" : 
+                 product.name.toLowerCase().includes("shirt") || product.name.toLowerCase().includes("tee") ? "T-Shirts" : 
+                 product.name.toLowerCase().includes("rash guard") ? "Athletic Wear" : "Accessories",
         image: product.thumbnail_url,
         isNew: Math.random() > 0.7
       }))
     : [];
 
   const filteredProducts = activeCategory 
-    ? products.filter(p => p.name.toLowerCase().includes(activeCategory.toLowerCase()))
+    ? products.filter(p => p.category.toLowerCase().includes(activeCategory.toLowerCase()))
     : products;
 
   return (

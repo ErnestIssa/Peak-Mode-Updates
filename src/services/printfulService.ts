@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 // Types for product data
@@ -351,12 +350,17 @@ const dummyProductDetails: Record<number, PrintfulProductDetail> = {
   }
 };
 
-// Function to fetch all products (now returns dummy data)
+// Function to fetch all products from the API
 export const fetchPrintfulProducts = async (): Promise<PrintfulProduct[]> => {
   try {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return dummyProducts;
+    const response = await fetch("https://peak-mode-server.vercel.app/api/products");
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Failed to fetch products:", error);
     toast.error("Failed to load products. Please try again later.");

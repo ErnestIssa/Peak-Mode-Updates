@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProductDetails, PrintfulProductDetail } from '@/services/printfulService';
@@ -18,6 +18,21 @@ const ProductDetail = () => {
     queryFn: () => fetchProductDetails(Number(id)),
     enabled: !!id,
   });
+
+  useEffect(() => {
+    // Set default color when product loads
+    if (product && product.sync_variants.length > 0) {
+      const availableColors = [...new Set(
+        product.sync_variants
+          .map(v => v.color)
+          .filter(Boolean)
+      )];
+      
+      if (availableColors.length > 0 && !selectedColor) {
+        setSelectedColor(availableColors[0] as string);
+      }
+    }
+  }, [product, selectedColor]);
 
   const handleAddToCart = () => {
     // Would handle cart logic here
@@ -79,10 +94,7 @@ const ProductDetail = () => {
   // Get unique colors from variants
   const availableColors = [...new Set(
     variants
-      .map(v => {
-        const parts = v.name.split(' - ');
-        return parts.length > 1 ? parts[1] : null;
-      })
+      .map(v => v.color)
       .filter(Boolean)
   )];
   
@@ -97,11 +109,6 @@ const ProductDetail = () => {
   const price = variants.length > 0 ? 
     `$${variants[0].price} ${variants[0].currency}` : 
     "$59.99 USD";
-  
-  // Set default color if none selected and colors are available
-  if (!selectedColor && availableColors.length > 0) {
-    setSelectedColor(availableColors[0] as string);
-  }
 
   return (
     <div className="min-h-screen">

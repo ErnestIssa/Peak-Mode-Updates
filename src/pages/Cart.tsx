@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react';
-import { Layout } from '@/components/layout';
+import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';

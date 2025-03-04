@@ -25,7 +25,6 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', href: '#' },
     { name: 'Shop', href: '#' },
-    { name: 'Collections', href: '#collections' },
     { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' }
   ];
@@ -34,7 +33,9 @@ const Navbar = () => {
     <header 
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-sm text-foreground' 
+          : 'bg-black/70 backdrop-blur-md text-white'
       )}
     >
       <nav className="peak-container flex items-center justify-between h-20">
@@ -43,8 +44,7 @@ const Navbar = () => {
           href="#" 
           className={cn(
             "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all",
-            isLogoAnimated && "animate-letter-spacing",
-            isScrolled ? "text-foreground" : "text-white"
+            isLogoAnimated && "animate-letter-spacing"
           )}
           onClick={handleLogoClick}
         >
@@ -57,10 +57,7 @@ const Navbar = () => {
             <a 
               key={link.name} 
               href={link.href} 
-              className={cn(
-                "nav-link",
-                isScrolled ? "nav-link-scrolled" : "nav-link-transparent"
-              )}
+              className="nav-link hover:opacity-80 transition-colors"
             >
               {link.name}
             </a>
@@ -70,32 +67,23 @@ const Navbar = () => {
         {/* Icons */}
         <div className="hidden md:flex items-center space-x-6">
           <button 
-            className={cn(
-              "hover:opacity-70 transition-colors",
-              isScrolled ? "text-foreground" : "text-white"
-            )} 
+            className="hover:opacity-70 transition-colors" 
             aria-label="Search"
           >
             <Search className="h-5 w-5" />
           </button>
           <button 
-            className={cn(
-              "hover:opacity-70 transition-colors",
-              isScrolled ? "text-foreground" : "text-white"
-            )} 
+            className="hover:opacity-70 transition-colors" 
             aria-label="Account"
           >
             <User className="h-5 w-5" />
           </button>
           <button 
-            className={cn(
-              "hover:opacity-70 transition-colors relative",
-              isScrolled ? "text-foreground" : "text-white"
-            )} 
+            className="hover:opacity-70 transition-colors relative" 
             aria-label="Cart"
           >
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
               0
             </span>
           </button>
@@ -104,10 +92,7 @@ const Navbar = () => {
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
           <button 
-            className={cn(
-              "p-2",
-              isScrolled ? "text-foreground" : "text-white"
-            )} 
+            className="p-2" 
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >

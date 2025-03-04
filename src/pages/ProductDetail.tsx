@@ -2,14 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchProductDetails, PrintfulProductDetail } from '@/services/printfulService';
+import { fetchProductDetails } from '@/services/printfulService';
 import Navbar from '@/components/Navbar';
 import { ArrowLeft, ShoppingCart, Heart } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   
@@ -20,19 +21,29 @@ const ProductDetail = () => {
   });
 
   useEffect(() => {
-    // Set default color when product loads
+    // Set default size and color when product loads
     if (product && product.sync_variants.length > 0) {
+      const availableSizes = [...new Set(
+        product.sync_variants
+          .map(v => v.size)
+          .filter(Boolean)
+      )];
+      
       const availableColors = [...new Set(
         product.sync_variants
           .map(v => v.color)
           .filter(Boolean)
       )];
       
+      if (availableSizes.length > 0 && !selectedSize) {
+        setSelectedSize(availableSizes[0] as string);
+      }
+      
       if (availableColors.length > 0 && !selectedColor) {
         setSelectedColor(availableColors[0] as string);
       }
     }
-  }, [product, selectedColor]);
+  }, [product, selectedSize, selectedColor]);
 
   const handleAddToCart = () => {
     // Would handle cart logic here
@@ -42,6 +53,8 @@ const ProductDetail = () => {
       color: selectedColor,
       quantity
     });
+    
+    toast.success("Added to cart successfully!");
   };
 
   if (isLoading) {
@@ -106,15 +119,20 @@ const ProductDetail = () => {
   )];
   
   // Get product price (use first variant)
-  const price = variants.length > 0 ? 
-    `$${variants[0].price} ${variants[0].currency}` : 
+  const variant = variants.find(v => 
+    (!selectedSize || v.size === selectedSize) && 
+    (!selectedColor || v.color === selectedColor)
+  ) || variants[0];
+  
+  const price = variant ? 
+    `${variant.price} ${variant.currency}` : 
     "$59.99 USD";
 
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="peak-container mt-28 mb-16">
-        <Link to="/" className="inline-flex items-center text-sm mb-8 hover:underline">
+        <Link to="/shop" className="inline-flex items-center text-sm mb-8 hover:underline">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to products
         </Link>
@@ -147,7 +165,7 @@ const ProductDetail = () => {
                       className={`w-10 h-10 rounded-full border-2 ${
                         selectedColor === color ? 'border-black' : 'border-transparent'
                       }`}
-                      style={{ backgroundColor: (color as string).toLowerCase() }}
+                      style={{ backgroundColor: color?.toLowerCase() || "#ccc" }}
                       onClick={() => setSelectedColor(color as string)}
                       aria-label={`Select ${color} color`}
                     />

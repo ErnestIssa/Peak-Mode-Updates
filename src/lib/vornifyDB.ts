@@ -72,3 +72,23 @@ export async function addSubscriber(email: string): Promise<VornifyResponse> {
 export async function getSubscribers(): Promise<VornifyResponse> {
   return executeVornifyCommand("subscribers", "--read", {});
 }
+
+/**
+ * Send a contact message to the database
+ */
+export async function sendContactMessage(
+  name: string,
+  email: string,
+  subject: string,
+  message: string
+): Promise<VornifyResponse> {
+  return executeVornifyCommand("contact_messages", "--create", {
+    id: `msg_${Date.now()}`,
+    name,
+    email,
+    subject,
+    message,
+    submitted_at: new Date().toISOString(),
+    status: "new"
+  });
+}

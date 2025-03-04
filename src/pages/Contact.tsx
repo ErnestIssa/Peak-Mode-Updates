@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { sendContactMessage } from "@/lib/vornifyDB";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -15,6 +15,7 @@ const Contact = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -26,24 +27,62 @@ const Contact = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    // Validate form data
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast({
-        title: "Message Sent",
-        description: "We'll get back to you as soon as possible.",
+        title: "Error",
+        description: "Please fill out all fields",
+        variant: "destructive",
       });
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setIsSuccess(false);
+    
+    try {
+      const result = await sendContactMessage(
+        formData.name,
+        formData.email,
+        formData.subject,
+        formData.message
+      );
+      
+      if (result.success || result.status) {
+        setIsSuccess(true);
+        toast({
+          title: "Message Sent",
+          description: "We'll get back to you as soon as possible.",
+        });
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+        
+        // Reset success state after 3 seconds
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
+      } else {
+        throw new Error(result.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Message submission error:', error);
+      toast({
+        title: "Message Failed",
+        description: "There was an error sending your message. Please try again.",
+        variant: "destructive",
       });
-    }, 1500);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -113,6 +152,7 @@ const Contact = () => {
                         onChange={handleChange}
                         className="w-full p-3 border border-border focus:outline-none focus:ring-2 focus:ring-black"
                         required
+                        disabled={isSubmitting || isSuccess}
                       />
                     </div>
                     <div>
@@ -125,6 +165,7 @@ const Contact = () => {
                         onChange={handleChange}
                         className="w-full p-3 border border-border focus:outline-none focus:ring-2 focus:ring-black"
                         required
+                        disabled={isSubmitting || isSuccess}
                       />
                     </div>
                   </div>
@@ -138,6 +179,7 @@ const Contact = () => {
                       onChange={handleChange}
                       className="w-full p-3 border border-border focus:outline-none focus:ring-2 focus:ring-black"
                       required
+                      disabled={isSubmitting || isSuccess}
                     >
                       <option value="">Select a subject</option>
                       <option value="order">Order Inquiry</option>
@@ -158,16 +200,29 @@ const Contact = () => {
                       rows={6}
                       className="w-full p-3 border border-border focus:outline-none focus:ring-2 focus:ring-black"
                       required
+                      disabled={isSubmitting || isSuccess}
                     ></textarea>
                   </div>
                   
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className={`w-full py-3 px-6 bg-black text-white font-medium transition-all duration-300 
-                    ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black/90'}`}
+                    disabled={isSubmitting || isSuccess}
+                    className={`w-full py-3 px-6 bg-black text-white font-medium transition-all duration-300 flex items-center justify-center gap-2
+                    ${isSubmitting || isSuccess ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black/90'}`}
                   >
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : isSuccess ? (
+                      <>
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                        <span>Message Sent!</span>
+                      </>
+                    ) : (
+                      'Send Message'
+                    )}
                   </button>
                 </form>
               </div>

@@ -4,7 +4,6 @@ import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { SlidersHorizontal } from 'lucide-react';
 import Newsletter from '../components/Newsletter';
 
 const Shop = () => {
@@ -63,10 +62,7 @@ const Shop = () => {
                 ))}
               </div>
               
-              <button className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80">
-                <SlidersHorizontal className="w-4 h-4" />
-                <span>Filters</span>
-              </button>
+              {/* Filters button removed */}
             </div>
             
             {isLoading ? (

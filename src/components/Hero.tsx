@@ -76,14 +76,14 @@ const Hero = () => {
           )}>
             <a 
               href="#collections" 
-              className="bg-white text-black px-8 py-4 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
+              className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
             >
               <span>Shop Collection</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </a>
             <a 
               href="#about" 
-              className="border border-white px-8 py-4 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
+              className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
             >
               About Us
             </a>

@@ -16,33 +16,10 @@ const AboutPage = () => {
     threshold: 0.3,
   });
 
-  const { ref: teamRef, inView: teamInView } = useInView({
+  const { ref: valuesRef, inView: valuesInView } = useInView({
     triggerOnce: true,
     threshold: 0.3,
   });
-
-  const team = [
-    {
-      name: "Alex Johnson",
-      role: "Founder & CEO",
-      image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"
-    },
-    {
-      name: "Sarah Martinez",
-      role: "Head of Design",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"
-    },
-    {
-      name: "Marcus Chen",
-      role: "Lead Developer",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"
-    },
-    {
-      name: "Olivia Taylor",
-      role: "Marketing Director",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"
-    }
-  ];
 
   return (
     <div className="min-h-screen">
@@ -142,41 +119,64 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* Team Section */}
+        {/* Values Section (New) */}
         <section className="peak-section">
           <div className="peak-container">
             <div 
-              ref={teamRef}
+              ref={valuesRef}
               className={cn(
-                "text-center transition-all duration-700",
-                teamInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                "transition-all duration-700",
+                valuesInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
               )}
             >
-              <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b border-black font-medium">
-                Our Team
-              </span>
-              <h2 className="mt-6 text-3xl md:text-4xl font-bold">
-                The Faces Behind Peak Mode
-              </h2>
-              <p className="mt-6 text-lg max-w-3xl mx-auto">
-                Our diverse team of athletes, designers, and innovators share a common passion: 
-                creating gear that helps you reach your peak.
-              </p>
+              <div className="text-center mb-12">
+                <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b border-black font-medium">
+                  Our Values
+                </span>
+                <h2 className="mt-6 text-3xl md:text-4xl font-bold">
+                  What Drives Us Forward
+                </h2>
+                <p className="mt-6 text-lg max-w-3xl mx-auto">
+                  Every decision we make is guided by these core principles that define who we are and what we stand for.
+                </p>
+              </div>
               
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {team.map((member, index) => (
-                  <div key={index} className="transition-all duration-500" style={{ transitionDelay: `${index * 100}ms` }}>
-                    <div className="aspect-square overflow-hidden">
-                      <img 
-                        src={member.image} 
-                        alt={member.name}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                    </div>
-                    <h3 className="mt-4 text-xl font-medium">{member.name}</h3>
-                    <p className="text-foreground/70">{member.role}</p>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-white p-8 border border-border">
+                  <h3 className="text-2xl font-bold mb-4">Excellence in Everything</h3>
+                  <p>
+                    We never settle for "good enough." From the stitching on our garments to the 
+                    experience on our website, we pursue excellence in every detail. It's this 
+                    commitment that creates the Peak Mode difference.
+                  </p>
+                </div>
+                
+                <div className="bg-white p-8 border border-border">
+                  <h3 className="text-2xl font-bold mb-4">Community First</h3>
+                  <p>
+                    The Peak Mode community is at the heart of everything we do. We actively listen, 
+                    engage, and build relationships with the athletes and fitness enthusiasts who wear 
+                    our gear, using their feedback to continuously improve.
+                  </p>
+                </div>
+                
+                <div className="bg-white p-8 border border-border">
+                  <h3 className="text-2xl font-bold mb-4">Sustainable Innovation</h3>
+                  <p>
+                    We believe that performance and sustainability can coexist. We're constantly 
+                    researching and implementing new materials and manufacturing techniques that reduce 
+                    our environmental footprint without compromising quality.
+                  </p>
+                </div>
+                
+                <div className="bg-white p-8 border border-border">
+                  <h3 className="text-2xl font-bold mb-4">Inclusive Performance</h3>
+                  <p>
+                    Peak performance isn't reserved for elite athletes. We design our products to 
+                    serve individuals at all fitness levels, body types, and backgrounds. Everyone 
+                    deserves gear that helps them reach their personal peak.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

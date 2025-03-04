@@ -4,7 +4,7 @@
  */
 
 export const VORNIFY_API_URL = 'https://api.vornify.se/api/vornifydb';
-export const DATABASE_NAME = "peak_mode_49rjf9whesz0s5rg9jeh9t30g9th3e9t8";
+export const DATABASE_NAME = "peak_mode_49rjf9w";
 
 interface VornifyResponse {
   success?: boolean;

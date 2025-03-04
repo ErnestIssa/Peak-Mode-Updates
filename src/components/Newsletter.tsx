@@ -1,13 +1,10 @@
-
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-
-const DATABASE_NAME = "peak_mode_49rjf9whesz0s5rg9jeh9t30g9th3e9t8";
-const COLLECTION_NAME = "subscribers";
+import { addSubscriber } from '@/lib/vornifyDB';
 
 const Newsletter = () => {
   const { ref, inView } = useInView({
@@ -34,22 +31,7 @@ const Newsletter = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('https://api.vornify.se/api/vornifydb', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          database_name: DATABASE_NAME,
-          collection_name: COLLECTION_NAME,
-          command: "--create",
-          data: {
-            id: `subscriber_${Date.now()}`,
-            email: email,
-            subscribed_at: new Date().toISOString(),
-          }
-        })
-      });
-      
-      const result = await response.json();
+      const result = await addSubscriber(email);
       
       if (result.success || result.status) {
         toast({

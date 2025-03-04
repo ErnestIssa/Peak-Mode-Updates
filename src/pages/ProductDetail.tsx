@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProductDetails } from '@/services/printfulService';
 import Navbar from '@/components/Navbar';
-import { ArrowLeft, ShoppingCart, Heart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
@@ -21,7 +20,6 @@ const ProductDetail = () => {
   });
 
   useEffect(() => {
-    // Set default size and color when product loads
     if (product && product.sync_variants.length > 0) {
       const availableSizes = [...new Set(
         product.sync_variants
@@ -48,7 +46,6 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     if (!product) return;
     
-    // Create cart item from selected product
     const cartItem = {
       id: product.sync_product.id,
       name: product.sync_product.name,
@@ -60,11 +57,9 @@ const ProductDetail = () => {
       currency: variant ? variant.currency : "USD"
     };
     
-    // Get current cart items from localStorage
     const existingCart = localStorage.getItem('cart');
     let cartItems = existingCart ? JSON.parse(existingCart) : [];
     
-    // Check if this product is already in cart (same product, size and color)
     const existingItemIndex = cartItems.findIndex((item: any) => 
       item.id === cartItem.id && 
       item.size === cartItem.size && 
@@ -72,14 +67,11 @@ const ProductDetail = () => {
     );
     
     if (existingItemIndex >= 0) {
-      // If product already in cart, update quantity
       cartItems[existingItemIndex].quantity += quantity;
     } else {
-      // If not in cart, add new item
       cartItems.push(cartItem);
     }
     
-    // Save updated cart to localStorage
     localStorage.setItem('cart', JSON.stringify(cartItems));
     
     toast.success("Added to cart successfully!");
@@ -123,30 +115,25 @@ const ProductDetail = () => {
     );
   }
 
-  // Extract product details
   const { sync_product, sync_variants } = product;
   const productName = sync_product.name;
   const productDescription = sync_product.description || "No description available.";
   const thumbnail = sync_product.thumbnail_url;
   
-  // Extract variants info
   const variants = sync_variants || [];
   
-  // Get unique colors from variants
   const availableColors = [...new Set(
     variants
       .map(v => v.color)
       .filter(Boolean)
   )];
   
-  // Get unique sizes from variants
   const sizes = [...new Set(
     variants
       .map(v => v.size)
       .filter(Boolean)
   )];
   
-  // Get product price (use first variant)
   const variant = variants.find(v => 
     (!selectedSize || v.size === selectedSize) && 
     (!selectedColor || v.color === selectedColor)
@@ -166,7 +153,6 @@ const ProductDetail = () => {
         </Link>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Product Image */}
           <div className="aspect-square bg-secondary relative overflow-hidden">
             <img 
               src={thumbnail} 
@@ -175,56 +161,48 @@ const ProductDetail = () => {
             />
           </div>
           
-          {/* Product Details */}
           <div className="space-y-6">
             <h1 className="text-3xl font-bold">{productName}</h1>
             <p className="text-2xl font-medium">{price}</p>
             
             <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: productDescription }} />
             
-            {/* Color Selection */}
-            {availableColors.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium mb-3">Color</h3>
-                <div className="flex space-x-2">
-                  {availableColors.map((color, index) => (
-                    <button
-                      key={index}
-                      className={`w-10 h-10 rounded-full border-2 ${
-                        selectedColor === color ? 'border-black' : 'border-transparent'
-                      }`}
-                      style={{ backgroundColor: color?.toLowerCase() || "#ccc" }}
-                      onClick={() => setSelectedColor(color as string)}
-                      aria-label={`Select ${color} color`}
-                    />
-                  ))}
-                </div>
+            <div>
+              <h3 className="text-sm font-medium mb-3">Color</h3>
+              <div className="flex space-x-2">
+                {availableColors.map((color, index) => (
+                  <button
+                    key={index}
+                    className={`w-10 h-10 rounded-full border-2 ${
+                      selectedColor === color ? 'border-black' : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: color?.toLowerCase() || "#ccc" }}
+                    onClick={() => setSelectedColor(color as string)}
+                    aria-label={`Select ${color} color`}
+                  />
+                ))}
               </div>
-            )}
+            </div>
             
-            {/* Size Selection */}
-            {sizes.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium mb-3">Size</h3>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((size, index) => (
-                    <button
-                      key={index}
-                      className={`px-4 py-2 border ${
-                        selectedSize === size 
-                          ? 'border-black bg-black text-white' 
-                          : 'border-gray-300 hover:border-black'
-                      }`}
-                      onClick={() => setSelectedSize(size as string)}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
+            <div>
+              <h3 className="text-sm font-medium mb-3">Size</h3>
+              <div className="flex flex-wrap gap-2">
+                {sizes.map((size, index) => (
+                  <button
+                    key={index}
+                    className={`px-4 py-2 border ${
+                      selectedSize === size 
+                        ? 'border-black bg-black text-white' 
+                        : 'border-gray-300 hover:border-black'
+                    }`}
+                    onClick={() => setSelectedSize(size as string)}
+                  >
+                    {size}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
             
-            {/* Quantity Selection */}
             <div>
               <h3 className="text-sm font-medium mb-3">Quantity</h3>
               <div className="flex items-center border border-gray-300 w-32">
@@ -250,17 +228,13 @@ const ProductDetail = () => {
               </div>
             </div>
             
-            {/* Add to Cart Button */}
-            <div className="flex space-x-4">
+            <div>
               <button 
-                className="peak-button flex-1 flex items-center justify-center"
+                className="peak-button w-full flex items-center justify-center"
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 Add to Cart
-              </button>
-              <button className="p-3 border border-gray-300 hover:border-black">
-                <Heart className="h-5 w-5" />
               </button>
             </div>
           </div>

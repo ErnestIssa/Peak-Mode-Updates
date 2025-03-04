@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLogoAnimated, setIsLogoAnimated] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +16,11 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogoClick = () => {
+    setIsLogoAnimated(true);
+    setTimeout(() => setIsLogoAnimated(false), 1000);
+  };
 
   const navLinks = [
     { name: 'Home', href: '#' },
@@ -33,7 +39,14 @@ const Navbar = () => {
     >
       <nav className="peak-container flex items-center justify-between h-20">
         {/* Logo */}
-        <a href="#" className="flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter">
+        <a 
+          href="#" 
+          className={cn(
+            "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all",
+            isLogoAnimated && "animate-letter-spacing"
+          )}
+          onClick={handleLogoClick}
+        >
           PEAK | MODE
         </a>
         

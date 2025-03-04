@@ -14,7 +14,7 @@ const Index = () => {
     // Simulate loading time
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 2000); // Extended to 2 seconds to see the animation better
     
     return () => clearTimeout(timer);
   }, []);
@@ -23,7 +23,7 @@ const Index = () => {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
         <div className="text-center">
-          <h1 className="text-white text-4xl font-display font-black tracking-tighter">
+          <h1 className="text-white text-4xl font-display font-black tracking-tighter opacity-0 animate-[fadeIn_1s_ease-in-out_forwards]">
             PEAK | MODE
           </h1>
           <div className="mt-6 w-16 h-1 bg-white mx-auto">

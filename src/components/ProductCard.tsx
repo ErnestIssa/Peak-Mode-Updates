@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ShoppingCart, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
+  id: number;
   image: string;
   name: string;
   price: string;
@@ -12,6 +14,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
+  id,
   image,
   name,
   price,
@@ -27,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative overflow-hidden aspect-[3/4]">
+      <Link to={`/product/${id}`} className="relative overflow-hidden aspect-[3/4]">
         {/* Product Image */}
         <div className="w-full h-full bg-secondary/50"></div>
         <img
@@ -68,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
           <Heart className="h-4 w-4" />
         </button>
-      </div>
+      </Link>
       
       <div className="p-4 flex flex-col flex-grow">
         <span className="text-xs text-foreground/60 uppercase tracking-wider">{category}</span>

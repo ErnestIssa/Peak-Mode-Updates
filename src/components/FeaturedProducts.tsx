@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
+import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -11,7 +13,10 @@ const FeaturedProducts = () => {
     threshold: 0.1,
   });
 
-  const products = [
+  const { data: printfulProducts, isLoading, error } = usePrintfulProducts();
+
+  // Fallback products if API fails
+  const fallbackProducts = [
     {
       id: 1,
       name: "Performance Tech Tee",
@@ -44,6 +49,23 @@ const FeaturedProducts = () => {
     }
   ];
 
+  // Determine which products to display
+  const products = printfulProducts && printfulProducts.length > 0 
+    ? printfulProducts.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: "$59.99", // Default price since Printful API doesn't return prices in the products list
+        category: product.name.includes("Hoodie") ? "Hoodies" : 
+                 product.name.includes("Shirt") ? "Shirts" : 
+                 product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
+        image: product.thumbnail_url,
+        isNew: true
+      }))
+    : fallbackProducts;
+
+  // Limit to 4 products max for display
+  const displayProducts = products.slice(0, 4);
+
   return (
     <section className="peak-section bg-secondary">
       <div className="peak-container">
@@ -63,26 +85,44 @@ const FeaturedProducts = () => {
           </a>
         </div>
         
-        <div 
-          ref={ref}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {products.map((product, index) => (
-            <div 
-              key={product.id}
-              className={cn(
-                "transition-all duration-700",
-                inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10",
-                `delay-[${index * 100 + 300}ms]`
-              )}
-              style={{ 
-                transitionDelay: inView ? `${index * 100 + 300}ms` : '0ms'
-              }}
-            >
-              <ProductCard {...product} />
-            </div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex flex-col">
+                <Skeleton className="aspect-[3/4] w-full" />
+                <div className="p-4">
+                  <Skeleton className="h-4 w-1/3 mb-2" />
+                  <Skeleton className="h-6 w-3/4 mb-4" />
+                  <Skeleton className="h-4 w-1/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500">Failed to load products. Please try again later.</p>
+          </div>
+        ) : (
+          <div 
+            ref={ref}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {displayProducts.map((product, index) => (
+              <div 
+                key={product.id}
+                className={cn(
+                  "transition-all duration-700",
+                  inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                )}
+                style={{ 
+                  transitionDelay: inView ? `${index * 100 + 300}ms` : '0ms'
+                }}
+              >
+                <ProductCard {...product} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,21 +1,18 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import FeaturedProducts from '../components/FeaturedProducts';
-import Collections from '../components/Collections';
 import Newsletter from '../components/Newsletter';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading time
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // Extended to 2 seconds to see the animation better
-    
+    }, 2000);
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -41,7 +38,6 @@ const Index = () => {
         <Hero />
         <About />
         <FeaturedProducts />
-        <Collections />
         <Newsletter />
       </main>
     </div>

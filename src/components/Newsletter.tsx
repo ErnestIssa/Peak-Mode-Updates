@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,7 @@ const Newsletter = () => {
   
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,16 +31,22 @@ const Newsletter = () => {
     }
     
     setIsSubmitting(true);
+    setIsSuccess(false);
     
     try {
       const result = await addSubscriber(email);
       
       if (result.success || result.status) {
+        setIsSuccess(true);
         toast({
           title: "Success!",
           description: "You've been added to our newsletter",
         });
         setEmail('');
+        // Reset success state after 3 seconds
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
       } else {
         throw new Error(result.error || 'Failed to subscribe');
       }
@@ -82,14 +90,29 @@ const Newsletter = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isSubmitting || isSuccess}
             />
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isSuccess}
               className="bg-white text-black px-8 py-4 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center justify-center space-x-2 group h-auto"
             >
-              <span>{isSubmitting ? 'Subscribing...' : 'Subscribe'}</span>
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <span>Subscribing...</span>
+                </>
+              ) : isSuccess ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500 animate-fade-in" />
+                  <span>Subscribed!</span>
+                </>
+              ) : (
+                <>
+                  <span>Subscribe</span>
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </>
+              )}
             </Button>
           </form>
           

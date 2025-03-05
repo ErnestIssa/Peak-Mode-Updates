@@ -5,7 +5,9 @@ import { ArrowRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
+import { useCJProducts } from '@/hooks/useCJProducts';
 import { Skeleton } from '@/components/ui/skeleton';
+import { UnifiedProduct } from '@/models/Product';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -13,58 +15,99 @@ const FeaturedProducts = () => {
     threshold: 0.1,
   });
 
-  const { data: printfulProducts, isLoading, error } = usePrintfulProducts();
+  const { data: printfulProducts, isLoading: printfulLoading, error: printfulError } = usePrintfulProducts();
+  const { data: cjProducts, isLoading: cjLoading, error: cjError } = useCJProducts();
 
-  // Fallback products if API fails
-  const fallbackProducts = [
-    {
-      id: 1,
-      name: "Performance Tech Tee",
-      price: "$49.99",
-      category: "T-Shirts",
-      image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      isNew: true
-    },
-    {
-      id: 2,
-      name: "Compression Leggings",
-      price: "$79.99",
-      category: "Bottoms",
-      image: "https://images.unsplash.com/photo-1565084888279-aca607ecce0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      id: 3,
-      name: "Sculpt Seamless Bra",
-      price: "$39.99",
-      category: "Sports Bras",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      id: 4,
-      name: "Performance Joggers",
-      price: "$89.99",
-      category: "Bottoms",
-      image: "https://images.unsplash.com/photo-1556301590-319c5b2ac83d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      isNew: true
-    }
-  ];
+  const isLoading = printfulLoading || cjLoading;
+  const hasError = printfulError || cjError;
 
-  // Determine which products to display
-  const products = printfulProducts && printfulProducts.length > 0 
+  // Convert Printful products to unified format
+  const printfulUnified: UnifiedProduct[] = printfulProducts && printfulProducts.length > 0 
     ? printfulProducts.map(product => ({
-        id: product.id,
+        id: `printful-${product.id}`,
+        originalId: product.id,
         name: product.name,
-        price: "$59.99", // Default price since Printful API doesn't return prices in the products list
+        price: "499 SEK", // Default price since Printful API doesn't return prices in the products list
+        currency: "SEK",
         category: product.name.includes("Hoodie") ? "Hoodies" : 
                  product.name.includes("Shirt") ? "Shirts" : 
                  product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
         image: product.thumbnail_url,
-        isNew: true
+        isNew: true,
+        source: 'printful'
       }))
-    : fallbackProducts;
+    : [];
 
-  // Limit to 4 products max for display
-  const displayProducts = products.slice(0, 4);
+  // Convert CJ products to unified format
+  const cjUnified: UnifiedProduct[] = cjProducts && cjProducts.length > 0 
+    ? cjProducts.map(product => ({
+        id: `cj-${product.id}`,
+        originalId: product.id,
+        name: product.productNameEn || product.productName,
+        price: `${product.sellingPrice} SEK`,
+        currency: "SEK",
+        category: product.categoryName || "Accessories",
+        image: product.productImage,
+        isNew: Math.random() > 0.7,
+        source: 'cjdropshipping'
+      }))
+    : [];
+
+  // Combine all products and take a selection
+  const allProducts = [...printfulUnified, ...cjUnified];
+  
+  // Shuffle and select featured products
+  const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+  const displayProducts = shuffled.slice(0, 4);
+
+  // Fallback products if both APIs fail
+  const fallbackProducts = [
+    {
+      id: "fallback-1",
+      originalId: 1,
+      name: "Performance Tech Tee",
+      price: "499 SEK",
+      currency: "SEK",
+      category: "T-Shirts",
+      image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      isNew: true,
+      source: 'printful' as ProductSource
+    },
+    {
+      id: "fallback-2",
+      originalId: 2,
+      name: "Compression Leggings",
+      price: "699 SEK",
+      currency: "SEK",
+      category: "Bottoms",
+      image: "https://images.unsplash.com/photo-1565084888279-aca607ecce0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      source: 'printful' as ProductSource
+    },
+    {
+      id: "fallback-3",
+      originalId: 3,
+      name: "Sculpt Seamless Bra",
+      price: "349 SEK",
+      currency: "SEK",
+      category: "Sports Bras",
+      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      source: 'printful' as ProductSource
+    },
+    {
+      id: "fallback-4",
+      originalId: 4,
+      name: "Performance Joggers",
+      price: "799 SEK",
+      currency: "SEK",
+      category: "Bottoms",
+      image: "https://images.unsplash.com/photo-1556301590-319c5b2ac83d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      isNew: true,
+      source: 'printful' as ProductSource
+    }
+  ];
+
+  // Determine which products to display
+  const finalDisplayProducts = displayProducts.length > 0 ? displayProducts : fallbackProducts;
 
   return (
     <section className="peak-section bg-secondary">
@@ -79,7 +122,7 @@ const FeaturedProducts = () => {
             </h2>
           </div>
           
-          <a href="#" className="mt-6 md:mt-0 inline-flex items-center text-sm font-medium group">
+          <a href="/shop" className="mt-6 md:mt-0 inline-flex items-center text-sm font-medium group">
             View All Products
             <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </a>
@@ -98,7 +141,7 @@ const FeaturedProducts = () => {
               </div>
             ))}
           </div>
-        ) : error ? (
+        ) : hasError && finalDisplayProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-red-500">Failed to load products. Please try again later.</p>
           </div>
@@ -107,7 +150,7 @@ const FeaturedProducts = () => {
             ref={ref}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            {displayProducts.map((product, index) => (
+            {finalDisplayProducts.map((product, index) => (
               <div 
                 key={product.id}
                 className={cn(

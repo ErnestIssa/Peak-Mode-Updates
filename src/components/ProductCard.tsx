@@ -4,14 +4,18 @@ import { cn } from '@/lib/utils';
 import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { ProductSource } from '@/models/Product';
 
 interface ProductCardProps {
-  id: number;
+  id: string | number;
   image: string;
   name: string;
   price: string;
+  currency?: string;
   category: string;
   isNew?: boolean;
+  source?: ProductSource;
+  originalId?: string | number;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -19,8 +23,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
   image,
   name,
   price,
+  currency = 'SEK',
   category,
   isNew = false,
+  source = 'printful',
+  originalId,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -28,18 +35,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation to product detail page
     
-    // Determine currency - default to SEK as requested by the user
-    const currency = price.includes('SEK') ? 'SEK' : (price.includes('$') ? 'USD' : 'SEK');
-    
     const cartItem = {
-      id: id,
+      id: originalId || id,
       name: name,
       price: parseFloat(price.replace(/[^0-9.]/g, '')),
       image: image,
       size: null, // Default values since quick add doesn't specify size/color
       color: null,
       quantity: 1,
-      currency: currency
+      currency: currency,
+      source: source
     };
     
     const existingCart = localStorage.getItem('cart');
@@ -48,7 +53,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const existingItemIndex = cartItems.findIndex((item: any) => 
       item.id === cartItem.id && 
       item.size === cartItem.size && 
-      item.color === cartItem.color
+      item.color === cartItem.color &&
+      item.source === cartItem.source
     );
     
     if (existingItemIndex >= 0) {
@@ -62,13 +68,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
     toast.success("Added to cart successfully!");
   };
 
+  const getProductDetailPath = () => {
+    if (source === 'printful') {
+      return `/product/${originalId || id}`;
+    } else if (source === 'cjdropshipping') {
+      return `/cj-product/${originalId || id}`;
+    }
+    return `/product/${originalId || id}`;
+  };
+
+  const displayPrice = price.includes(currency) ? price : `${price} ${currency}`;
+
   return (
     <div 
       className="product-card flex flex-col"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link to={`/product/${id}`} className="relative overflow-hidden aspect-[3/4]">
+      <Link to={getProductDetailPath()} className="relative overflow-hidden aspect-[3/4]">
         {/* Product Image */}
         <div className="w-full h-full bg-secondary/50"></div>
         <img
@@ -89,6 +106,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
         
+        {/* Source Tag */}
+        <div className="absolute top-4 right-4 bg-white/80 text-black text-xs uppercase tracking-wider py-1 px-2">
+          {source === 'cjdropshipping' ? 'CJ' : 'Printful'}
+        </div>
+        
         {/* Quick Add */}
         <button 
           onClick={handleQuickAdd}
@@ -106,7 +128,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <span className="text-xs text-foreground/60 uppercase tracking-wider">{category}</span>
         <h3 className="mt-1 font-medium">{name}</h3>
         <div className="mt-auto pt-4 flex justify-between items-center">
-          <span className="font-medium">{price}</span>
+          <span className="font-medium">{displayPrice}</span>
         </div>
       </div>
     </div>

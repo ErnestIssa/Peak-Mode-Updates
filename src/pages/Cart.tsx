@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { ProductSource } from '@/models/Product';
 
 interface CartItem {
-  id: number;
+  id: number | string;
   name: string;
   price: number;
   image: string;
@@ -15,6 +16,7 @@ interface CartItem {
   color: string | null;
   quantity: number;
   currency: string;
+  source?: ProductSource;
 }
 
 const Cart = () => {
@@ -82,13 +84,12 @@ const Cart = () => {
     toast.success("Cart cleared");
   };
 
-  // Determine the predominant currency
-  const getCurrency = () => {
-    if (cartItems.length === 0) return 'SEK';
-    
-    const currencies = cartItems.map(item => item.currency);
-    // Default to SEK as requested
-    return currencies.includes('SEK') ? 'SEK' : currencies[0] || 'SEK';
+  // Get product detail URL based on source
+  const getProductDetailPath = (item: CartItem) => {
+    if (item.source === 'cjdropshipping') {
+      return `/cj-product/${item.id}`;
+    }
+    return `/product/${item.id}`;
   };
 
   if (cartItems.length === 0) {
@@ -138,14 +139,19 @@ const Cart = () => {
               
               <div className="divide-y divide-border">
                 {cartItems.map((item, index) => (
-                  <div key={`${item.id}-${item.size}-${item.color}`} className="p-4 md:p-6 flex flex-col md:flex-row gap-4">
-                    <div className="w-full md:w-24 h-24 bg-secondary/50 relative flex-shrink-0">
+                  <div key={`${item.id}-${item.size}-${item.color}-${item.source}`} className="p-4 md:p-6 flex flex-col md:flex-row gap-4">
+                    <Link to={getProductDetailPath(item)} className="w-full md:w-24 h-24 bg-secondary/50 relative flex-shrink-0">
                       <img 
                         src={item.image} 
                         alt={item.name} 
                         className="w-full h-full object-cover"
                       />
-                    </div>
+                      {item.source && (
+                        <div className="absolute top-0 right-0 bg-white/80 text-black text-xs p-1">
+                          {item.source === 'cjdropshipping' ? 'CJ' : 'Printful'}
+                        </div>
+                      )}
+                    </Link>
                     
                     <div className="flex-grow flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div>
@@ -210,7 +216,7 @@ const Cart = () => {
               <div className="p-4 space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{cartTotal.toFixed(2)} {getCurrency()}</span>
+                  <span>{cartTotal.toFixed(2)} SEK</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -224,7 +230,7 @@ const Cart = () => {
                 <div className="pt-4 border-t border-border">
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>{cartTotal.toFixed(2)} {getCurrency()}</span>
+                    <span>{cartTotal.toFixed(2)} SEK</span>
                   </div>
                 </div>
                 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
@@ -7,7 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { useCJProducts } from '@/hooks/useCJProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UnifiedProduct } from '@/models/Product';
+import { UnifiedProduct, ProductSource } from '@/models/Product';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({

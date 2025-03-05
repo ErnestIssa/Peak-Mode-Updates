@@ -53,33 +53,50 @@ export const getAccessToken = async (): Promise<string | null> => {
     const tokenExpiry = localStorage.getItem('cj_token_expiry');
     
     if (storedToken && tokenExpiry && new Date().getTime() < parseInt(tokenExpiry)) {
+      console.log("Using stored CJ access token");
       return storedToken;
     }
     
-    // If no valid token, get a new one
-    const response = await fetch(`${CJ_API_BASE_URL}/api/authentication/getAccessToken`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'CJ-Access-Key': API_KEY
+    // If no valid token, try to get a new one
+    try {
+      const response = await fetch(`${CJ_API_BASE_URL}/api/authentication/getAccessToken`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CJ-Access-Key': API_KEY
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error("Failed to get access token:", data.message);
+        throw new Error(data.message || 'Failed to get access token');
       }
-    });
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.message || 'Failed to get access token');
+      
+      // Store token and expiration
+      localStorage.setItem('cj_access_token', data.data.accessToken);
+      const expiryTime = new Date().getTime() + (data.data.expiresIn * 1000);
+      localStorage.setItem('cj_token_expiry', expiryTime.toString());
+      
+      return data.data.accessToken;
+    } catch (error) {
+      console.error("CORS error or API failure when getting CJ access token:", error);
+      // Due to CORS, create a temporary fake token 
+      // This is only for development and will make the app use fallback data
+      const tempToken = "temp_token_" + new Date().getTime();
+      localStorage.setItem('cj_access_token', tempToken);
+      const expiryTime = new Date().getTime() + (3600 * 1000); // 1 hour expiry
+      localStorage.setItem('cj_token_expiry', expiryTime.toString());
+      
+      console.log("Created temporary token due to CORS. Using fallback data.");
+      
+      // Return null to indicate that we should use fallback data
+      return null;
     }
-    
-    // Store token and expiration
-    localStorage.setItem('cj_access_token', data.data.accessToken);
-    const expiryTime = new Date().getTime() + (data.data.expiresIn * 1000);
-    localStorage.setItem('cj_token_expiry', expiryTime.toString());
-    
-    return data.data.accessToken;
   } catch (error) {
     console.error("Failed to get CJdropshipping access token:", error);
-    toast.error("Failed to connect to CJdropshipping API");
+    toast.error("Failed to connect to CJdropshipping API. Using sample data.");
     return null;
   }
 };
@@ -90,35 +107,41 @@ export const fetchCJProducts = async (pageNum = 1, pageSize = 20): Promise<CJPro
     const accessToken = await getAccessToken();
     
     if (!accessToken) {
-      throw new Error("No access token available");
+      console.log("No access token available. Using fallback products.");
+      return getFallbackProducts();
     }
     
-    const response = await fetch(`${CJ_API_BASE_URL}/api/product/list`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'CJ-Access-Token': accessToken
-      },
-      body: JSON.stringify({
-        pageNum,
-        pageSize
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    try {
+      const response = await fetch(`${CJ_API_BASE_URL}/api/product/list`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CJ-Access-Token': accessToken
+        },
+        body: JSON.stringify({
+          pageNum,
+          pageSize
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch products');
+      }
+      
+      return data.data.list || [];
+    } catch (error) {
+      console.error("CORS error or API failure when fetching CJ products:", error);
+      return getFallbackProducts();
     }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.message || 'Failed to fetch products');
-    }
-    
-    return data.data.list || [];
   } catch (error) {
     console.error("Failed to fetch CJdropshipping products:", error);
-    toast.error("Failed to load products from CJdropshipping");
+    toast.error("Failed to load products from CJdropshipping. Using sample data.");
     
     // Return fallback products if API fails
     return getFallbackProducts();
@@ -185,34 +208,40 @@ export const fetchCJProductDetail = async (productId: string): Promise<CJProduct
     const accessToken = await getAccessToken();
     
     if (!accessToken) {
-      throw new Error("No access token available");
+      console.log("No access token available for product details. Using fallback product.");
+      return getFallbackProducts().find(p => p.id === productId) || null;
     }
     
-    const response = await fetch(`${CJ_API_BASE_URL}/api/product/query`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'CJ-Access-Token': accessToken
-      },
-      body: JSON.stringify({
-        pid: productId
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    try {
+      const response = await fetch(`${CJ_API_BASE_URL}/api/product/query`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CJ-Access-Token': accessToken
+        },
+        body: JSON.stringify({
+          pid: productId
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch product details');
+      }
+      
+      return data.data || null;
+    } catch (error) {
+      console.error(`CORS error or API failure when fetching product details for ID ${productId}:`, error);
+      return getFallbackProducts().find(p => p.id === productId) || null;
     }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.message || 'Failed to fetch product details');
-    }
-    
-    return data.data || null;
   } catch (error) {
     console.error(`Failed to fetch CJdropshipping product details for ID ${productId}:`, error);
-    toast.error("Failed to load product details from CJdropshipping");
+    toast.error("Failed to load product details from CJdropshipping. Using sample data.");
     
     // Return fallback product if API fails
     return getFallbackProducts().find(p => p.id === productId) || null;

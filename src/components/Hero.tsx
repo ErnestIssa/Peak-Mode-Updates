@@ -52,7 +52,7 @@ const Hero = () => {
             revealText ? "opacity-100" : "opacity-0"
           )}>
             <span className="inline-block text-sm md:text-base uppercase tracking-wider pb-4 border-b border-white/30 animate-fade-in">
-              Premium Performance Apparel
+              Premium Träningskläder
             </span>
           </div>
           
@@ -60,15 +60,15 @@ const Hero = () => {
             "mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter transition-all duration-700 delay-500",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            NO LIMITS.<br />JUST PEAKS.
+            INGA GRÄNSER.<br />BARA TOPPAR.
           </h1>
           
           <p className={cn(
             "mt-6 max-w-xl text-white/80 text-lg md:text-xl leading-relaxed transition-all duration-700 delay-700",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            High-performance fitness apparel engineered for strength, endurance, and crafted for style. 
-            Push your limits and elevate your game—on the streets and in the gym.
+            Högpresterande träningskläder utvecklade för styrka, uthållighet och designade med stil.
+            Tänja dina gränser och höja din nivå—på gatorna och i gymmet.
           </p>
           
           <div className={cn(
@@ -79,14 +79,14 @@ const Hero = () => {
               to="/shop" 
               className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
             >
-              <span>Shop Now</span>
+              <span>Handla Nu</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <a 
               href="#about" 
               className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
             >
-              About Us
+              Om Oss
             </a>
           </div>
         </div>

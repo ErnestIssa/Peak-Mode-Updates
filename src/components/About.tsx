@@ -32,10 +32,10 @@ const About = () => {
               )}
             >
               <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b border-black font-medium">
-                About Us
+                Om Oss
               </span>
               <h2 className="mt-6 text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                About Peak Mode
+                Om Peak Mode
               </h2>
             </div>
             
@@ -47,20 +47,20 @@ const About = () => {
               )}
             >
               <p className="text-lg leading-relaxed">
-                At Peak Mode, we believe fitness is more than just a routine—it's a mindset. 
-                Our brand is built for those who refuse to settle, who push past limits, 
-                and who strive for greatness in every workout and every moment.
+                På Peak Mode tror vi att fitness är mer än bara en rutin—det är ett tankesätt. 
+                Vårt varumärke är byggt för de som vägrar att nöja sig, som tänjer på gränserna, 
+                och som strävar efter storhet i varje träningspass och varje ögonblick.
               </p>
               
               <p className="text-lg leading-relaxed">
-                We design high-performance fitness apparel that blends functionality with style, 
-                making sure you look and feel your best—whether you're in the gym or on the streets. 
-                Our gear is crafted for durability, comfort, and peak performance—so you can just focus 
-                on crushing your goals.
+                Vi designar högpresterande träningskläder som kombinerar funktionalitet med stil, 
+                och ser till att du ser och känner dig som bäst—oavsett om du är i gymmet eller på gatorna. 
+                Våra kläder är tillverkade för hållbarhet, komfort och topprestanda—så att du kan fokusera 
+                på att krossa dina mål.
               </p>
               
               <p className="text-lg leading-relaxed font-medium">
-                Join the Peak Mode movement. No Limits. Just Peaks.
+                Gå med i Peak Mode-rörelsen. Inga Gränser. Bara Toppar.
               </p>
             </div>
           </div>
@@ -74,22 +74,22 @@ const About = () => {
           >
             <div className="p-8 border border-border bg-secondary/50">
               <span className="block text-5xl font-bold">100%</span>
-              <span className="block mt-2 text-foreground/70">Premium Materials</span>
+              <span className="block mt-2 text-foreground/70">Premium Material</span>
             </div>
             
             <div className="p-8 border border-border bg-secondary/50">
               <span className="block text-5xl font-bold">24/7</span>
-              <span className="block mt-2 text-foreground/70">Performance Ready</span>
+              <span className="block mt-2 text-foreground/70">Redo För Prestanda</span>
             </div>
             
             <div className="p-8 border border-border bg-secondary/50">
               <span className="block text-5xl font-bold">50+</span>
-              <span className="block mt-2 text-foreground/70">Unique Designs</span>
+              <span className="block mt-2 text-foreground/70">Unika Designs</span>
             </div>
             
             <div className="p-8 border border-border bg-secondary/50">
               <span className="block text-5xl font-bold">10k+</span>
-              <span className="block mt-2 text-foreground/70">Happy Athletes</span>
+              <span className="block mt-2 text-foreground/70">Nöjda Atleter</span>
             </div>
           </div>
         </div>

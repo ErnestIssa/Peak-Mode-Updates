@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ShoppingCart } from 'lucide-react';
@@ -105,11 +104,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             New
           </div>
         )}
-        
-        {/* Source Tag */}
-        <div className="absolute top-4 right-4 bg-white/80 text-black text-xs uppercase tracking-wider py-1 px-2">
-          {source === 'cjdropshipping' ? 'CJ' : 'Printful'}
-        </div>
         
         {/* Quick Add */}
         <button 

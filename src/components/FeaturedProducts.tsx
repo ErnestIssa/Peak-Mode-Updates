@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProductSource, UnifiedProduct } from '@/models/Product';
+import { UnifiedProduct } from '@/models/Product';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -25,13 +25,13 @@ const FeaturedProducts = () => {
         id: `printful-${product.id}`,
         originalId: product.id,
         name: product.name,
-        price: "499 SEK", // Default price since Printful API doesn't return prices in the products list
+        price: product.price || "499 SEK",
         currency: "SEK",
         category: product.name.includes("Hoodie") ? "Hoodies" : 
                  product.name.includes("Shirt") ? "Shirts" : 
                  product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
         image: product.thumbnail_url,
-        isNew: true,
+        isNew: Math.random() > 0.7,
         source: 'printful'
       }))
     : [];

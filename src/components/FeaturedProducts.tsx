@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UnifiedProduct } from '@/models/Product';
+import { UnifiedProduct, ProductSource } from '@/models/Product';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({

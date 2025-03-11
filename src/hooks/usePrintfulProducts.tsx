@@ -11,14 +11,39 @@ export const usePrintfulProducts = () => {
       // Fetch details for each product to get prices
       const productsWithPrices = await Promise.all(
         products.map(async (product) => {
-          const details = await fetchProductDetails(product.id);
-          const firstVariant = details?.sync_variants[0];
-          const price = firstVariant ? firstVariant.retail_price : "499";
-          
-          return {
-            ...product,
-            price: `${price} SEK`
-          };
+          try {
+            const details = await fetchProductDetails(product.id);
+            
+            // If we have variant information, use the first variant's retail price
+            let price = "499 SEK"; // Default fallback price
+            let currency = "SEK";
+            
+            if (details?.sync_variants && details.sync_variants.length > 0) {
+              const firstVariant = details.sync_variants[0];
+              if (firstVariant.retail_price) {
+                price = firstVariant.retail_price;
+                currency = firstVariant.currency || "SEK";
+                
+                // Format price as "PRICE CURRENCY"
+                if (!price.includes(currency)) {
+                  price = `${price} ${currency}`;
+                }
+              }
+            }
+            
+            return {
+              ...product,
+              price,
+              currency
+            };
+          } catch (error) {
+            console.error(`Error fetching details for product ${product.id}:`, error);
+            return {
+              ...product,
+              price: "499 SEK", // Default fallback price
+              currency: "SEK"
+            };
+          }
         })
       );
       

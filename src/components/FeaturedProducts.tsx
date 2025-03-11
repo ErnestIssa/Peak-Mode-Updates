@@ -26,13 +26,13 @@ const FeaturedProducts = () => {
         originalId: product.id,
         name: product.name,
         price: product.price || "499 SEK",
-        currency: "SEK",
+        currency: product.currency || "SEK",
         category: product.name.includes("Hoodie") ? "Hoodies" : 
                  product.name.includes("Shirt") ? "Shirts" : 
                  product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
         image: product.thumbnail_url,
         isNew: Math.random() > 0.7,
-        source: 'printful'
+        source: 'printful' as ProductSource
       }))
     : [];
 
@@ -42,55 +42,6 @@ const FeaturedProducts = () => {
   // Shuffle and select featured products
   const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
   const displayProducts = shuffled.slice(0, 4);
-
-  // Fallback products if API fails
-  const fallbackProducts = [
-    {
-      id: "fallback-1",
-      originalId: 1,
-      name: "Performance Tech Tee",
-      price: "499 SEK",
-      currency: "SEK",
-      category: "T-Shirts",
-      image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      isNew: true,
-      source: 'printful' as ProductSource
-    },
-    {
-      id: "fallback-2",
-      originalId: 2,
-      name: "Compression Leggings",
-      price: "699 SEK",
-      currency: "SEK",
-      category: "Bottoms",
-      image: "https://images.unsplash.com/photo-1565084888279-aca607ecce0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      source: 'printful' as ProductSource
-    },
-    {
-      id: "fallback-3",
-      originalId: 3,
-      name: "Sculpt Seamless Bra",
-      price: "349 SEK",
-      currency: "SEK",
-      category: "Sports Bras",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      source: 'printful' as ProductSource
-    },
-    {
-      id: "fallback-4",
-      originalId: 4,
-      name: "Performance Joggers",
-      price: "799 SEK",
-      currency: "SEK",
-      category: "Bottoms",
-      image: "https://images.unsplash.com/photo-1556301590-319c5b2ac83d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      isNew: true,
-      source: 'printful' as ProductSource
-    }
-  ];
-
-  // Determine which products to display
-  const finalDisplayProducts = displayProducts.length > 0 ? displayProducts : fallbackProducts;
 
   return (
     <section className="peak-section bg-secondary">
@@ -124,7 +75,7 @@ const FeaturedProducts = () => {
               </div>
             ))}
           </div>
-        ) : hasError && finalDisplayProducts.length === 0 ? (
+        ) : hasError && displayProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-red-500">Failed to load products. Please try again later.</p>
           </div>
@@ -133,20 +84,26 @@ const FeaturedProducts = () => {
             ref={ref}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            {finalDisplayProducts.map((product, index) => (
-              <div 
-                key={product.id}
-                className={cn(
-                  "transition-all duration-700",
-                  inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                )}
-                style={{ 
-                  transitionDelay: inView ? `${index * 100 + 300}ms` : '0ms'
-                }}
-              >
-                <ProductCard {...product} />
+            {displayProducts.length > 0 ? (
+              displayProducts.map((product, index) => (
+                <div 
+                  key={product.id}
+                  className={cn(
+                    "transition-all duration-700",
+                    inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                  )}
+                  style={{ 
+                    transitionDelay: inView ? `${index * 100 + 300}ms` : '0ms'
+                  }}
+                >
+                  <ProductCard {...product} />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-4 text-center py-12">
+                <p>No products available at this time. Please check back later.</p>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>

@@ -60,7 +60,7 @@ const Hero = () => {
             "mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter transition-all duration-700 delay-500",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            INGA GRÄNSER.<br />BARA TOPPAR.
+            NO LIMITS.<br />ONLY PEAKS.
           </h1>
           
           <p className={cn(

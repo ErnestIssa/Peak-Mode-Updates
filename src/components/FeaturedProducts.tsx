@@ -1,12 +1,12 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
-import { useCJProducts } from '@/hooks/useCJProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UnifiedProduct, ProductSource } from '@/models/Product';
+import { ProductSource, UnifiedProduct } from '@/models/Product';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -15,10 +15,9 @@ const FeaturedProducts = () => {
   });
 
   const { data: printfulProducts, isLoading: printfulLoading, error: printfulError } = usePrintfulProducts();
-  const { data: cjProducts, isLoading: cjLoading, error: cjError } = useCJProducts();
 
-  const isLoading = printfulLoading || cjLoading;
-  const hasError = printfulError || cjError;
+  const isLoading = printfulLoading;
+  const hasError = printfulError;
 
   // Convert Printful products to unified format
   const printfulUnified: UnifiedProduct[] = printfulProducts && printfulProducts.length > 0 
@@ -37,29 +36,14 @@ const FeaturedProducts = () => {
       }))
     : [];
 
-  // Convert CJ products to unified format
-  const cjUnified: UnifiedProduct[] = cjProducts && cjProducts.length > 0 
-    ? cjProducts.map(product => ({
-        id: `cj-${product.id}`,
-        originalId: product.id,
-        name: product.productNameEn || product.productName,
-        price: `${product.sellingPrice} SEK`,
-        currency: "SEK",
-        category: product.categoryName || "Accessories",
-        image: product.productImage,
-        isNew: Math.random() > 0.7,
-        source: 'cjdropshipping'
-      }))
-    : [];
-
-  // Combine all products and take a selection
-  const allProducts = [...printfulUnified, ...cjUnified];
+  // Take a selection of products
+  const allProducts = [...printfulUnified];
   
   // Shuffle and select featured products
   const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
   const displayProducts = shuffled.slice(0, 4);
 
-  // Fallback products if both APIs fail
+  // Fallback products if API fails
   const fallbackProducts = [
     {
       id: "fallback-1",

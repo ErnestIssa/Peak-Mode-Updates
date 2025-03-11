@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
-import { useCJProducts } from '@/hooks/useCJProducts';
 import { Skeleton } from '@/components/ui/skeleton';
 import Newsletter from '../components/Newsletter';
 import { useLocation } from 'react-router-dom';
@@ -11,14 +10,12 @@ import { UnifiedProduct } from '@/models/Product';
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeSource, setActiveSource] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   
   const { data: printfulProducts, isLoading: printfulLoading, error: printfulError } = usePrintfulProducts();
-  const { data: cjProducts, isLoading: cjLoading, error: cjError } = useCJProducts();
   
-  const isLoading = printfulLoading || cjLoading;
-  const hasError = printfulError || cjError;
+  const isLoading = printfulLoading;
+  const hasError = printfulError;
   
   const location = useLocation();
   
@@ -28,19 +25,13 @@ const Shop = () => {
     setSearchQuery(search);
   }, [location.search]);
 
-  // Categories and sources for filtering
+  // Categories for filtering
   const categories = [
     { name: 'All', value: null },
     { name: 'T-Shirts', value: 'shirt' },
     { name: 'Hoodies', value: 'hoodie' },
-    { name: 'Electronics', value: 'electronics' },
+    { name: 'Athletic Wear', value: 'athletic' },
     { name: 'Accessories', value: 'accessory' }
-  ];
-  
-  const sources = [
-    { name: 'All Sources', value: null },
-    { name: 'Printful', value: 'printful' },
-    { name: 'CJ Dropshipping', value: 'cjdropshipping' }
   ];
 
   // Convert Printful products to unified format
@@ -60,35 +51,13 @@ const Shop = () => {
       }))
     : [];
 
-  // Convert CJ products to unified format
-  const cjUnified: UnifiedProduct[] = cjProducts && cjProducts.length > 0 
-    ? cjProducts.map(product => ({
-        id: `cj-${product.id}`,
-        originalId: product.id,
-        name: product.productNameEn || product.productName,
-        price: `${product.sellingPrice} SEK`,
-        currency: "SEK",
-        category: product.categoryName || 
-                (product.productNameEn?.includes("earbuds") || product.productName?.includes("earbuds")) ? "Electronics" :
-                "Accessories",
-        image: product.productImage,
-        isNew: Math.random() > 0.7,
-        source: 'cjdropshipping'
-      }))
-    : [];
+  // All products now only come from Printful
+  const allProducts = [...printfulUnified];
 
-  // Combine all products
-  const allProducts = [...printfulUnified, ...cjUnified];
-
-  // Apply source filter
-  let filteredBySource = activeSource 
-    ? allProducts.filter(p => p.source === activeSource)
-    : allProducts;
-    
   // Apply category filter
   let filteredProducts = activeCategory 
-    ? filteredBySource.filter(p => p.category.toLowerCase().includes(activeCategory.toLowerCase()))
-    : filteredBySource;
+    ? allProducts.filter(p => p.category.toLowerCase().includes(activeCategory.toLowerCase()))
+    : allProducts;
     
   // Apply search filter if exists
   if (searchQuery) {
@@ -131,23 +100,6 @@ const Shop = () => {
                   </button>
                 ))}
               </div>
-              
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                <span className="py-2 font-medium">Sources:</span>
-                {sources.map(source => (
-                  <button
-                    key={source.name}
-                    onClick={() => setActiveSource(source.value)}
-                    className={`px-4 py-2 whitespace-nowrap ${
-                      source.value === activeSource 
-                        ? 'bg-black text-white' 
-                        : 'bg-secondary hover:bg-secondary/80'
-                    }`}
-                  >
-                    {source.name}
-                  </button>
-                ))}
-              </div>
             </div>
             
             {isLoading ? (
@@ -174,7 +126,7 @@ const Shop = () => {
                 ))}
                 {filteredProducts.length === 0 && (
                   <div className="col-span-full text-center py-12">
-                    <p>No products found. Try a different category, source, or search term.</p>
+                    <p>No products found. Try a different category or search term.</p>
                   </div>
                 )}
               </div>

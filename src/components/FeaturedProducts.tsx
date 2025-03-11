@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProductSource } from '@/models/Product';
+import { UnifiedProduct, ProductSource } from '@/models/Product';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -20,7 +20,7 @@ const FeaturedProducts = () => {
   const hasError = printfulError;
 
   // Convert Printful products to unified format
-  const printfulUnified = printfulProducts && printfulProducts.length > 0 
+  const printfulUnified: UnifiedProduct[] = printfulProducts && printfulProducts.length > 0 
     ? printfulProducts.map(product => ({
         id: `printful-${product.id}`,
         originalId: product.id,
@@ -49,15 +49,15 @@ const FeaturedProducts = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b border-black font-medium">
-              Utvalda Produkter
+              Featured Products
             </span>
             <h2 className="mt-4 text-3xl md:text-4xl font-bold">
-              Toppval
+              Top Performers
             </h2>
           </div>
           
           <a href="/shop" className="mt-6 md:mt-0 inline-flex items-center text-sm font-medium group">
-            Visa Alla Produkter
+            View All Products
             <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </a>
         </div>
@@ -77,7 +77,7 @@ const FeaturedProducts = () => {
           </div>
         ) : hasError && displayProducts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-red-500">Kunde inte ladda produkter. Vänligen försök igen senare.</p>
+            <p className="text-red-500">Failed to load products. Please try again later.</p>
           </div>
         ) : (
           <div 
@@ -101,7 +101,7 @@ const FeaturedProducts = () => {
               ))
             ) : (
               <div className="col-span-4 text-center py-12">
-                <p>Inga produkter tillgängliga just nu. Vänligen kom tillbaka senare.</p>
+                <p>No products available at this time. Please check back later.</p>
               </div>
             )}
           </div>

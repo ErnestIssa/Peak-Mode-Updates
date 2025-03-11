@@ -52,7 +52,7 @@ const Hero = () => {
             revealText ? "opacity-100" : "opacity-0"
           )}>
             <span className="inline-block text-sm md:text-base uppercase tracking-wider pb-4 border-b border-white/30 animate-fade-in">
-              Premium Träningskläder
+              Premium Performance Apparel
             </span>
           </div>
           
@@ -60,15 +60,15 @@ const Hero = () => {
             "mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter transition-all duration-700 delay-500",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            NO LIMITS.<br />ONLY PEAKS.
+            NO LIMITS.<br />JUST PEAKS.
           </h1>
           
           <p className={cn(
             "mt-6 max-w-xl text-white/80 text-lg md:text-xl leading-relaxed transition-all duration-700 delay-700",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            Högpresterande träningskläder utvecklade för styrka, uthållighet och designade med stil.
-            Tänja dina gränser och höja din nivå—på gatorna och i gymmet.
+            High-performance fitness apparel engineered for strength, endurance, and crafted for style. 
+            Push your limits and elevate your game—on the streets and in the gym.
           </p>
           
           <div className={cn(
@@ -79,14 +79,14 @@ const Hero = () => {
               to="/shop" 
               className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
             >
-              <span>Handla Nu</span>
+              <span>Shop Now</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <a 
               href="#about" 
               className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
             >
-              Om Oss
+              About Us
             </a>
           </div>
         </div>

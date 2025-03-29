@@ -86,14 +86,6 @@ const Hero = () => {
             NO LIMITS.<br />JUST PEAKS.
           </h1>
           
-          <p className={cn(
-            "mt-6 max-w-xl text-white/80 text-lg md:text-xl leading-relaxed transition-all duration-700 delay-700",
-            revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          )}>
-            High-performance fitness apparel engineered for strength, endurance, and crafted for style. 
-            Push your limits and elevate your game—on the streets and in the gym.
-          </p>
-          
           <div className={cn(
             "mt-10 flex space-x-4 transition-all duration-700 delay-900",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"

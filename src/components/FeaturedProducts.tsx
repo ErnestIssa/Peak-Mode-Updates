@@ -5,10 +5,12 @@ import { ArrowRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
+import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UnifiedProduct, ProductSource } from '@/models/Product';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
+import { fetchProductDetails } from '@/services/printfulService';
 
 const FeaturedProducts = () => {
   const { ref, inView } = useInView({
@@ -17,33 +19,56 @@ const FeaturedProducts = () => {
   });
 
   const { data: printfulProducts, isLoading: printfulLoading, error: printfulError } = usePrintfulProducts();
-
-  const isLoading = printfulLoading;
-  const hasError = printfulError;
-
-  // Convert Printful products to unified format
-  const printfulUnified: UnifiedProduct[] = printfulProducts && printfulProducts.length > 0 
-    ? printfulProducts.map(product => ({
-        id: `printful-${product.id}`,
-        originalId: product.id,
-        name: product.name,
-        price: product.price || "499 SEK",
-        currency: product.currency || "SEK",
-        category: product.name.includes("Hoodie") ? "Hoodies" : 
-                 product.name.includes("Shirt") ? "Shirts" : 
-                 product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
-        image: product.thumbnail_url,
-        isNew: Math.random() > 0.7,
-        source: 'printful' as ProductSource
-      }))
-    : [];
-
-  // Take a selection of products
-  const allProducts = [...printfulUnified];
   
-  // Shuffle and select featured products
-  const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
-  const displayProducts = shuffled.slice(0, 4);
+  // Get detailed product information for each product including prices
+  const { data: detailedProducts, isLoading: detailsLoading } = useQuery({
+    queryKey: ['featured-product-details'],
+    queryFn: async () => {
+      if (!printfulProducts || printfulProducts.length === 0) return [];
+      
+      // Take first 4 products for featured section
+      const selectedProducts = printfulProducts.slice(0, 4);
+      
+      // Fetch details for each product
+      const productsWithDetails = await Promise.all(
+        selectedProducts.map(async (product) => {
+          const details = await fetchProductDetails(product.id);
+          
+          let price = "499 SEK"; // Default fallback price
+          let currency = "SEK";
+          
+          if (details?.sync_variants && details.sync_variants.length > 0) {
+            const firstVariant = details.sync_variants[0];
+            if (firstVariant.retail_price) {
+              price = `${firstVariant.retail_price} ${firstVariant.currency}`;
+              currency = firstVariant.currency;
+            }
+          }
+          
+          return {
+            id: `printful-${product.id}`,
+            originalId: product.id,
+            name: product.name,
+            price: price,
+            currency: currency,
+            category: product.name.toLowerCase().includes("hoodie") ? "Hoodies" : 
+                     product.name.toLowerCase().includes("shirt") ? "Shirts" : 
+                     product.name.toLowerCase().includes("rash guard") ? "Athletic Wear" : "Apparel",
+            image: product.thumbnail_url,
+            isNew: Math.random() > 0.7,
+            source: 'printful' as ProductSource
+          };
+        })
+      );
+      
+      return productsWithDetails;
+    },
+    enabled: !!printfulProducts && printfulProducts.length > 0,
+  });
+
+  const isLoading = printfulLoading || detailsLoading;
+  const hasError = printfulError;
+  const displayProducts = detailedProducts || [];
 
   return (
     <section className="peak-section bg-secondary">
@@ -72,14 +97,14 @@ const FeaturedProducts = () => {
               </div>
             ))}
           </div>
-        ) : hasError && displayProducts.length === 0 ? (
+        ) : hasError ? (
           <div className="text-center py-12">
             <p className="text-red-500">Failed to load products. Please try again later.</p>
           </div>
         ) : (
           <div 
             ref={ref}
-            className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-4 sm:gap-6"
           >
             {displayProducts.length > 0 ? (
               displayProducts.map((product, index) => (
@@ -97,7 +122,7 @@ const FeaturedProducts = () => {
                 </div>
               ))
             ) : (
-              <div className="col-span-2 lg:col-span-4 text-center py-12">
+              <div className="col-span-2 text-center py-12">
                 <p>No products available at this time. Please check back later.</p>
               </div>
             )}

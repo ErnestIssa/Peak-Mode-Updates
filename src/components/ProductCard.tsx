@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ShoppingCart } from 'lucide-react';
@@ -80,7 +81,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div 
-      className="product-card flex flex-col"
+      className="product-card flex flex-col h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -100,7 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         
         {/* New Tag */}
         {isNew && (
-          <div className="absolute top-4 left-4 bg-black text-white text-xs uppercase tracking-wider py-1 px-2">
+          <div className="absolute top-2 left-2 bg-black text-white text-xs uppercase tracking-wider py-1 px-2">
             New
           </div>
         )}
@@ -109,20 +110,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <button 
           onClick={handleQuickAdd}
           className={cn(
-            "absolute bottom-0 left-0 right-0 bg-black text-white py-3 flex justify-center items-center space-x-2 transition-all duration-300",
+            "absolute bottom-0 left-0 right-0 bg-black text-white py-2 flex justify-center items-center space-x-2 transition-all duration-300",
             isHovered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
           )}
         >
-          <ShoppingCart className="h-4 w-4" />
-          <span className="text-sm font-medium">Quick Add</span>
+          <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="text-xs sm:text-sm font-medium">Quick Add</span>
         </button>
       </Link>
       
-      <div className="p-4 flex flex-col flex-grow">
-        <span className="text-xs text-foreground/60 uppercase tracking-wider">{category}</span>
-        <h3 className="mt-1 font-medium">{name}</h3>
-        <div className="mt-auto pt-4 flex justify-between items-center">
-          <span className="font-medium">{displayPrice}</span>
+      <div className="p-3 flex flex-col flex-grow">
+        <span className="text-xs text-foreground/60 uppercase tracking-wider truncate">{category}</span>
+        <h3 className="mt-0.5 font-medium text-sm sm:text-base line-clamp-2">{name}</h3>
+        <div className="mt-auto pt-2 flex justify-between items-center">
+          <span className="font-medium text-sm sm:text-base">{displayPrice}</span>
         </div>
       </div>
     </div>

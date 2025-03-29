@@ -7,6 +7,15 @@ import { Link } from 'react-router-dom';
 const Hero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [revealText, setRevealText] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Array of background images
+  const backgroundImages = [
+    "https://files.cdn.printful.com/files/486/486a3d8c695befaf9bf9c6b9c31901ec_preview.png",
+    "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1500",
+    "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1500",
+    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1500"
+  ];
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,28 +25,39 @@ const Hero = () => {
     return () => clearTimeout(timer);
   }, []);
   
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+    }, 5000); // Change image every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-      {/* Background Image */}
+      {/* Background Images */}
       <div className="absolute inset-0 w-full h-full">
-        <div 
-          className={cn(
-            "w-full h-full object-cover opacity-0 transition-all duration-1000",
-            imageLoaded ? "opacity-100 blur-0" : "blur-md"
-          )}
-          style={{
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(https://files.cdn.printful.com/files/486/486a3d8c695befaf9bf9c6b9c31901ec_preview.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'grayscale(100%)'
-          }}
-        />
+        {backgroundImages.map((image, index) => (
+          <div 
+            key={index}
+            className={cn(
+              "absolute inset-0 w-full h-full transition-opacity duration-1500 ease-in-out",
+              currentImageIndex === index ? "opacity-100" : "opacity-0"
+            )}
+            style={{
+              background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'grayscale(100%)'
+            }}
+          />
+        ))}
         <img 
-          src="https://files.cdn.printful.com/files/486/486a3d8c695befaf9bf9c6b9c31901ec_preview.png" 
+          src={backgroundImages[0]}
           alt="Hero Background" 
           className="hidden" 
           onLoad={handleImageLoad}

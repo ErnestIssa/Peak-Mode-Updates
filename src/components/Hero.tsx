@@ -112,6 +112,19 @@ const Hero = () => {
         </div>
       </div>
       
+      {/* Navigation Dots */}
+      <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex items-center justify-center space-x-3 z-20">
+        {backgroundImages.map((_, index) => (
+          <div 
+            key={index}
+            className={cn(
+              "h-2 bg-white rounded-full transition-all duration-500",
+              currentImageIndex === index ? "w-8 opacity-100" : "w-2 opacity-60"
+            )}
+          />
+        ))}
+      </div>
+      
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <div className="w-8 h-12 border-2 border-white rounded-full flex justify-center">

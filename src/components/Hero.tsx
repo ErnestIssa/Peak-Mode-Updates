@@ -9,9 +9,8 @@ const Hero = () => {
   const [revealText, setRevealText] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Array of background images
+  // Array of background images reduced to 3
   const backgroundImages = [
-    "https://files.cdn.printful.com/files/486/486a3d8c695befaf9bf9c6b9c31901ec_preview.png",
     "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1500",
     "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1500",
     "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1500"
@@ -45,8 +44,12 @@ const Hero = () => {
           <div 
             key={index}
             className={cn(
-              "absolute inset-0 w-full h-full transition-opacity duration-1500 ease-in-out",
-              currentImageIndex === index ? "opacity-100" : "opacity-0"
+              "absolute inset-0 w-full h-full transition-all transform duration-700",
+              currentImageIndex === index 
+                ? "opacity-100 translate-x-0" 
+                : index < currentImageIndex 
+                  ? "opacity-0 -translate-x-full" 
+                  : "opacity-0 translate-x-full"
             )}
             style={{
               background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${image})`,

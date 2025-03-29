@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
-import About from '../components/About';
 import FeaturedProducts from '../components/FeaturedProducts';
 import Newsletter from '../components/Newsletter';
+import AboutStore from '../components/AboutStore';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,8 +37,8 @@ const Index = () => {
       <Navbar />
       <main>
         <Hero />
-        <About />
         <FeaturedProducts />
+        <AboutStore />
         <Newsletter />
       </main>
     </div>

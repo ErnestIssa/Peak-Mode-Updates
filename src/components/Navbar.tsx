@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Menu, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -69,9 +68,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Shop', href: '/shop' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' }
+    { name: 'Men', href: '/shop' },
+    { name: 'Women', href: '/shop' },
+    { name: 'Accessories', href: '/shop' }
   ];
 
   return (

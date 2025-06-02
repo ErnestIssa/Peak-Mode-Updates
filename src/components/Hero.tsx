@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
@@ -11,9 +10,9 @@ const Hero = () => {
   
   // Array of background images reduced to 3
   const backgroundImages = [
-    "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1500",
-    "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1500",
-    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1500"
+    "https://wallpaperaccess.com/full/1244717.jpg",
+    "https://www.brickbodies.com/wp-content/uploads/2020/10/Runner-1.jpg",
+    "https://wallpaperaccess.com/full/5738912.jpg"
   ];
   
   useEffect(() => {
@@ -49,12 +48,14 @@ const Hero = () => {
                 ? "opacity-100 translate-x-0" 
                 : index < currentImageIndex 
                   ? "opacity-0 -translate-x-full" 
-                  : "opacity-0 translate-x-full"
+                  : "opacity-0 translate-x-full",
+              index === 0 ? 'bg-center' : '',
+              index === 1 ? 'bg-center md:bg-bottom' : '',
+              index === 2 ? 'bg-[90%_center] md:bg-center' : ''
             )}
             style={{
               background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${image})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
               filter: 'grayscale(100%)'
             }}
           />
@@ -97,12 +98,12 @@ const Hero = () => {
               <span>Shop Now</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-            <a 
-              href="#about" 
+            <Link 
+              to="/about" 
               className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
             >
               About Us
-            </a>
+            </Link>
           </div>
         </div>
       </div>

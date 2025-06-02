@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ShoppingCart } from 'lucide-react';
@@ -85,14 +84,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link to={getProductDetailPath()} className="relative overflow-hidden aspect-[3/4]">
+      <Link to={getProductDetailPath()} className="relative block w-full aspect-[3/4]">
         {/* Product Image */}
         <div className="w-full h-full bg-secondary/50"></div>
         <img
           src={image}
           alt={name}
           className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-all duration-700",
+            "absolute inset-0 w-full h-full object-contain transition-all duration-700",
             imageLoaded ? "opacity-100 blur-0" : "opacity-0 blur-sm",
             isHovered ? "scale-105" : "scale-100"
           )}
@@ -119,7 +118,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </button>
       </Link>
       
-      <div className="p-3 flex flex-col flex-grow">
+      <div className="p-2 sm:p-3 flex flex-col flex-grow">
         <span className="text-xs text-foreground/60 uppercase tracking-wider truncate">{category}</span>
         <h3 className="mt-0.5 font-medium text-sm sm:text-base line-clamp-2">{name}</h3>
         <div className="mt-auto pt-2 flex justify-between items-center">

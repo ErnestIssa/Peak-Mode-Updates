@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { cn } from '@/lib/utils';
@@ -55,16 +54,10 @@ const AboutPage = () => {
                 <h2 className="mt-6 text-3xl font-bold">From Passion to Peak Performance</h2>
                 <div className="mt-6 space-y-4">
                   <p>
-                    Peak Mode began in 2018 when founder Alex Johnson, a former professional athlete, 
-                    couldn't find fitness apparel that balanced performance, durability, and style. 
-                    What started as a small collection designed in a garage has grown into a movement 
-                    embraced by athletes and fitness enthusiasts worldwide.
+                    Peak Mode isn't just apparel — it's a declaration. Born from the mindset of someone who trained in silence, overlooked but never outworked, Peak Mode was never about following trends. It was built to represent a deeper truth: that real transformation doesn't come from hype, but from showing up when it's hard, when no one's watching, and when the only competition is who you were yesterday. This brand was created for those who train not for attention, but for growth — those who know that discomfort, discipline, and quiet consistency are where progress lives.
                   </p>
                   <p>
-                    Our journey has been defined by a relentless pursuit of innovation and quality. 
-                    Each product is rigorously tested under extreme conditions to ensure it performs 
-                    when you need it most. We believe that when your gear works flawlessly, you can 
-                    focus entirely on reaching new heights.
+                    Every product from Peak Mode is crafted to echo that mindset. With functional performance at the core, each piece is designed to support your toughest workouts and your everyday grind — no fluff, no shortcuts. It's not about being perfect — it's about choosing your peak, and chasing it relentlessly. When you wear Peak Mode, you're not just putting on gear. You're stepping into the version of yourself that refuses to settle. Because the peak isn't a destination — it's a mode you enter. And once you're in it, there's no turning back.
                   </p>
                 </div>
               </div>
@@ -93,13 +86,13 @@ const AboutPage = () => {
                 Our Mission
               </span>
               <h2 className="mt-6 text-3xl md:text-4xl font-bold">
-                Elevating Performance Through Innovation
+                Elevate Your Performance
               </h2>
               <p className="mt-6 text-lg">
-                At Peak Mode, our mission is to create performance apparel that empowers individuals to 
-                break through their limits. We believe that everyone has untapped potential that the right 
-                gear can help unlock. Through innovative design, premium materials, and a commitment to 
-                sustainability, we're redefining what athletes can expect from their apparel.
+                At Peak Mode, our mission goes beyond just creating premium fitness gear — we exist to embody a mindset. We were born from the belief that greatness isn't reserved for the few — it's available to anyone willing to show up, stay consistent, and chase their next level, no matter who's watching. We know the grind isn't always loud. It's early mornings. Quiet victories. The sweat that no one claps for. Peak Mode was created to reflect that — not perfection, but the decision to level up, every single day.
+              </p>
+              <p className="mt-4 text-lg">
+                We don't follow trends — we represent transformation. Each piece we design, starting with our flagship performance shorts, is made to empower movement with purpose. Functional. Sleek. Tested. This isn't about hype — it's about discipline. Because Peak Mode isn't a destination — it's a state of becoming. A reminder that your best isn't behind you — it's always ahead. No shortcuts. No excuses. Just progress. Just Peaks.
               </p>
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="p-6 bg-white">

@@ -1,4 +1,3 @@
-
 /**
  * Utility for interacting with VornifyDB API
  */
@@ -243,6 +242,72 @@ export async function sendSubscriptionConfirmationEmail(
           <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Facebook</a>
           <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Twitter</a>
           <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Unsubscribe</a>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  return sendEmail(email, subject, htmlBody);
+}
+
+/**
+ * Send a welcome offer email with discount code
+ */
+export async function sendWelcomeOfferEmail(
+  email: string,
+  discountCode: string
+): Promise<VornifyEmailResponse> {
+  const firstName = email.split('@')[0];
+  const subject = "Welcome to the Movement - Your Peak Mode Discount Code";
+  const htmlBody = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #9b87f5; padding-bottom: 20px;">
+        <h1 style="font-family: 'Montserrat', Arial, sans-serif; color: #1A1F2C; margin: 0; letter-spacing: 5px; font-weight: 700; font-size: 28px;">PEAK | MODE</h1>
+      </div>
+      
+      <div style="padding: 25px; background-color: #E5DEFF; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #6E59A5; margin-top: 0; font-family: 'Montserrat', Arial, sans-serif; font-weight: 600;">Welcome to the Movement.</h2>
+        
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
+          Hi ${firstName},
+        </p>
+        
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 20px;">
+          Thanks for joining Peak Mode — where performance meets purpose. You're not just here for gear, you're here to level up.
+        </p>
+        
+        <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; text-align: center; margin: 25px 0;">
+          <p style="color: #403E43; font-size: 14px; margin: 0 0 10px;">Your exclusive 10% discount code:</p>
+          <p style="font-family: 'Courier New', monospace; font-size: 24px; font-weight: bold; color: #6E59A5; margin: 0; letter-spacing: 2px;">
+            ${discountCode}
+          </p>
+        </div>
+        
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
+          Use it at checkout and take the first step toward your next peak. Peak Mode isn't a destination. It's a decision.
+        </p>
+        
+        <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin-bottom: 16px;">
+          Let's chase progress — together.<br>
+          No shortcuts. No excuses. Just Peaks.
+        </p>
+        
+        <div style="margin-top: 25px; background-color: #ffffff; border-radius: 8px; padding: 15px; border-left: 4px solid #9b87f5;">
+          <p style="color: #403E43; line-height: 1.6; font-size: 16px; margin: 0;">
+            — The Peak Mode Team
+          </p>
+        </div>
+      </div>
+      
+      <a href="https://peakmode.com/shop" style="display: block; text-align: center; margin: 25px auto; background-color: #9b87f5; color: white; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; letter-spacing: 0.5px; font-family: 'Montserrat', Arial, sans-serif; max-width: 200px;">Shop Now</a>
+      
+      <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #8E9196; font-size: 13px;">
+        <p style="margin-bottom: 10px;">© ${new Date().getFullYear()} Peak Mode. All rights reserved.</p>
+        <p style="margin-bottom: 10px;">Stockholmsvägen 25, 746 32 Bålsta, Sweden</p>
+        <div style="margin-top: 15px;">
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Instagram</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Facebook</a>
+          <a href="#" style="color: #9b87f5; margin: 0 8px; text-decoration: none;">Twitter</a>
         </div>
       </div>
     </div>

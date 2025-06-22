@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, Search as SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -53,8 +52,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const quickLinks = [
     { name: "New Arrivals", href: "/shop" },
     { name: "Best Sellers", href: "/shop" },
-    { name: "Women's Collection", href: "/shop" },
-    { name: "Men's Collection", href: "/shop" }
+    { name: "Women's Collection", href: "/womens" },
+    { name: "Men's Collection", href: "/mens" },
+    { name: "Accessories", href: "/accessories" }
   ];
 
   return (

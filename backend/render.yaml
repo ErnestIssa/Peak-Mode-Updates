@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: peak-mode-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://peakmodecluster:Itangishaka76701463!!@cluster0.bm3zcvt.mongodb.net/peak-mode?retryWrites=true&w=majority&appName=Cluster0
+      - key: JWT_SECRET
+        value: peak_mode_super_secret_jwt_key_2024_production_change_this
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: ADMIN_EMAIL
+        value: admin@peakmode.com
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: MAX_FILE_SIZE
+        value: 10485760
+      - key: UPLOAD_PATH
+        value: ./uploads 

@@ -6,8 +6,19 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
     port: 8080,
+    strictPort: true,
+    host: true,
+    open: true,
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
+    hmr: {
+      overlay: false,
+      timeout: 5000,
+      clientPort: 8080,
+    },
   },
   plugins: [
     react(),
@@ -19,4 +30,24 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  css: {
+    devSourcemap: true,
+  },
+  build: {
+    sourcemap: true,
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
+        }
+      }
+    }
+  },
+  define: {
+    // Ensure environment variables are available in production
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+  }
 }));

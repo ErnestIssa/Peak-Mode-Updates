@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 import Newsletter from '../components/Newsletter';
 
 const AboutPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { ref: storyRef, inView: storyInView } = useInView({
     triggerOnce: true,
     threshold: 0.3,
@@ -96,16 +100,16 @@ const AboutPage = () => {
               </p>
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="p-6 bg-white">
-                  <h3 className="text-xl font-bold">Quality</h3>
-                  <p className="mt-4">Premium materials and craftsmanship that stand up to extreme conditions</p>
+                  <h3 className="text-xl font-bold">Grind</h3>
+                  <p className="mt-4">We build gear for the quiet, relentless effort that defines true greatness.</p>
                 </div>
                 <div className="p-6 bg-white">
-                  <h3 className="text-xl font-bold">Innovation</h3>
-                  <p className="mt-4">Constantly pushing boundaries with new technologies and designs</p>
+                  <h3 className="text-xl font-bold">Commitment</h3>
+                  <p className="mt-4">Our mission is to empower those who train with purpose, discipline, and consistency.</p>
                 </div>
                 <div className="p-6 bg-white">
-                  <h3 className="text-xl font-bold">Sustainability</h3>
-                  <p className="mt-4">Eco-friendly practices and materials throughout our production process</p>
+                  <h3 className="text-xl font-bold">Mindset</h3>
+                  <p className="mt-4">Peak Mode represents the daily choice to push beyond limits and embrace excellence.</p>
                 </div>
               </div>
             </div>
@@ -136,38 +140,40 @@ const AboutPage = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white p-8 border border-border">
-                  <h3 className="text-2xl font-bold mb-4">Excellence in Everything</h3>
+                  <h3 className="text-2xl font-bold mb-4">Mindset Over Hype</h3>
                   <p>
-                    We never settle for "good enough." From the stitching on our garments to the 
-                    experience on our website, we pursue excellence in every detail. It's this 
-                    commitment that creates the Peak Mode difference.
+                    We don't chase trends — we build from truth. Peak Mode exists for those who train 
+                    for more than likes or aesthetics. Our gear is designed to reflect a deeper purpose: 
+                    progress in silence, discipline in motion. Every thread stands for the decision to 
+                    show up, even when no one's watching.
                   </p>
                 </div>
                 
                 <div className="bg-white p-8 border border-border">
-                  <h3 className="text-2xl font-bold mb-4">Community First</h3>
+                  <h3 className="text-2xl font-bold mb-4">Function Meets Intent</h3>
                   <p>
-                    The Peak Mode community is at the heart of everything we do. We actively listen, 
-                    engage, and build relationships with the athletes and fitness enthusiasts who wear 
-                    our gear, using their feedback to continuously improve.
+                    Every piece we create has a purpose — whether it's the fit that moves with you or 
+                    the material that lasts through grind sessions. No fluff, no wasted fabric. Just 
+                    functional performance wear that elevates your movement and mirrors your mission. 
+                    Built for comfort. Engineered for progress.
                   </p>
                 </div>
                 
                 <div className="bg-white p-8 border border-border">
-                  <h3 className="text-2xl font-bold mb-4">Sustainable Innovation</h3>
+                  <h3 className="text-2xl font-bold mb-4">Real People. Real Progress.</h3>
                   <p>
-                    We believe that performance and sustainability can coexist. We're constantly 
-                    researching and implementing new materials and manufacturing techniques that reduce 
-                    our environmental footprint without compromising quality.
+                    We're not here to glorify perfection. We honor effort — raw, consistent, and real. 
+                    Peak Mode is for anyone who's tired of being overlooked, and ready to own their 
+                    story. This brand was built by one of you, for all of you.
                   </p>
                 </div>
                 
                 <div className="bg-white p-8 border border-border">
-                  <h3 className="text-2xl font-bold mb-4">Inclusive Performance</h3>
+                  <h3 className="text-2xl font-bold mb-4">Peaks Are Earned Daily</h3>
                   <p>
-                    Peak performance isn't reserved for elite athletes. We design our products to 
-                    serve individuals at all fitness levels, body types, and backgrounds. Everyone 
-                    deserves gear that helps them reach their personal peak.
+                    We believe your peak isn't a destination — it's a mode you enter every single day. 
+                    Through discomfort. Through reps. Through choices that no one claps for. Peak Mode 
+                    is your reminder that you're built for more, and the summit is always ahead.
                   </p>
                 </div>
               </div>

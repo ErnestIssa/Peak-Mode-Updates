@@ -3,17 +3,29 @@ import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Hero = () => {
+interface HeroProps {
+  title?: string;
+  subtitle?: string;
+  backgroundImage?: string;
+}
+
+const Hero: React.FC<HeroProps> = ({ 
+  title = "NO LIMITS.\nJUST PEAKS.", 
+  subtitle = "Premium Performance Apparel",
+  backgroundImage
+}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [revealText, setRevealText] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Array of background images reduced to 3
-  const backgroundImages = [
-    "https://wallpaperaccess.com/full/1244717.jpg",
-    "https://www.brickbodies.com/wp-content/uploads/2020/10/Runner-1.jpg",
-    "https://wallpaperaccess.com/full/5738912.jpg"
-  ];
+  // Array of background images reduced to 3 - use admin image if provided
+  const backgroundImages = backgroundImage 
+    ? [backgroundImage, ...["https://wallpaperaccess.com/full/1244717.jpg", "https://www.brickbodies.com/wp-content/uploads/2020/10/Runner-1.jpg", "https://wallpaperaccess.com/full/5738912.jpg"].slice(1)]
+    : [
+        "https://wallpaperaccess.com/full/1244717.jpg",
+        "https://www.brickbodies.com/wp-content/uploads/2020/10/Runner-1.jpg",
+        "https://wallpaperaccess.com/full/5738912.jpg"
+      ];
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,7 +41,7 @@ const Hero = () => {
     }, 5000); // Change image every 5 seconds
     
     return () => clearInterval(interval);
-  }, []);
+  }, [backgroundImages.length]);
   
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -76,7 +88,7 @@ const Hero = () => {
             revealText ? "opacity-100" : "opacity-0"
           )}>
             <span className="inline-block text-sm md:text-base uppercase tracking-wider pb-4 border-b border-white/30 animate-fade-in">
-              Premium Performance Apparel
+              {subtitle}
             </span>
           </div>
           
@@ -84,7 +96,12 @@ const Hero = () => {
             "mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter transition-all duration-700 delay-500",
             revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            NO LIMITS.<br />JUST PEAKS.
+            {title.split('\n').map((line, index) => (
+              <React.Fragment key={index}>
+                {line}
+                {index < title.split('\n').length - 1 && <br />}
+              </React.Fragment>
+            ))}
           </h1>
           
           <div className={cn(
@@ -94,6 +111,7 @@ const Hero = () => {
             <Link 
               to="/shop" 
               className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
+              onClick={() => window.scrollTo(0, 0)}
             >
               <span>Shop Now</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />

@@ -5,9 +5,10 @@ import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
 import Newsletter from '../components/Newsletter';
 import { useLocation } from 'react-router-dom';
-import { UnifiedProduct } from '@/models/Product';
+import { UnifiedProduct, ProductSource } from '@/models/Product';
 
 const Shop = () => {
+  // Initialize activeCategory as null to show all products by default
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   
@@ -17,6 +18,11 @@ const Shop = () => {
   const hasError = printfulError;
   
   const location = useLocation();
+  
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -46,7 +52,7 @@ const Shop = () => {
                  product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
         image: product.thumbnail_url,
         isNew: Math.random() > 0.7,
-        source: 'printful'
+        source: ProductSource.PRINTFUL
       }))
     : [];
 
@@ -63,6 +69,11 @@ const Shop = () => {
     filteredProducts = filteredProducts.filter(p => 
       p.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+  }
+
+  // Randomize the order of products when showing all products
+  if (!activeCategory && !searchQuery) {
+    filteredProducts = [...filteredProducts].sort(() => Math.random() - 0.5);
   }
 
   return (
@@ -90,7 +101,7 @@ const Shop = () => {
                     key={category.name}
                     onClick={() => setActiveCategory(category.value)}
                     className={`px-4 py-2 whitespace-nowrap ${
-                      category.value === activeCategory 
+                      (category.value === activeCategory || (category.value === null && activeCategory === null))
                         ? 'bg-black text-white' 
                         : 'bg-secondary hover:bg-secondary/80'
                     }`}

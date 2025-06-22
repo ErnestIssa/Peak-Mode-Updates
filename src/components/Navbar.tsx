@@ -3,6 +3,8 @@ import { ShoppingBag, Menu, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import SearchModal from './SearchModal';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -67,10 +69,11 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Men', href: '/shop' },
-    { name: 'Women', href: '/shop' },
-    { name: 'Accessories', href: '/shop' }
+    { name: 'Shop', href: '/shop' },
+    { name: 'Men', href: '/mens' },
+    { name: 'Women', href: '/womens' },
+    { name: 'Accessories', href: '/accessories' },
+    { name: 'About', href: '/about' }
   ];
 
   return (
@@ -95,15 +98,11 @@ const Navbar = () => {
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              to={link.href} 
-              className="nav-link hover:opacity-80 transition-colors text-foreground"
-            >
-              {link.name}
-            </Link>
-          ))}
+          <Link to="/shop" className="text-sm font-medium hover:text-gray-600">Shop</Link>
+          <Link to="/mens" className="text-sm font-medium hover:text-gray-600">Men</Link>
+          <Link to="/womens" className="text-sm font-medium hover:text-gray-600">Women</Link>
+          <Link to="/accessories" className="text-sm font-medium hover:text-gray-600">Accessories</Link>
+          <Link to="/about" className="text-sm font-medium hover:text-gray-600">About</Link>
         </div>
         
         {/* Icons */}
@@ -115,6 +114,12 @@ const Navbar = () => {
           >
             <Search className="h-5 w-5" />
           </button>
+          <Link 
+            to="/admin/login"
+            className="text-sm font-medium hover:text-gray-600"
+          >
+            Admin
+          </Link>
           <Link 
             to="/cart"
             className="hover:opacity-70 transition-colors relative text-foreground" 
@@ -216,6 +221,30 @@ const Navbar = () => {
       
       {/* Search Modal */}
       <SearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
+
+      {/* Mobile menu */}
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <nav className="flex flex-col space-y-4 mt-8">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.name} 
+                  to={link.href} 
+                  className="text-sm font-medium hover:text-gray-600"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 };

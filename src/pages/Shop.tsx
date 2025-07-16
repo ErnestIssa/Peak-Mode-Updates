@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
-import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
 import { Skeleton } from '@/components/ui/skeleton';
 import Newsletter from '../components/Newsletter';
 import { useLocation } from 'react-router-dom';
-import { UnifiedProduct } from '@/models/Product';
+import { UnifiedProduct, ProductSource } from '@/models/Product';
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   
-  const { data: printfulProducts, isLoading: printfulLoading, error: printfulError } = usePrintfulProducts();
-  
-  const isLoading = printfulLoading;
-  const hasError = printfulError;
+  const isLoading = false;
+  const hasError = false;
   
   const location = useLocation();
   
@@ -33,25 +30,144 @@ const Shop = () => {
     { name: 'Accessories', value: 'accessory' }
   ];
 
-  // Convert Printful products to unified format
-  const printfulUnified: UnifiedProduct[] = printfulProducts && printfulProducts.length > 0 
-    ? printfulProducts.map(product => ({
-        id: `printful-${product.id}`,
-        originalId: product.id,
-        name: product.name,
-        price: "499 SEK", // Default price since Printful API doesn't return prices in the products list
-        currency: "SEK",
-        category: product.name.includes("Hoodie") ? "Hoodies" : 
-                 product.name.includes("Shirt") ? "Shirts" : 
-                 product.name.includes("rash guard") ? "Athletic Wear" : "Apparel",
-        image: product.thumbnail_url,
-        isNew: Math.random() > 0.7,
-        source: 'printful'
-      }))
-    : [];
+  // Test products for development
+  const testProducts: UnifiedProduct[] = [
+    {
+      id: 'test-1',
+      originalId: 'test-1',
+      name: 'Peak Mode Performance Hoodie',
+      price: '599 SEK',
+      currency: 'SEK',
+      category: 'Hoodies',
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=600&fit=crop',
+      isNew: true,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-2',
+      originalId: 'test-2',
+      name: 'Elite Training T-Shirt',
+      price: '299 SEK',
+      currency: 'SEK',
+      category: 'Shirts',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-3',
+      originalId: 'test-3',
+      name: 'Athletic Performance Shorts',
+      price: '399 SEK',
+      currency: 'SEK',
+      category: 'Athletic Wear',
+      image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=600&fit=crop',
+      isNew: true,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-4',
+      originalId: 'test-4',
+      name: 'Premium Workout Leggings',
+      price: '499 SEK',
+      currency: 'SEK',
+      category: 'Athletic Wear',
+      image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-5',
+      originalId: 'test-5',
+      name: 'Peak Mode Logo Sweatshirt',
+      price: '449 SEK',
+      currency: 'SEK',
+      category: 'Hoodies',
+      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-6',
+      originalId: 'test-6',
+      name: 'Performance Tank Top',
+      price: '249 SEK',
+      currency: 'SEK',
+      category: 'Shirts',
+      image: 'https://images.unsplash.com/photo-1506629905607-13e6f5c2b1ce?w=400&h=600&fit=crop',
+      isNew: true,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-7',
+      originalId: 'test-7',
+      name: 'Athletic Compression Shirt',
+      price: '349 SEK',
+      currency: 'SEK',
+      category: 'Shirts',
+      image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-8',
+      originalId: 'test-8',
+      name: 'Peak Mode Training Jacket',
+      price: '699 SEK',
+      currency: 'SEK',
+      category: 'Hoodies',
+      image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=600&fit=crop',
+      isNew: true,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-9',
+      originalId: 'test-9',
+      name: 'Performance Sports Bra',
+      price: '399 SEK',
+      currency: 'SEK',
+      category: 'Athletic Wear',
+      image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-10',
+      originalId: 'test-10',
+      name: 'Elite Training Pants',
+      price: '549 SEK',
+      currency: 'SEK',
+      category: 'Athletic Wear',
+      image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-11',
+      originalId: 'test-11',
+      name: 'Peak Mode Classic Tee',
+      price: '279 SEK',
+      currency: 'SEK',
+      category: 'Shirts',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=600&fit=crop',
+      isNew: false,
+      source: 'test' as ProductSource
+    },
+    {
+      id: 'test-12',
+      originalId: 'test-12',
+      name: 'Premium Athletic Hoodie',
+      price: '649 SEK',
+      currency: 'SEK',
+      category: 'Hoodies',
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=600&fit=crop',
+      isNew: true,
+      source: 'test' as ProductSource
+    }
+  ];
 
-  // All products now only come from Printful
-  const allProducts = [...printfulUnified];
+  // All products now come from test data
+  const allProducts = [...testProducts];
 
   // Apply category filter
   let filteredProducts = activeCategory 

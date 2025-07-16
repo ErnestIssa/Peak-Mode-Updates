@@ -8,11 +8,17 @@ const Hero = () => {
   const [revealText, setRevealText] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Array of background images reduced to 3
+  // Array of background images - fitness focused
   const backgroundImages = [
+<<<<<<< HEAD
     "https://wallpaperaccess.com/full/1244717.jpg",
     "https://www.brickbodies.com/wp-content/uploads/2020/10/Runner-1.jpg",
     "https://wallpaperaccess.com/full/5738912.jpg"
+=======
+    "https://wallpapercave.com/wp/wp12031320.jpg",
+    "https://t3.ftcdn.net/jpg/01/19/59/74/360_F_119597487_SnvLBdheEGOxu05rMQ5tCzo250cRrTz9.jpg",
+    "https://miro.medium.com/v2/resize:fit:1400/0*ZhonbGa006Yiq4M_"
+>>>>>>> 4074183
   ];
   
   useEffect(() => {
@@ -55,7 +61,13 @@ const Hero = () => {
             )}
             style={{
               background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${image})`,
+<<<<<<< HEAD
               backgroundSize: 'cover',
+=======
+              backgroundSize: 'cover', // Use 'cover' for all images to fill screen entirely
+              backgroundPosition: index === 2 ? 'center center' : 'center', // Ensure third image is centered
+              backgroundRepeat: 'no-repeat',
+>>>>>>> 4074183
               filter: 'grayscale(100%)'
             }}
           />

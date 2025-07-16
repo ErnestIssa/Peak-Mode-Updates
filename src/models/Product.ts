@@ -1,5 +1,5 @@
 
-export type ProductSource = 'printful' | 'cjdropshipping';
+export type ProductSource = 'printful' | 'cjdropshipping' | 'test';
 
 export interface UnifiedProduct {
   id: string | number;

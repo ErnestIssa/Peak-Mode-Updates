@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
-import { ArrowRight, Award, Clock, Package } from 'lucide-react';
+import { ArrowRight, Award, Clock, Package, Shield, Leaf, MessageCircle, RotateCcw, Truck, CreditCard, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -17,6 +17,49 @@ const AboutStore = () => {
     triggerOnce: true,
     threshold: 0.3,
   });
+
+  const infoBlocks = [
+    {
+      icon: <Truck className="h-8 w-8 text-black" />,
+      title: "Fast Delivery",
+      description: "Get your gear quickly. Orders processed within 24h and delivered across Sweden in 1–3 business days."
+    },
+    {
+      icon: <Award className="h-8 w-8 text-black" />,
+      title: "Premium Quality",
+      description: "Tested by athletes. Built for performance, comfort, and style — from gym to street."
+    },
+    {
+      icon: <Shield className="h-8 w-8 text-black" />,
+      title: "Secure Payments",
+      description: "Shop confidently with secure checkout powered by Stripe. Your data is always protected."
+    },
+    {
+      icon: <Leaf className="h-8 w-8 text-black" />,
+      title: "Sustainable",
+      description: "Consciously made. We aim for eco-friendly materials and mindful packaging."
+    },
+    {
+      icon: <MessageCircle className="h-8 w-8 text-black" />,
+      title: "Responsive Support",
+      description: "Need help? Our team responds within 24 hours. We're always here to assist."
+    },
+    {
+      icon: <RotateCcw className="h-8 w-8 text-black" />,
+      title: "30-Day Return Policy",
+      description: "Not the right fit? Return within 30 days — no stress, no hidden fees."
+    },
+    {
+      icon: <Package className="h-8 w-8 text-black" />,
+      title: "Free Shipping Over 899 kr",
+      description: "Enjoy complimentary shipping on all orders above 899 kr. Quality and convenience, no compromises."
+    },
+    {
+      icon: <Zap className="h-8 w-8 text-black" />,
+      title: "Limited Drops",
+      description: "We produce in small, exclusive batches. Get yours before it's gone."
+    }
+  ];
 
   return (
     <section className="peak-section">
@@ -50,18 +93,40 @@ const AboutStore = () => {
                 About Peak Mode
               </span>
               <h2 className="mt-4 text-3xl md:text-4xl font-bold">
-                Elevate Your Performance
+                Elevate Your Peak Performance
               </h2>
             </div>
             <p className="text-muted-foreground">
-              At Peak Mode, we craft premium fitness apparel that combines cutting-edge 
-              technology with minimalist design. Our products are built to enhance your 
-              performance while ensuring maximum comfort during even the most intense workouts.
+              At Peak Mode, we believe performance isn't about perfection — it's about persistence. Our gear is designed not just to support your workouts, but to reflect the mindset behind them: consistency, focus, and the quiet drive to keep showing up.
             </p>
             <p className="text-muted-foreground">
-              Each piece is meticulously designed with durability and functionality in mind, 
-              using sustainable materials that minimize environmental impact without compromising 
-              on quality.
+              Born from a vision, not a trend, Peak Mode was created for those who train with intention — the ones who chase growth, not attention. We're not here to follow the hype. We're here to build high-quality, performance-driven apparel that feels just as strong as your reason for starting.
+            </p>
+            <p className="text-muted-foreground">
+              Every fabric, every fit, every feature is tested with purpose — built to move with you through discomfort, progress, and everything in between.
+            </p>
+            <div className="space-y-3">
+              <p className="text-muted-foreground font-semibold">What makes us different?</p>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start">
+                  <span className="text-black font-bold mr-2">•</span>
+                  <span>Thoughtful design tailored for both gym and street</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-black font-bold mr-2">•</span>
+                  <span>Premium materials that perform without compromise</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-black font-bold mr-2">•</span>
+                  <span>A mindset-first brand — built for those who train beyond the spotlight</span>
+                </li>
+              </ul>
+            </div>
+            <p className="text-muted-foreground">
+              This is more than just apparel. This is the uniform for your next level.
+            </p>
+            <p className="text-black font-bold text-lg">
+              Welcome to Peak Mode — No Limits. Just Peaks.
             </p>
             <div className="pt-2">
               <Link to="/about">
@@ -78,39 +143,23 @@ const AboutStore = () => {
         <div 
           ref={statsRef}
           className={cn(
-            "grid grid-cols-2 md:grid-cols-3 gap-4 mt-12 transition-all duration-700",
+            "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mt-12 transition-all duration-700",
             statsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Award className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Premium Quality</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Crafted with the finest materials for durability and comfort
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Package className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Sustainable</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Eco-friendly production with recyclable packaging
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-none shadow-sm col-span-2 md:col-span-1">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Clock className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Fast Shipping</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Quick delivery to get you moving in no time
-              </p>
-            </CardContent>
-          </Card>
+          {infoBlocks.map((block, index) => (
+            <Card key={index} className="border-none shadow-sm">
+              <CardContent className="flex flex-col items-center text-center p-3 sm:p-6">
+                <div className="h-6 w-6 sm:h-8 sm:w-8 text-black">
+                  {React.cloneElement(block.icon, { className: "h-6 w-6 sm:h-8 sm:w-8 text-black" })}
+                </div>
+                <h3 className="text-sm sm:text-xl font-bold mt-2 sm:mt-4">{block.title}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
+                  {block.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

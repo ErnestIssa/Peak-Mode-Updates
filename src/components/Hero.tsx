@@ -9,11 +9,11 @@ const Hero = () => {
   const [revealText, setRevealText] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Array of background images reduced to 3
+  // Array of background images - fitness focused
   const backgroundImages = [
-    "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1500",
-    "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1500",
-    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1500"
+    "https://wallpapercave.com/wp/wp12031320.jpg",
+    "https://t3.ftcdn.net/jpg/01/19/59/74/360_F_119597487_SnvLBdheEGOxu05rMQ5tCzo250cRrTz9.jpg",
+    "https://miro.medium.com/v2/resize:fit:1400/0*ZhonbGa006Yiq4M_"
   ];
   
   useEffect(() => {
@@ -53,8 +53,9 @@ const Hero = () => {
             )}
             style={{
               background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundSize: 'cover', // Use 'cover' for all images to fill screen entirely
+              backgroundPosition: index === 2 ? 'center center' : 'center', // Ensure third image is centered
+              backgroundRepeat: 'no-repeat',
               filter: 'grayscale(100%)'
             }}
           />

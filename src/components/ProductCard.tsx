@@ -73,6 +73,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return `/product/${originalId || id}`;
     } else if (source === 'cjdropshipping') {
       return `/cj-product/${originalId || id}`;
+    } else if (source === 'test') {
+      return `/test-product/${originalId || id}`;
     }
     return `/product/${originalId || id}`;
   };
@@ -101,7 +103,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         
         {/* New Tag */}
         {isNew && (
-          <div className="absolute top-2 left-2 bg-black text-white text-xs uppercase tracking-wider py-1 px-2">
+          <div className="absolute top-1 md:top-2 left-1 md:left-2 bg-black text-white text-xs uppercase tracking-wider py-0.5 md:py-1 px-1.5 md:px-2">
             New
           </div>
         )}
@@ -119,11 +121,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </button>
       </Link>
       
-      <div className="p-3 flex flex-col flex-grow">
+      <div className="p-2 md:p-3 flex flex-col flex-grow">
         <span className="text-xs text-foreground/60 uppercase tracking-wider truncate">{category}</span>
-        <h3 className="mt-0.5 font-medium text-sm sm:text-base line-clamp-2">{name}</h3>
-        <div className="mt-auto pt-2 flex justify-between items-center">
-          <span className="font-medium text-sm sm:text-base">{displayPrice}</span>
+        <h3 className="mt-0.5 font-medium text-xs md:text-sm lg:text-base line-clamp-2">{name}</h3>
+        <div className="mt-auto pt-1 md:pt-2 flex justify-between items-center">
+          <span className="font-medium text-xs md:text-sm lg:text-base">{displayPrice}</span>
         </div>
       </div>
     </div>

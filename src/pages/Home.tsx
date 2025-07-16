@@ -5,6 +5,7 @@ import Hero from '../components/Hero';
 import FeaturedProducts from '../components/FeaturedProducts';
 import Newsletter from '../components/Newsletter';
 import AboutStore from '../components/AboutStore';
+import SupportFollowSection from '../components/SupportFollowSection';
 
 const Home = () => {
   return (
@@ -14,6 +15,7 @@ const Home = () => {
         <Hero />
         <FeaturedProducts />
         <AboutStore />
+        <SupportFollowSection />
         <Newsletter />
       </main>
     </div>

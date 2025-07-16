@@ -2,24 +2,41 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Menu, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import SearchModal from './SearchModal';
 
 const Navbar = () => {
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLogoAnimated, setIsLogoAnimated] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   
+  // Determine if we're on a light page (pages with white/light backgrounds)
+  const isLightPage = location.pathname !== '/';
+  const textColor = isLightPage ? 'text-black' : 'text-white';
+  
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 10);
+      
+      // Only show navbar when at the very top of the page
+      if (currentScrollY <= 10) {
+        setIsNavbarVisible(true);
+      } else {
+        setIsNavbarVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
     };
     
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   useEffect(() => {
     // Update cart count whenever localStorage changes
@@ -77,8 +94,9 @@ const Navbar = () => {
   return (
     <header 
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full bg-white/80 backdrop-blur-md text-foreground',
-        isScrolled && 'shadow-md'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
+        textColor,
+        isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
       )}
     >
       <nav className="peak-container flex items-center justify-between h-20">
@@ -86,7 +104,8 @@ const Navbar = () => {
         <Link 
           to="/" 
           className={cn(
-            "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all text-foreground",
+            "flex-shrink-0 font-display font-black text-xl md:text-2xl tracking-tighter transition-all",
+            textColor,
             isLogoAnimated && "animate-letter-spacing"
           )}
           onClick={handleLogoClick}
@@ -100,7 +119,7 @@ const Navbar = () => {
             <Link 
               key={link.name} 
               to={link.href} 
-              className="nav-link hover:opacity-80 transition-colors text-foreground"
+              className={cn("nav-link hover:opacity-80 transition-colors", textColor)}
             >
               {link.name}
             </Link>
@@ -110,7 +129,7 @@ const Navbar = () => {
         {/* Icons */}
         <div className="hidden md:flex items-center space-x-6">
           <button 
-            className="hover:opacity-70 transition-colors text-foreground" 
+            className={cn("hover:opacity-70 transition-colors", textColor)} 
             aria-label="Search"
             onClick={() => setSearchModalOpen(true)}
           >
@@ -118,11 +137,14 @@ const Navbar = () => {
           </button>
           <Link 
             to="/cart"
-            className="hover:opacity-70 transition-colors relative text-foreground" 
+            className={cn("hover:opacity-70 transition-colors relative", textColor)} 
             aria-label="Cart"
           >
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
+            <span className={cn(
+              "absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center",
+              isLightPage ? "bg-black text-white" : "bg-white text-black"
+            )}>
               {cartCount}
             </span>
           </Link>
@@ -132,17 +154,24 @@ const Navbar = () => {
         <div className="md:hidden flex items-center space-x-4">
           <Link 
             to="/cart"
-            className="hover:opacity-70 transition-colors relative text-foreground" 
+            className={cn("hover:opacity-70 transition-colors relative", textColor)} 
             aria-label="Cart"
           >
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black text-white text-xs flex items-center justify-center">
+            <span className={cn(
+              "absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center",
+              isLightPage ? "bg-black text-white" : "bg-white text-black"
+            )}>
               {cartCount}
             </span>
           </Link>
           
           <button 
-            className="p-2 text-foreground hover:bg-gray-100 rounded-full transition-colors" 
+            className={cn(
+              "p-2 rounded-full transition-colors", 
+              textColor,
+              isLightPage ? "hover:bg-black/10" : "hover:bg-white/10"
+            )} 
             aria-label="Toggle menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >

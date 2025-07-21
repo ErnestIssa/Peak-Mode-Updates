@@ -1,11 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
-<<<<<<< HEAD
-import { ArrowRight, Award, Clock, Package, Truck, RefreshCw, Shirt, HelpCircle, MessageCircle, RefreshCcw, Star, Instagram, Facebook, Music } from 'lucide-react';
-=======
-import { ArrowRight, Award, Clock, Package, Shield, Leaf, MessageCircle, RotateCcw, Truck, CreditCard, Zap } from 'lucide-react';
->>>>>>> 4074183
+import { ArrowRight, Award, Clock, Package, Shield, Leaf, MessageCircle, RotateCcw, Truck, CreditCard, Zap, HelpCircle, RefreshCcw, Star, Instagram, Facebook, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -64,87 +60,165 @@ const AboutStore = () => {
     }
   ];
 
+  const athleteImages = [
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  ];
+
   return (
     <section className="peak-section">
       <div className="peak-container">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-          {/* Left side - Image */}
-          <div className="relative h-[400px] md:h-full overflow-hidden rounded-sm">
-            <img 
-              src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" 
-              alt="Peak Mode Store" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div className="absolute bottom-6 left-6 right-6">
-              <p className="text-white text-sm md:text-base font-medium">
-                Crafted with precision for your peak performance
-              </p>
-            </div>
-          </div>
+        {/* Hero About Section */}
+        <div className="mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left side - Content */}
+            <div 
+              ref={textRef}
+              className={cn(
+                "space-y-8 transition-all duration-700",
+                textInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              )}
+            >
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                    Peak Mode — Not Just Apparel.
+                    <br />
+                    <span className="text-muted-foreground">A mode You enter.</span>
+                    <br />
+                    <span className="text-muted-foreground">A mindset You Wear.</span>
+                  </h2>
+                </div>
+                
+                <p className="text-xl font-semibold text-black">
+                  You weren't made to blend in. You were made to evolve.
+                </p>
+                
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  At Peak Mode, we don't follow trends — we follow truth. The quiet truth of those who train in silence, grow through discomfort, and show up when no one's watching.
+                </p>
+                
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  We built this brand for the grinders, the early risers, the ones who chase progress like it's personal — because it is.
+                </p>
+              </div>
 
-          {/* Right side - Content */}
-          <div 
-            ref={textRef}
-            className={cn(
-              "space-y-6 transition-all duration-700",
-              textInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-            )}
-          >
-            <div>
-              <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b border-black font-medium">
-                About Peak Mode
-              </span>
-              <h2 className="mt-4 text-3xl md:text-4xl font-bold">
-                Elevate Your Peak Performance
-              </h2>
+              <div className="space-y-6">
+                {/* Athlete Image */}
+                <div className="w-full h-64 overflow-hidden rounded-lg">
+                  <img 
+                    src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                    alt="Athlete in training" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                
+                <div className="bg-black text-white p-6 rounded-lg">
+                  <p className="text-xl font-bold mb-2">This isn't just activewear.</p>
+                  <p className="text-lg">It's a mindset you wear.</p>
+                  <p className="text-base mt-2">A daily reminder that your best isn't behind you — it's the peak ahead.</p>
+                </div>
+                
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Each piece is crafted for more than comfort or performance — it's for the moments between reps, between doubt and discipline. Gear that feels like fuel, not just fabric.
+                </p>
+              </div>
+
+              {/* What sets us apart */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold">What sets Peak Mode apart?</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Card className="border border-gray-200 bg-gradient-to-br from-gray-50 to-white shadow-sm hover:shadow-md transition-all duration-300">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold text-black mb-2">Designed for both the gym and the grind outside it</h4>
+                      <p className="text-sm text-muted-foreground">Versatile performance gear that transitions seamlessly from workout to everyday life.</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="border border-gray-200 bg-gradient-to-br from-gray-50 to-white shadow-sm hover:shadow-md transition-all duration-300">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold text-black mb-2">Rooted in purpose — not perfection</h4>
+                      <p className="text-sm text-muted-foreground">Built for progress, not perfection. Every piece serves a purpose in your journey.</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="border border-gray-200 bg-gradient-to-br from-gray-50 to-white shadow-sm hover:shadow-md transition-all duration-300">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold text-black mb-2">Created by someone who lives this journey, just like you</h4>
+                      <p className="text-sm text-muted-foreground">Authentic gear designed by someone who understands the grind firsthand.</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Whether you're starting out or leveling up, the path is the same: keep showing up.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Because greatness isn't loud — it's consistent. And that's exactly what we built Peak Mode for.
+                </p>
+                <p className="text-xl font-bold text-black">
+                  So don't wait for the perfect moment — create it.
+                </p>
+              </div>
+
+              {/* CTA Section */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold">🔗 Ready to enter the mode?</h3>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/shop">
+                    <Button size="lg" className="group w-full sm:w-auto">
+                      Shop the Collection
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                  <Link to="/about">
+                    <Button variant="outline" size="lg" className="group w-full sm:w-auto">
+                      Learn the Story
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground">
-<<<<<<< HEAD
-              Peak Mode isn't just another fitness brand — it's a declaration of intent. Born from the grind, not the spotlight, we design performance gear that honors consistency, not clout. Our journey began with one goal: to create apparel that mirrors the inner discipline of those who train with purpose. Every stitch is shaped by the belief that your peak isn't a place — it's a mindset you choose, rep after rep.
-            </p>
-            <p className="text-muted-foreground">
-              From our signature performance shorts to everything that follows, every product is built to serve athletes of all levels who move with quiet determination. No gimmicks. No noise. Just quality, functionality, and an identity you can wear. Because when you commit to progress, you enter Peak Mode — and that's when transformation begins.
-=======
-              At Peak Mode, we believe performance isn't about perfection — it's about persistence. Our gear is designed not just to support your workouts, but to reflect the mindset behind them: consistency, focus, and the quiet drive to keep showing up.
-            </p>
-            <p className="text-muted-foreground">
-              Born from a vision, not a trend, Peak Mode was created for those who train with intention — the ones who chase growth, not attention. We're not here to follow the hype. We're here to build high-quality, performance-driven apparel that feels just as strong as your reason for starting.
-            </p>
-            <p className="text-muted-foreground">
-              Every fabric, every fit, every feature is tested with purpose — built to move with you through discomfort, progress, and everything in between.
-            </p>
-            <div className="space-y-3">
-              <p className="text-muted-foreground font-semibold">What makes us different?</p>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start">
-                  <span className="text-black font-bold mr-2">•</span>
-                  <span>Thoughtful design tailored for both gym and street</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black font-bold mr-2">•</span>
-                  <span>Premium materials that perform without compromise</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-black font-bold mr-2">•</span>
-                  <span>A mindset-first brand — built for those who train beyond the spotlight</span>
-                </li>
-              </ul>
-            </div>
-            <p className="text-muted-foreground">
-              This is more than just apparel. This is the uniform for your next level.
-            </p>
-            <p className="text-black font-bold text-lg">
-              Welcome to Peak Mode — No Limits. Just Peaks.
->>>>>>> 4074183
-            </p>
-            <div className="pt-2">
-              <Link to="/about">
-                <Button variant="outline" className="group">
-                  Learn More
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
+
+            {/* Right side - Image Gallery */}
+            <div className="grid grid-cols-2 gap-4 h-[600px] lg:h-[700px]">
+              <div className="space-y-4">
+                <div className="h-1/2 overflow-hidden rounded-lg">
+                  <img 
+                    src={athleteImages[0]} 
+                    alt="Athlete training" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="h-1/2 overflow-hidden rounded-lg">
+                  <img 
+                    src={athleteImages[1]} 
+                    alt="Athlete in gym" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="h-1/2 overflow-hidden rounded-lg">
+                  <img 
+                    src={athleteImages[2]} 
+                    alt="Athlete running" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="h-1/2 overflow-hidden rounded-lg">
+                  <img 
+                    src={athleteImages[3]} 
+                    alt="Athlete lifting" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -157,129 +231,17 @@ const AboutStore = () => {
             statsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
-<<<<<<< HEAD
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Award className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Premium Quality</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Crafted with the finest materials for durability and comfort
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Package className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Sustainable</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Eco-friendly production with recyclable packaging
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Clock className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Fast Shipping</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                We ship within 1–3 working days across all of Sweden — so you can gear up without the wait
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <RefreshCw className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">30-Day Return Policy</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Not satisfied? No problem. Return your item within 30 days — no questions asked.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Truck className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Free Shipping Over 899 kr</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Enjoy free standard shipping on all orders above 899 kr. Delivered fast, straight to your door.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-sm">
-            <CardContent className="flex flex-col items-center text-center p-6">
-              <Shirt className="h-8 w-8 mb-4 text-black" />
-              <h3 className="text-xl font-bold">Easy Size Exchange & Returns</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Wrong size? We've got you. Quick and hassle-free exchanges or returns, guaranteed.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Support and Social Links Section */}
-        <div className="mt-16 border-t pt-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Support Column */}
-            <div>
-              <h3 className="text-2xl font-bold mb-6">Support</h3>
-              <div className="space-y-4">
-                <Link to="/contact" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <MessageCircle className="h-5 w-5" />
-                  <span>Customer Support</span>
-                </Link>
-                <Link to="/faq" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <HelpCircle className="h-5 w-5" />
-                  <span>FAQ</span>
-                </Link>
-                <Link to="/contact" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <RefreshCcw className="h-5 w-5" />
-                  <span>Exchanges & Returns</span>
-                </Link>
-                <Link to="/reviews" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <Star className="h-5 w-5" />
-                  <span>Reviews</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Follow Us Column */}
-            <div>
-              <h3 className="text-2xl font-bold mb-6">Follow Us</h3>
-              <div className="space-y-4">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <Instagram className="h-5 w-5" />
-                  <span>Instagram</span>
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <Facebook className="h-5 w-5" />
-                  <span>Facebook</span>
-                </a>
-                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-black transition-colors">
-                  <Music className="h-5 w-5" />
-                  <span>TikTok</span>
-                </a>
-              </div>
-            </div>
-
-          </div>
-=======
           {infoBlocks.map((block, index) => (
             <Card key={index} className="border-none shadow-sm">
-              <CardContent className="flex flex-col items-center text-center p-3 sm:p-6">
-                <div className="h-6 w-6 sm:h-8 sm:w-8 text-black">
-                  {React.cloneElement(block.icon, { className: "h-6 w-6 sm:h-8 sm:w-8 text-black" })}
-                </div>
-                <h3 className="text-sm sm:text-xl font-bold mt-2 sm:mt-4">{block.title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
+              <CardContent className="flex flex-col items-center text-center p-6">
+                {block.icon}
+                <h3 className="text-xl font-bold mt-4">{block.title}</h3>
+                <p className="text-sm text-muted-foreground mt-2">
                   {block.description}
                 </p>
               </CardContent>
             </Card>
           ))}
->>>>>>> 4074183
         </div>
       </div>
     </section>

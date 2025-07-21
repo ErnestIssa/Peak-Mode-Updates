@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Search as SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import { usePrintfulProducts } from '@/hooks/usePrintfulProducts';
+
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -12,8 +12,41 @@ interface SearchModalProps {
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: printfulProducts, isLoading } = usePrintfulProducts();
   const navigate = useNavigate();
+
+  // Test products for search
+  const testProducts = [
+    {
+      id: 'test-1',
+      name: 'Peak Mode Performance Hoodie',
+      price: '599 SEK',
+      currency: 'SEK',
+      category: 'Hoodies',
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=600&fit=crop',
+      source: 'test'
+    },
+    {
+      id: 'test-2',
+      name: 'Elite Training T-Shirt',
+      price: '299 SEK',
+      currency: 'SEK',
+      category: 'Shirts',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=600&fit=crop',
+      source: 'test'
+    },
+    {
+      id: 'test-3',
+      name: 'Athletic Performance Shorts',
+      price: '399 SEK',
+      currency: 'SEK',
+      category: 'Athletic Wear',
+      image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=600&fit=crop',
+      source: 'test'
+    }
+  ];
+
+  const printfulProducts = testProducts;
+  const isLoading = false;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -41,6 +74,15 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    console.log('SearchModal overlay clicked!', e.target === e.currentTarget);
+    console.log('Click position:', e.clientX, e.clientY);
+    if (e.target === e.currentTarget) {
+      console.log('Closing SearchModal...');
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   // Filter products based on search term
@@ -58,9 +100,22 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center">
+    <div 
+      className="fixed top-0 left-0 w-full h-full z-[80] bg-black/50 backdrop-blur-sm flex justify-center"
+              style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 80,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(4px)'
+        }}
+      onClick={handleOverlayClick}
+    >
       <div 
-        className="w-full max-w-4xl bg-white shadow-xl flex flex-col h-[80vh] mt-20"
+        className="w-full max-w-4xl bg-white shadow-xl flex flex-col h-[80vh] mt-20 relative z-[90]"
         onClick={e => e.stopPropagation()}
       >
         {/* Search Input */}
@@ -106,7 +161,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 >
                   <div className="aspect-square overflow-hidden bg-secondary/50">
                     <img 
-                      src={result.thumbnail_url} 
+                      src={result.image} 
                       alt={result.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -168,7 +223,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                   >
                     <div className="aspect-square overflow-hidden bg-secondary/50">
                       <img 
-                        src={product.thumbnail_url} 
+                        src={product.image} 
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

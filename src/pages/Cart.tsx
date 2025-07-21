@@ -148,7 +148,7 @@ const Cart = () => {
                       />
                       {item.source && (
                         <div className="absolute top-0 right-0 bg-white/80 text-black text-xs p-1">
-                          {item.source === 'cjdropshipping' ? 'CJ' : 'Printful'}
+                          {item.source === 'cjdropshipping' ? 'CJ' : 'Test'}
                         </div>
                       )}
                     </Link>

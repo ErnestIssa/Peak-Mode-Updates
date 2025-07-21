@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReviewForm from '../components/ReviewForm';
 
@@ -25,8 +25,32 @@ interface ReviewData {
 
 const Reviews = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+  const [showProductFilter, setShowProductFilter] = useState(false);
+
+  // Product categories for filtering
+  const productCategories = [
+    { id: 'all', name: 'All Products', collection: 'All Collections' },
+    { id: 'mens-collection', name: "Men's Collection", collection: 'Men' },
+    { id: 'womens-collection', name: "Women's Collection", collection: 'Women' },
+    { id: 'accessories-collection', name: 'Accessories Collection', collection: 'Accessories' },
+    { id: 'performance-shorts', name: 'Performance Shorts', collection: 'Men' },
+    { id: 'training-tanks', name: 'Training Tanks', collection: 'Women' },
+    { id: 'athletic-hoodies', name: 'Athletic Hoodies', collection: 'All' },
+    { id: 'compression-shirts', name: 'Compression Shirts', collection: 'Men' }
+  ];
+
+  // Check if we should automatically open the review form
+  useEffect(() => {
+    const shouldOpenReviewForm = searchParams.get('write-review');
+    if (shouldOpenReviewForm === 'true') {
+      setIsReviewFormOpen(true);
+      // Remove the parameter from URL to prevent reopening on refresh
+      navigate('/reviews', { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   // Dummy reviews data
   const reviews: Review[] = [
@@ -90,9 +114,14 @@ const Reviews = () => {
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < rating ? "text-yellow-400" : "text-gray-300"}>
-        ⭐
-      </span>
+      <svg
+        key={i}
+        className={`w-4 h-4 ${i < rating ? "text-amber-400 fill-current" : "text-gray-300"}`}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
     ));
   };
 
@@ -139,7 +168,7 @@ const Reviews = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto text-center">
               <div className="flex justify-center items-center mb-4">
-                <div className="text-3xl mr-4">
+                <div className="flex space-x-1 mr-4">
                   {renderStars(Math.floor(averageRating))}
                 </div>
                 <div className="text-left">
@@ -172,12 +201,12 @@ const Reviews = () => {
                       key={review.id}
                       className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100"
                     >
-                      <div className="flex items-center mb-4">
-                        <div className="text-xl mr-3">
+                      <div className="flex items-center mb-3">
+                        <div className="flex space-x-1 mr-3">
                           {renderStars(review.rating)}
                         </div>
                       </div>
-                      <p className="text-gray-700 text-lg mb-4 italic">
+                      <p className="text-gray-700 text-sm mb-4 italic leading-relaxed">
                         "{review.feedback}"
                       </p>
                       <div className="flex items-center justify-between">
@@ -209,11 +238,11 @@ const Reviews = () => {
               </h2>
               
               {/* Filter Options */}
-              <div className="flex justify-center mb-8">
-                <div className="flex space-x-4 bg-gray-100 p-2 rounded-lg">
+              <div className="flex flex-col items-center mb-8">
+                <div className="flex space-x-4 bg-gray-100 p-2 rounded-lg mb-4">
                   <button
                     onClick={() => setSelectedFilter('all')}
-                    className={`px-4 py-2 rounded-md transition-colors ${
+                    className={`px-4 py-2 rounded-md transition-colors font-medium ${
                       selectedFilter === 'all' 
                         ? 'bg-white text-black shadow-sm' 
                         : 'text-gray-600 hover:text-black'
@@ -222,16 +251,55 @@ const Reviews = () => {
                     All Products
                   </button>
                   <button
-                    onClick={() => setSelectedFilter('shorts')}
-                    className={`px-4 py-2 rounded-md transition-colors ${
-                      selectedFilter === 'shorts' 
+                    onClick={() => setShowProductFilter(!showProductFilter)}
+                    className={`px-4 py-2 rounded-md transition-colors font-medium flex items-center space-x-2 ${
+                      showProductFilter 
                         ? 'bg-white text-black shadow-sm' 
                         : 'text-gray-600 hover:text-black'
                     }`}
                   >
-                    Performance Shorts
+                    <span>Reviews by Product</span>
+                    <svg 
+                      className={`w-4 h-4 transition-transform ${showProductFilter ? 'rotate-180' : ''}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </button>
                 </div>
+                
+                {/* Product Filter Dropdown */}
+                {showProductFilter && (
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-full max-w-md animate-in slide-in-from-top-2 duration-200">
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                      <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                      </svg>
+                      Select Product Category
+                    </h3>
+                    <div className="space-y-1 max-h-60 overflow-y-auto">
+                      {productCategories.map((category) => (
+                        <button
+                          key={category.id}
+                          onClick={() => {
+                            setSelectedFilter(category.id);
+                            setShowProductFilter(false);
+                          }}
+                          className={`w-full text-left px-3 py-2.5 rounded-md transition-all duration-200 ${
+                            selectedFilter === category.id
+                              ? 'bg-primary text-white shadow-sm'
+                              : 'text-gray-700 hover:bg-gray-50 hover:shadow-sm'
+                          }`}
+                        >
+                          <div className="font-medium text-sm">{category.name}</div>
+                          <div className="text-xs opacity-75">{category.collection}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Reviews Grid */}
@@ -243,14 +311,14 @@ const Reviews = () => {
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center">
-                        <div className="text-lg mr-3">
+                        <div className="flex space-x-1 mr-3">
                           {renderStars(review.rating)}
                         </div>
                       </div>
                     </div>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-gray-700 mb-4 text-sm leading-relaxed">
                       {review.feedback}
                     </p>
                     <div className="flex items-center justify-between">

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProductSource } from '@/models/Product';
@@ -15,6 +15,7 @@ interface ProductCardProps {
   isNew?: boolean;
   source?: ProductSource;
   originalId?: string | number;
+  onWishlistClick?: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -27,9 +28,59 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isNew = false,
   source = 'printful',
   originalId,
+  onWishlistClick,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Check if product is already in wishlist on component mount
+  useEffect(() => {
+    const wishlist = localStorage.getItem('wishlist');
+    if (wishlist) {
+      const wishlistItems = JSON.parse(wishlist);
+      const existingItem = wishlistItems.find((item: any) => item.id === (originalId || id));
+      setIsWishlisted(!!existingItem);
+    }
+  }, [id, originalId]);
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const wishlist = localStorage.getItem('wishlist');
+    let wishlistItems = wishlist ? JSON.parse(wishlist) : [];
+    
+    const existingItem = wishlistItems.find((item: any) => item.id === (originalId || id));
+    
+    if (existingItem) {
+      // Remove from wishlist
+      wishlistItems = wishlistItems.filter((item: any) => item.id !== (originalId || id));
+      setIsWishlisted(false);
+      toast.success("Removed from wishlist");
+    } else {
+      // Add to wishlist
+      wishlistItems.push({
+        id: originalId || id,
+        name: name,
+        price: price,
+        image: image,
+        currency: currency,
+        category: category,
+        source: source
+      });
+      setIsWishlisted(true);
+      toast.success("Added to wishlist");
+    }
+    
+    localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+    
+    // Dispatch custom event to update wishlist count
+    window.dispatchEvent(new CustomEvent('wishlistUpdated'));
+    
+    // Call the parent's onWishlistClick if provided
+    onWishlistClick?.();
+  };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation to product detail page
@@ -68,12 +119,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getProductDetailPath = () => {
-    if (source === 'printful') {
-      return `/product/${originalId || id}`;
-    } else if (source === 'cjdropshipping') {
+    if (source === 'cjdropshipping') {
       return `/cj-product/${originalId || id}`;
     } else if (source === 'test') {
-      return `/test-product/${originalId || id}`;
+      return `/product/${originalId || id}`;
     }
     return `/product/${originalId || id}`;
   };
@@ -107,6 +156,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
         
+        {/* Wishlist Button */}
+        <button
+          onClick={handleWishlistToggle}
+          className={cn(
+            "absolute top-1 md:top-2 right-1 md:right-2 rounded-full p-1.5 md:p-2 shadow-md transition-colors z-10",
+            isWishlisted 
+              ? "bg-red-500 hover:bg-red-600" 
+              : "bg-white hover:bg-gray-100"
+          )}
+        >
+          <Heart 
+            className={cn(
+              "w-3 h-3 md:w-4 md:h-4 transition-colors",
+              isWishlisted ? "text-white fill-white" : "text-gray-600"
+            )} 
+          />
+        </button>
+        
         {/* Quick Add */}
         <button 
           onClick={handleQuickAdd}
@@ -120,11 +187,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </button>
       </Link>
       
-<<<<<<< HEAD
-      <div className="p-2 sm:p-3 flex flex-col flex-grow">
-=======
       <div className="p-2 md:p-3 flex flex-col flex-grow">
->>>>>>> 4074183
         <span className="text-xs text-foreground/60 uppercase tracking-wider truncate">{category}</span>
         <h3 className="mt-0.5 font-medium text-xs md:text-sm lg:text-base line-clamp-2">{name}</h3>
         <div className="mt-auto pt-1 md:pt-2 flex justify-between items-center">

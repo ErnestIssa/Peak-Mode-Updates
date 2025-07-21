@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, Search } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
 import SearchModal from './SearchModal';
+import WishlistModal from './WishlistModal';
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,7 +14,9 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLogoAnimated, setIsLogoAnimated] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [wishlistModalOpen, setWishlistModalOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   
   // Determine if we're on a light page (pages with white/light backgrounds)
   const isLightPage = location.pathname !== '/';
@@ -50,18 +54,38 @@ const Navbar = () => {
       }
     };
     
-    // Call immediately to set initial value
+    // Update wishlist count whenever localStorage changes
+    const updateWishlistCount = () => {
+      const wishlist = localStorage.getItem('wishlist');
+      if (wishlist) {
+        const wishlistItems = JSON.parse(wishlist);
+        setWishlistCount(wishlistItems.length);
+      } else {
+        setWishlistCount(0);
+      }
+    };
+    
+    // Call immediately to set initial values
     updateCartCount();
+    updateWishlistCount();
     
     // Listen for changes to localStorage
-    window.addEventListener('storage', updateCartCount);
+    window.addEventListener('storage', () => {
+      updateCartCount();
+      updateWishlistCount();
+    });
     
     // Custom event for cart updates that happen in the same window
     window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('wishlistUpdated', updateWishlistCount);
     
     return () => {
-      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('storage', () => {
+        updateCartCount();
+        updateWishlistCount();
+      });
       window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('wishlistUpdated', updateWishlistCount);
     };
   }, []);
 
@@ -85,9 +109,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Men', href: '/shop' },
-    { name: 'Women', href: '/shop' },
-    { name: 'Accessories', href: '/shop' }
+    { name: 'Men', href: '/mens-collection' },
+    { name: 'Women', href: '/womens-collection' },
+    { name: 'Accessories', href: '/accessories-collection' }
   ];
 
   return (
@@ -134,6 +158,21 @@ const Navbar = () => {
           >
             <Search className="h-5 w-5" />
           </button>
+          <button 
+            className={cn("hover:opacity-70 transition-colors relative", textColor)} 
+            aria-label="Wishlist"
+            onClick={() => setWishlistModalOpen(true)}
+          >
+            <Heart className="h-5 w-5" />
+            {wishlistCount > 0 && (
+              <span className={cn(
+                "absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center",
+                isLightPage ? "bg-black text-white" : "bg-white text-black"
+              )}>
+                {wishlistCount}
+              </span>
+            )}
+          </button>
           <Link 
             to="/cart"
             className={cn("hover:opacity-70 transition-colors relative", textColor)} 
@@ -151,6 +190,21 @@ const Navbar = () => {
         
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center space-x-4">
+          <button 
+            className={cn("hover:opacity-70 transition-colors relative", textColor)} 
+            aria-label="Wishlist"
+            onClick={() => setWishlistModalOpen(true)}
+          >
+            <Heart className="h-5 w-5" />
+            {wishlistCount > 0 && (
+              <span className={cn(
+                "absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center",
+                isLightPage ? "bg-black text-white" : "bg-white text-black"
+              )}>
+                {wishlistCount}
+              </span>
+            )}
+          </button>
           <Link 
             to="/cart"
             className={cn("hover:opacity-70 transition-colors relative", textColor)} 
@@ -182,16 +236,31 @@ const Navbar = () => {
       {/* Mobile Menu Overlay */}
       <div 
         className={cn(
-          'fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden',
+          'fixed top-0 left-0 w-full h-full bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-300 md:hidden',
           mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
-        onClick={() => setMobileMenuOpen(false)}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 60,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(4px)'
+        }}
+        onClick={(e) => {
+          console.log('Mobile menu overlay clicked!');
+          console.log('Click position:', e.clientX, e.clientY);
+          console.log('Closing mobile menu...');
+          setMobileMenuOpen(false);
+        }}
       />
       
       {/* Mobile Menu Dropdown */}
       <div 
         className={cn(
-          'absolute top-20 left-0 right-0 bg-white shadow-lg z-40 transition-all duration-300 md:hidden overflow-hidden',
+          'absolute top-20 left-0 right-0 bg-white shadow-lg z-[70] transition-all duration-300 md:hidden overflow-hidden',
           mobileMenuOpen ? 'max-h-[70vh] opacity-100' : 'max-h-0 opacity-0'
         )}
       >
@@ -240,11 +309,71 @@ const Navbar = () => {
               <span>Search</span>
             </div>
           </button>
+          
+          <button 
+            className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
+            onClick={() => {
+              setWishlistModalOpen(true);
+              setMobileMenuOpen(false);
+            }}
+            style={{ 
+              animationDelay: `${(navLinks.length + 1) * 50}ms`,
+              animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Heart className="h-4 w-4" />
+              <span>Wishlist {wishlistCount > 0 && `(${wishlistCount})`}</span>
+            </div>
+          </button>
         </div>
       </div>
       
       {/* Search Modal */}
       <SearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
+      
+      {/* Wishlist Modal */}
+      <WishlistModal
+        isOpen={wishlistModalOpen}
+        onClose={() => setWishlistModalOpen(false)}
+        onAddToCart={(item) => {
+          // Add to cart logic
+          const cartItem = {
+            id: item.id,
+            name: item.name,
+            price: parseFloat(item.price.replace(/[^0-9.]/g, '')),
+            image: item.image,
+            size: item.size || null,
+            color: item.color || null,
+            quantity: 1,
+            currency: item.currency,
+            source: 'test'
+          };
+          
+          const existingCart = localStorage.getItem('cart');
+          let cartItems = existingCart ? JSON.parse(existingCart) : [];
+          
+          const existingItemIndex = cartItems.findIndex((cartItem: any) => 
+            cartItem.id === item.id && 
+            cartItem.size === item.size && 
+            cartItem.color === item.color &&
+            cartItem.source === 'test'
+          );
+          
+          if (existingItemIndex >= 0) {
+            cartItems[existingItemIndex].quantity += 1;
+          } else {
+            cartItems.push(cartItem);
+          }
+          
+          localStorage.setItem('cart', JSON.stringify(cartItems));
+          
+          // Dispatch custom event to update cart count
+          window.dispatchEvent(new CustomEvent('cartUpdated'));
+          
+          toast.success("Added to cart successfully!");
+        }}
+      />
     </header>
   );
 };

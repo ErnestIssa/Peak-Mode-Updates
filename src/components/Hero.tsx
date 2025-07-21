@@ -10,15 +10,9 @@ const Hero = () => {
   
   // Array of background images - fitness focused
   const backgroundImages = [
-<<<<<<< HEAD
-    "https://wallpaperaccess.com/full/1244717.jpg",
-    "https://www.brickbodies.com/wp-content/uploads/2020/10/Runner-1.jpg",
-    "https://wallpaperaccess.com/full/5738912.jpg"
-=======
     "https://wallpapercave.com/wp/wp12031320.jpg",
     "https://t3.ftcdn.net/jpg/01/19/59/74/360_F_119597487_SnvLBdheEGOxu05rMQ5tCzo250cRrTz9.jpg",
     "https://miro.medium.com/v2/resize:fit:1400/0*ZhonbGa006Yiq4M_"
->>>>>>> 4074183
   ];
   
   useEffect(() => {
@@ -44,7 +38,7 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
       {/* Background Images */}
-      <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
         {backgroundImages.map((image, index) => (
           <div 
             key={index}
@@ -54,20 +48,13 @@ const Hero = () => {
                 ? "opacity-100 translate-x-0" 
                 : index < currentImageIndex 
                   ? "opacity-0 -translate-x-full" 
-                  : "opacity-0 translate-x-full",
-              index === 0 ? 'bg-center' : '',
-              index === 1 ? 'bg-center md:bg-bottom' : '',
-              index === 2 ? 'bg-[90%_center] md:bg-center' : ''
+                  : "opacity-0 translate-x-full"
             )}
             style={{
               background: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${image})`,
-<<<<<<< HEAD
-              backgroundSize: 'cover',
-=======
               backgroundSize: 'cover', // Use 'cover' for all images to fill screen entirely
               backgroundPosition: index === 2 ? 'center center' : 'center', // Ensure third image is centered
               backgroundRepeat: 'no-repeat',
->>>>>>> 4074183
               filter: 'grayscale(100%)'
             }}
           />
@@ -110,12 +97,12 @@ const Hero = () => {
               <span>Shop Now</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-            <Link 
-              to="/about" 
+            <a 
+              href="#about" 
               className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
             >
               About Us
-            </Link>
+            </a>
           </div>
         </div>
       </div>

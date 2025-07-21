@@ -263,6 +263,7 @@ const AboutStore = () => {
                 </a>
               </div>
             </div>
+
           </div>
 =======
           {infoBlocks.map((block, index) => (

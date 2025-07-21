@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { trackFormData, clearFormData } from '@/lib/userInteractions';
 
 interface ReviewFormProps {
   isOpen: boolean;
@@ -63,6 +64,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
     handleClose();
   };
 
+  // Track form data changes
+  const handleFormDataChange = (field: string, value: string | number) => {
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+    
+    // Track form data for reload navigation
+    trackFormData({ email, ...newFormData });
+  };
+
   const handleClose = () => {
     setStep('email');
     setEmail('');
@@ -74,6 +84,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
       feedback: '',
       product: 'Performance Shorts'
     });
+    
+    // Clear form data tracking
+    clearFormData();
     onClose();
   };
 
@@ -82,7 +95,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
       <button
         key={i}
         type="button"
-        onClick={() => interactive && setFormData(prev => ({ ...prev, rating: i + 1 }))}
+        onClick={() => interactive && handleFormDataChange('rating', i + 1)}
         className={`text-2xl ${interactive ? 'cursor-pointer' : 'cursor-default'} ${
           i < rating ? 'text-yellow-400' : 'text-gray-300'
         }`}
@@ -95,9 +108,21 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
 
   if (!isOpen) return null;
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleOverlayClick}
+    >
+      <div 
+        className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-black">
@@ -140,7 +165,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      // Track email for form data
+                      trackFormData({ email: e.target.value, ...formData });
+                    }}
                     placeholder="Enter the email used for your purchase"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300"
                     required
@@ -171,7 +200,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => handleFormDataChange('name', e.target.value)}
                     placeholder="First name only"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300"
                     required
@@ -185,7 +214,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   <input
                     type="text"
                     value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    onChange={(e) => handleFormDataChange('location', e.target.value)}
                     placeholder="e.g., Stockholm, Malmö"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300"
                     required
@@ -198,7 +227,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   </label>
                   <select
                     value={formData.product}
-                    onChange={(e) => setFormData(prev => ({ ...prev, product: e.target.value }))}
+                    onChange={(e) => handleFormDataChange('product', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300"
                     required
                   >
@@ -224,7 +253,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   </label>
                   <textarea
                     value={formData.feedback}
-                    onChange={(e) => setFormData(prev => ({ ...prev, feedback: e.target.value }))}
+                    onChange={(e) => handleFormDataChange('feedback', e.target.value)}
                     placeholder="Share your experience with Peak Mode gear..."
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300 resize-none"

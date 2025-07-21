@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { Mail, MapPin, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { sendContactMessage, sendContactConfirmationEmail } from "@/lib/vornifyDB";
+import { trackFormData, clearFormData } from "@/lib/userInteractions";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -25,7 +26,11 @@ const Contact = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const newFormData = { ...formData, [name]: value };
+    setFormData(newFormData);
+    
+    // Track form data for reload navigation
+    trackFormData(newFormData);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,6 +75,9 @@ const Contact = () => {
           subject: '',
           message: ''
         });
+        
+        // Clear form data tracking
+        clearFormData();
         
         // Reset success state after 3 seconds
         setTimeout(() => {

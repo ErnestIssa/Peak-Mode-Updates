@@ -30,18 +30,37 @@ const SupportPopup: React.FC<SupportPopupProps> = ({ isVisible, onClose, onOpen 
     }
   ];
 
-  // Check if user has scrolled to the Stay Updated section
+  // Check if user has scrolled to a dark background section
   useEffect(() => {
     const checkScrollPosition = () => {
-      const stayUpdatedSection = document.getElementById('contact');
-      if (stayUpdatedSection) {
-        const rect = stayUpdatedSection.getBoundingClientRect();
+      // Check for contact section (Stay Updated)
+      const contactSection = document.getElementById('contact');
+      // Check for black CTA sections in collection pages
+      const ctaSections = document.querySelectorAll('section.bg-black');
+      
+      let isOverDarkBackground = false;
+      
+      // Check contact section
+      if (contactSection) {
+        const rect = contactSection.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        
-        // Check if the section is visible in the viewport
         const isVisible = rect.top < windowHeight && rect.bottom > 0;
-        setIsOverDarkBackground(isVisible);
+        if (isVisible) {
+          isOverDarkBackground = true;
+        }
       }
+      
+      // Check CTA sections
+      ctaSections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const isVisible = rect.top < windowHeight && rect.bottom > 0;
+        if (isVisible) {
+          isOverDarkBackground = true;
+        }
+      });
+      
+      setIsOverDarkBackground(isOverDarkBackground);
     };
 
     // Check on scroll

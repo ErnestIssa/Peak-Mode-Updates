@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { trackRecentlyViewed } from '@/lib/userInteractions';
-import WishlistModal from '@/components/WishlistModal';
+
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -268,10 +268,10 @@ const ProductDetail = () => {
     toast.success("Added to cart successfully!");
   };
 
-  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+
 
   const handleWishlist = () => {
-    setIsWishlistOpen(true);
+    window.dispatchEvent(new CustomEvent('openWishlist'));
   };
 
   const nextImage = () => {
@@ -779,43 +779,6 @@ const ProductDetail = () => {
       </div>
 
       <Newsletter />
-
-      {/* Wishlist Modal */}
-      <WishlistModal
-        isOpen={isWishlistOpen}
-        onClose={() => setIsWishlistOpen(false)}
-        onAddToCart={(item) => {
-          // Add to cart logic
-          const cartItem = {
-            id: item.id,
-            name: item.name,
-            price: parseFloat(item.price.replace(/[^0-9.]/g, '')),
-            image: item.image,
-            size: item.size || null,
-            color: item.color || null,
-            quantity: 1,
-            currency: item.currency,
-            source: 'test'
-          };
-          
-          const existingCart = localStorage.getItem('cart');
-          let cartItems = existingCart ? JSON.parse(existingCart) : [];
-          
-          const existingItemIndex = cartItems.findIndex((cartItem: any) => 
-            cartItem.id === item.id && 
-            cartItem.size === item.size && 
-            cartItem.color === item.color
-          );
-          
-          if (existingItemIndex >= 0) {
-            cartItems[existingItemIndex].quantity += 1;
-          } else {
-            cartItems.push(cartItem);
-          }
-          
-          localStorage.setItem('cart', JSON.stringify(cartItems));
-        }}
-      />
     </div>
   );
 };

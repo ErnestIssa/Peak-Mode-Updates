@@ -68,13 +68,7 @@ const Newsletter = () => {
   return (
     <section id="contact" className="peak-section bg-black text-white">
       <div className="peak-container">
-        <div 
-          ref={ref}
-          className={cn(
-            "max-w-3xl mx-auto text-center transition-all duration-700",
-            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          )}
-        >
+        <div className="max-w-3xl mx-auto text-center">
           <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b border-white/30 font-medium">
             Stay Updated
           </span>

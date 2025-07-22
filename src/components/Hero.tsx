@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 const Hero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [revealText, setRevealText] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   // Array of background images - fitness focused
@@ -14,14 +13,6 @@ const Hero = () => {
     "https://t3.ftcdn.net/jpg/01/19/59/74/360_F_119597487_SnvLBdheEGOxu05rMQ5tCzo250cRrTz9.jpg",
     "https://miro.medium.com/v2/resize:fit:1400/0*ZhonbGa006Yiq4M_"
   ];
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRevealText(true);
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, []);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,26 +61,17 @@ const Hero = () => {
       {/* Content */}
       <div className="peak-container relative z-10 mt-20 md:mt-0 flex flex-col items-center md:items-start text-white justify-center min-h-screen">
         <div className="max-w-3xl">
-          <div className={cn(
-            "overflow-hidden transition-all duration-500 delay-300",
-            revealText ? "opacity-100" : "opacity-0"
-          )}>
-            <span className="inline-block text-sm md:text-base uppercase tracking-wider pb-4 border-b border-white/30 animate-fade-in">
+          <div className="overflow-hidden">
+            <span className="inline-block text-sm md:text-base uppercase tracking-wider pb-4 border-b border-white/30">
               Premium Performance Apparel
             </span>
           </div>
           
-          <h1 className={cn(
-            "mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter transition-all duration-700 delay-500",
-            revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          )}>
+          <h1 className="mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter">
             NO LIMITS.<br />JUST PEAKS.
           </h1>
           
-          <div className={cn(
-            "mt-10 flex space-x-4 transition-all duration-700 delay-900",
-            revealText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          )}>
+          <div className="mt-10 flex space-x-4">
             <Link 
               to="/shop" 
               className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
@@ -97,12 +79,12 @@ const Hero = () => {
               <span>Shop Now</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-            <a 
-              href="#about" 
+            <Link 
+              to="/about" 
               className="border border-white px-5 py-2 font-medium tracking-wide hover:bg-white/10 transition-all duration-300"
             >
               About Us
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { trackFormData, clearFormData } from '@/lib/userInteractions';
 
 interface ReviewFormProps {
@@ -14,6 +14,7 @@ interface ReviewData {
   rating: number;
   feedback: string;
   product: string;
+  images: File[];
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) => {
@@ -24,10 +25,49 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
   const [formData, setFormData] = useState({
     name: '',
     location: '',
-    rating: 5,
+    rating: 0,
     feedback: '',
-    product: 'Performance Shorts'
+    product: '',
+    images: [] as File[]
   });
+  const [imagePreview, setImagePreview] = useState<string[]>([]);
+
+  // Prevent background scrolling when form is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isOpen]);
+
+  // Load saved form data on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('reviewFormData');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        setFormData(prev => ({ ...prev, ...parsed }));
+        if (parsed.email) {
+          setEmail(parsed.email);
+          setIsVerified(true);
+          setStep('form');
+        }
+      } catch (error) {
+        console.error('Error loading saved form data:', error);
+      }
+    }
+  }, []);
 
   const handleEmailVerification = async () => {
     if (!email) return;
@@ -40,6 +80,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
       if (email.includes('@')) {
         setIsVerified(true);
         setStep('form');
+        saveFormData({ email, ...formData });
       } else {
         alert('Please enter a valid email address.');
       }
@@ -50,8 +91,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.location || !formData.feedback) {
-      alert('Please fill in all required fields.');
+    if (!formData.name || !formData.location || !formData.feedback || !formData.product || formData.rating === 0) {
+      alert('Please fill in all required fields and select a rating.');
       return;
     }
 
@@ -64,13 +105,56 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
     handleClose();
   };
 
+  // Save form data to localStorage
+  const saveFormData = (data: any) => {
+    const dataToSave = { ...data };
+    // Don't save File objects to localStorage
+    delete dataToSave.images;
+    localStorage.setItem('reviewFormData', JSON.stringify(dataToSave));
+  };
+
   // Track form data changes
   const handleFormDataChange = (field: string, value: string | number) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     
+    // Save to localStorage
+    saveFormData({ email, ...newFormData });
+    
     // Track form data for reload navigation
     trackFormData({ email, ...newFormData });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length > 5) {
+      alert('You can upload a maximum of 5 images.');
+      return;
+    }
+
+    const newFormData = { ...formData, images: [...formData.images, ...imageFiles] };
+    setFormData(newFormData);
+    saveFormData({ email, ...newFormData });
+
+    // Create preview URLs
+    imageFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(prev => [...prev, e.target?.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    const newPreviews = imagePreview.filter((_, i) => i !== index);
+    
+    setFormData({ ...formData, images: newImages });
+    setImagePreview(newPreviews);
+    saveFormData({ email, ...formData, images: newImages });
   };
 
   const handleClose = () => {
@@ -80,10 +164,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
     setFormData({
       name: '',
       location: '',
-      rating: 5,
+      rating: 0,
       feedback: '',
-      product: 'Performance Shorts'
+      product: '',
+      images: []
     });
+    setImagePreview([]);
     
     // Clear form data tracking
     clearFormData();
@@ -96,12 +182,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
         key={i}
         type="button"
         onClick={() => interactive && handleFormDataChange('rating', i + 1)}
-        className={`text-2xl ${interactive ? 'cursor-pointer' : 'cursor-default'} ${
+        className={`text-lg ${interactive ? 'cursor-pointer hover:text-yellow-400' : 'cursor-default'} ${
           i < rating ? 'text-yellow-400' : 'text-gray-300'
         }`}
         disabled={!interactive}
       >
-        ⭐
+        ★
       </button>
     ));
   };
@@ -225,14 +311,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Product *
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={formData.product}
                     onChange={(e) => handleFormDataChange('product', e.target.value)}
+                    placeholder="Enter the product you purchased"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300"
                     required
-                  >
-                    <option value="Performance Shorts">Performance Shorts</option>
-                  </select>
+                  />
                 </div>
 
                 <div>
@@ -242,8 +328,48 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, onSubmit }) =>
                   <div className="flex items-center space-x-2">
                     {renderStars(formData.rating, true)}
                     <span className="text-sm text-gray-600 ml-2">
-                      {formData.rating}/5
+                      {formData.rating > 0 ? `${formData.rating}/5` : 'Select rating'}
                     </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product Images (Optional)
+                  </label>
+                  <div className="space-y-3">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-300"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Upload up to 5 images of your product (JPG, PNG, GIF)
+                    </p>
+                    
+                    {/* Image Previews */}
+                    {imagePreview.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2">
+                        {imagePreview.map((preview, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-20 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

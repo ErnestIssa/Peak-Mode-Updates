@@ -172,21 +172,9 @@ const FeaturedProducts = () => {
         </div>
         
         {/* Desktop/Tablet Grid Layout */}
-        <div 
-          ref={desktopRef}
-          className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
-        >
+        <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {displayProducts.map((product, index) => (
-            <div 
-              key={product.id}
-              className={cn(
-                "transition-all duration-700",
-                desktopInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              )}
-              style={{ 
-                transitionDelay: desktopInView ? `${index * 100 + 300}ms` : '0ms'
-              }}
-            >
+            <div key={product.id}>
               <ProductCard {...product} />
             </div>
           ))}
@@ -194,21 +182,12 @@ const FeaturedProducts = () => {
 
         {/* Mobile Horizontal Scroll Layout */}
         <div className="md:hidden">
-          <div ref={mobileRef} className="space-y-4">
+          <div className="space-y-4">
             {/* First Row - First 6 products */}
             <div className="overflow-x-auto scrollbar-hide">
               <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
                 {displayProducts.slice(0, 6).map((product, index) => (
-                  <div 
-                    key={product.id}
-                    className={cn(
-                      "w-32 flex-shrink-0 transition-all duration-700",
-                      mobileInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                    )}
-                    style={{ 
-                      transitionDelay: mobileInView ? `${index * 100 + 300}ms` : '0ms'
-                    }}
-                  >
+                  <div key={product.id} className="w-32 flex-shrink-0">
                     <ProductCard {...product} />
                   </div>
                 ))}
@@ -219,16 +198,7 @@ const FeaturedProducts = () => {
             <div className="overflow-x-auto scrollbar-hide">
               <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
                 {displayProducts.slice(6, 12).map((product, index) => (
-                  <div 
-                    key={product.id}
-                    className={cn(
-                      "w-32 flex-shrink-0 transition-all duration-700",
-                      mobileInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                    )}
-                    style={{ 
-                      transitionDelay: mobileInView ? `${(index + 6) * 100 + 300}ms` : '0ms'
-                    }}
-                  >
+                  <div key={product.id} className="w-32 flex-shrink-0">
                     <ProductCard {...product} />
                   </div>
                 ))}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 import { ArrowRight, Award, Clock, Package, Shield, Leaf, MessageCircle, RotateCcw, Truck, CreditCard, Zap, HelpCircle, RefreshCcw, Star, Instagram, Facebook, Music } from 'lucide-react';
@@ -7,6 +7,14 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 
 const AboutStore = () => {
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  
+  // Rotating text phrases
+  const rotatingTexts = [
+    "A mode You enter.",
+    "A mindset You wear."
+  ];
+  
   const { ref: textRef, inView: textInView } = useInView({
     triggerOnce: true,
     threshold: 0.3,
@@ -16,6 +24,14 @@ const AboutStore = () => {
     triggerOnce: true,
     threshold: 0.3,
   });
+  
+  useEffect(() => {
+    const textInterval = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % rotatingTexts.length);
+    }, 5000); // Change text every 5 seconds to match background images
+    
+    return () => clearInterval(textInterval);
+  }, []);
 
   const infoBlocks = [
     {
@@ -76,19 +92,30 @@ const AboutStore = () => {
             {/* Left side - Content */}
             <div 
               ref={textRef}
-              className={cn(
-                "space-y-8 transition-all duration-700",
-                textInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              )}
+              className="space-y-8"
             >
               <div className="space-y-6">
                 <div>
                   <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                     Peak Mode — Not Just Apparel.
                     <br />
-                    <span className="text-muted-foreground">A mode You enter.</span>
-                    <br />
-                    <span className="text-muted-foreground">A mindset You Wear.</span>
+                    <div className="relative overflow-hidden h-[1.2em]">
+                      {rotatingTexts.map((text, index) => (
+                        <span 
+                          key={index}
+                          className={cn(
+                            "text-muted-foreground absolute top-0 left-0 transition-all transform duration-700",
+                            currentTextIndex === index 
+                              ? "opacity-100 translate-x-0" 
+                              : index < currentTextIndex 
+                                ? "opacity-0 -translate-x-full" 
+                                : "opacity-0 translate-x-full"
+                          )}
+                        >
+                          {text}
+                        </span>
+                      ))}
+                    </div>
                   </h2>
                 </div>
                 
@@ -226,10 +253,7 @@ const AboutStore = () => {
         {/* Stats section */}
         <div 
           ref={statsRef}
-          className={cn(
-            "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mt-12 transition-all duration-700",
-            statsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          )}
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mt-12"
         >
           {infoBlocks.map((block, index) => (
             <Card key={index} className="border-none shadow-sm">

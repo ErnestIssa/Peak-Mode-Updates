@@ -59,24 +59,24 @@ const SupportFollowSection = () => {
           </div>
 
           {/* Follow Us Column */}
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6 text-center">Follow Us</h2>
-            <div className="space-y-2 md:space-y-3">
+            <div className="relative w-48">
               <button 
                 onClick={() => handleSocialMediaClick('tiktok')}
-                className="block w-full text-center text-base md:text-base text-gray-700 hover:text-black transition-colors duration-300 font-medium"
+                className="absolute top-0 left-0 w-full text-center py-2 text-base md:text-base text-gray-700 hover:text-black transition-colors duration-300 font-medium"
               >
                 TikTok
               </button>
               <button 
                 onClick={() => handleSocialMediaClick('instagram')}
-                className="block w-full text-center text-base md:text-base text-gray-700 hover:text-black transition-colors duration-300 font-medium"
+                className="absolute top-8 left-0 w-full text-center py-2 text-base md:text-base text-gray-700 hover:text-black transition-colors duration-300 font-medium"
               >
                 Instagram
               </button>
               <button 
                 onClick={() => handleSocialMediaClick('facebook')}
-                className="block w-full text-center text-base md:text-base text-gray-700 hover:text-black transition-colors duration-300 font-medium"
+                className="absolute top-16 left-0 w-full text-center py-2 text-base md:text-base text-gray-700 hover:text-black transition-colors duration-300 font-medium"
               >
                 Facebook
               </button>

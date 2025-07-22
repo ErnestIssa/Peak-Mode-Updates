@@ -72,13 +72,7 @@ const AboutPage = () => {
         <section ref={storySectionRef} className="peak-section bg-white">
           <div className="peak-container">
             {/* Block 1: Origin */}
-            <div 
-              ref={storyRef}
-              className={cn(
-                "mb-24 transition-all duration-1000",
-                storyInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              )}
-            >
+            <div className="mb-24">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
                   <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b-2 border-primary font-semibold text-primary">
@@ -148,13 +142,7 @@ const AboutPage = () => {
         {/* Mission Section */}
         <section className="peak-section bg-secondary">
           <div className="peak-container">
-            <div 
-              ref={missionRef}
-              className={cn(
-                "grid grid-cols-1 lg:grid-cols-2 gap-16 items-center transition-all duration-1000",
-                missionInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              )}
-            >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
                 <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b-2 border-primary font-semibold text-primary">
                   Our Mission
@@ -197,13 +185,7 @@ const AboutPage = () => {
         {/* Value Cards Section */}
         <section className="peak-section bg-white">
           <div className="peak-container">
-            <div 
-              ref={valuesRef}
-              className={cn(
-                "transition-all duration-1000",
-                valuesInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              )}
-            >
+            <div>
               <div className="text-center mb-16">
                 <span className="inline-block text-sm uppercase tracking-wider pb-2 border-b-2 border-primary font-semibold text-primary">
                   Our Values
@@ -254,13 +236,7 @@ const AboutPage = () => {
         {/* Closing Message */}
         <section className="peak-section bg-black text-white">
           <div className="peak-container">
-            <div 
-              ref={closingRef}
-              className={cn(
-                "text-center max-w-4xl mx-auto transition-all duration-1000",
-                closingInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              )}
-            >
+            <div className="text-center max-w-4xl mx-auto">
               <h2 className="text-4xl md:text-5xl font-bold mb-8">
                 This is more than just apparel.
               </h2>

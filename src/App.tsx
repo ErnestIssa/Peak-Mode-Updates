@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import PeakModePopup from "./components/PeakModePopup";
 import SupportPopup from "./components/SupportPopup";
+import GlobalWishlistModal from "./components/GlobalWishlistModal";
 import { usePeakModePopup } from "./hooks/usePeakModePopup";
 import { useSupportPopup } from "./hooks/useSupportPopup";
 import { useScrollToTop } from "./hooks/useScrollToTop";
@@ -21,6 +22,7 @@ import AccessoriesCollection from "./pages/AccessoriesCollection";
 import AboutPage from "./pages/About";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import ProductDetail from "./pages/ProductDetail";
 import TestProductDetail from "./pages/TestProductDetail";
 import TestProduct from "./pages/TestProduct";
@@ -53,6 +55,7 @@ const AppContent = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/test-product/:id" element={<TestProductDetail />} />
         <Route path="/test-product" element={<TestProduct />} />
@@ -72,6 +75,8 @@ const AppContent = () => {
         onClose={onSupportClose}
         onOpen={onSupportOpen}
       />
+
+      <GlobalWishlistModal />
     </>
   );
 };

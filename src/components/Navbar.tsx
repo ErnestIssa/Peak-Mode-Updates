@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import SearchModal from './SearchModal';
-import WishlistModal from './WishlistModal';
 
 const Navbar = () => {
   const location = useLocation();
@@ -14,7 +13,6 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLogoAnimated, setIsLogoAnimated] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
-  const [wishlistModalOpen, setWishlistModalOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   
@@ -93,12 +91,18 @@ const Navbar = () => {
     // Prevent scrolling when mobile menu is open
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
     } else {
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     }
     
     return () => {
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     };
   }, [mobileMenuOpen]);
 
@@ -115,13 +119,14 @@ const Navbar = () => {
   ];
 
   return (
-    <header 
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
-        textColor,
-        isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
-      )}
-    >
+    <>
+      <header 
+        className={cn(
+          'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
+          textColor,
+          isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+        )}
+      >
       <nav className="peak-container flex items-center justify-between h-20">
         {/* Logo */}
         <Link 
@@ -161,7 +166,7 @@ const Navbar = () => {
           <button 
             className={cn("hover:opacity-70 transition-colors relative", textColor)} 
             aria-label="Wishlist"
-            onClick={() => setWishlistModalOpen(true)}
+            onClick={() => window.dispatchEvent(new CustomEvent('openWishlist'))}
           >
             <Heart className="h-5 w-5" />
             {wishlistCount > 0 && (
@@ -193,7 +198,7 @@ const Navbar = () => {
           <button 
             className={cn("hover:opacity-70 transition-colors relative", textColor)} 
             aria-label="Wishlist"
-            onClick={() => setWishlistModalOpen(true)}
+            onClick={() => window.dispatchEvent(new CustomEvent('openWishlist'))}
           >
             <Heart className="h-5 w-5" />
             {wishlistCount > 0 && (
@@ -233,148 +238,76 @@ const Navbar = () => {
         </div>
       </nav>
       
-      {/* Mobile Menu Overlay */}
+      {/* Search Modal */}
+      <SearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
+    </header>
+    
+    {/* Mobile Menu Overlay - Outside header to cover entire viewport */}
+    {mobileMenuOpen && (
       <div 
-        className={cn(
-          'fixed top-0 left-0 w-full h-full bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-300 md:hidden',
-          mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        )}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 60,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(4px)'
-        }}
-        onClick={(e) => {
-          console.log('Mobile menu overlay clicked!');
-          console.log('Click position:', e.clientX, e.clientY);
-          console.log('Closing mobile menu...');
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] md:hidden"
+        onClick={() => {
+          console.log('Mobile menu overlay clicked - closing menu');
           setMobileMenuOpen(false);
         }}
       />
-      
-      {/* Mobile Menu Dropdown */}
-      <div 
-        className={cn(
-          'absolute top-20 left-0 right-0 bg-white shadow-lg z-[70] transition-all duration-300 md:hidden overflow-hidden',
-          mobileMenuOpen ? 'max-h-[70vh] opacity-100' : 'max-h-0 opacity-0'
-        )}
-      >
-        <div className="flex flex-col divide-y divide-gray-100">
-          {navLinks.map((link, index) => {
-            const isActive = window.location.pathname === link.href;
-            return (
-              <Link 
-                key={link.name} 
-                to={link.href} 
-                className={cn(
-                  "py-4 px-6 font-medium transition-all",
-                  isActive 
-                    ? "bg-secondary text-foreground" 
-                    : "text-gray-600 hover:bg-gray-50 hover:text-foreground"
+    )}
+    
+    {/* Mobile Menu Dropdown - Outside header */}
+    <div 
+      className={cn(
+        'fixed top-20 left-0 right-0 bg-white shadow-lg z-[70] transition-all duration-300 md:hidden overflow-hidden',
+        mobileMenuOpen ? 'max-h-[70vh] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+      )}
+    >
+      <div className="flex flex-col divide-y divide-gray-100">
+        {navLinks.map((link, index) => {
+          const isActive = window.location.pathname === link.href;
+          return (
+            <Link 
+              key={link.name} 
+              to={link.href} 
+              className={cn(
+                "py-4 px-6 font-medium transition-all",
+                isActive 
+                  ? "bg-secondary text-foreground" 
+                  : "text-gray-600 hover:bg-gray-50 hover:text-foreground"
+              )}
+              style={{ 
+                animationDelay: `${index * 50}ms`,
+                animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <div className="flex items-center justify-between">
+                <span>{link.name}</span>
+                {isActive && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                 )}
-                style={{ 
-                  animationDelay: `${index * 50}ms`,
-                  animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
-                }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <div className="flex items-center justify-between">
-                  <span>{link.name}</span>
-                  {isActive && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-          
-          <button 
-            className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
-            onClick={() => {
-              setSearchModalOpen(true);
-              setMobileMenuOpen(false);
-            }}
-            style={{ 
-              animationDelay: `${navLinks.length * 50}ms`,
-              animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              <span>Search</span>
-            </div>
-          </button>
-          
-          <button 
-            className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
-            onClick={() => {
-              setWishlistModalOpen(true);
-              setMobileMenuOpen(false);
-            }}
-            style={{ 
-              animationDelay: `${(navLinks.length + 1) * 50}ms`,
-              animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4" />
-              <span>Wishlist {wishlistCount > 0 && `(${wishlistCount})`}</span>
-            </div>
-          </button>
-        </div>
-      </div>
-      
-      {/* Search Modal */}
-      <SearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
-      
-      {/* Wishlist Modal */}
-      <WishlistModal
-        isOpen={wishlistModalOpen}
-        onClose={() => setWishlistModalOpen(false)}
-        onAddToCart={(item) => {
-          // Add to cart logic
-          const cartItem = {
-            id: item.id,
-            name: item.name,
-            price: parseFloat(item.price.replace(/[^0-9.]/g, '')),
-            image: item.image,
-            size: item.size || null,
-            color: item.color || null,
-            quantity: 1,
-            currency: item.currency,
-            source: 'test'
-          };
-          
-          const existingCart = localStorage.getItem('cart');
-          let cartItems = existingCart ? JSON.parse(existingCart) : [];
-          
-          const existingItemIndex = cartItems.findIndex((cartItem: any) => 
-            cartItem.id === item.id && 
-            cartItem.size === item.size && 
-            cartItem.color === item.color &&
-            cartItem.source === 'test'
+              </div>
+            </Link>
           );
-          
-          if (existingItemIndex >= 0) {
-            cartItems[existingItemIndex].quantity += 1;
-          } else {
-            cartItems.push(cartItem);
-          }
-          
-          localStorage.setItem('cart', JSON.stringify(cartItems));
-          
-          // Dispatch custom event to update cart count
-          window.dispatchEvent(new CustomEvent('cartUpdated'));
-          
-          toast.success("Added to cart successfully!");
-        }}
-      />
-    </header>
+        })}
+        
+        <button 
+          className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
+          onClick={() => {
+            setSearchModalOpen(true);
+            setMobileMenuOpen(false);
+          }}
+          style={{ 
+            animationDelay: `${(navLinks.length + 1) * 50}ms`,
+            animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            <span>Search</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    </>
   );
 };
 

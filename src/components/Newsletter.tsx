@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { useAdminContent } from '@/contexts/AdminContext';
 import { emailService } from '@/lib/emailTemplates';
-import { newsletterApi } from '@/lib/api';
+import { newsletterService } from '@/lib/peakModeService';
 import { useApiMutation } from '@/hooks/useApi';
 
 const Newsletter = () => {
@@ -41,14 +41,8 @@ const Newsletter = () => {
     setIsSuccess(false);
     
     try {
-      // Subscribe to newsletter using backend API
-      await subscribe(newsletterApi.subscribe, email);
-      
-      // Send Peak Mode newsletter confirmation email
-      await emailService.sendNewsletterSubscription({
-        email,
-        name: email.split('@')[0] // Use email prefix as name if not provided
-      });
+      // Subscribe to newsletter using Peak Mode service
+      await subscribe(newsletterService.subscribe, email);
       
       setIsSuccess(true);
       toast({

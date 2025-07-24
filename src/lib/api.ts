@@ -2,7 +2,10 @@
 // Centralized API communication layer for backend integration
 
 // Environment-based API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
+const VORNIFY_DB_URL = 'https://api.vornify.se/api/vornifydb';
+const VORNIFY_PAY_URL = 'https://api.vornify.se/api/vornifypay';
+const VORNIFY_EMAIL_URL = 'https://api.vornify.se/api/vornifyemail';
 
 // API Response types
 export interface ApiResponse<T = any> {
@@ -387,6 +390,185 @@ export const adminApi = {
   },
 };
 
+// VornifyDB Integration
+export const vornifyDB = {
+  // Generic VornifyDB operation
+  async operation(collectionName: string, command: string, data: any = {}): Promise<any> {
+    try {
+      const response = await fetch(VORNIFY_DB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database_name: 'VornifyDB',
+          collection_name: collectionName,
+          command: command,
+          data: data
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.status && !result.success) {
+        throw new Error(result.error || 'VornifyDB operation failed');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('VornifyDB operation error:', error);
+      throw error;
+    }
+  },
+
+  // Create record
+  async create(collectionName: string, data: any): Promise<any> {
+    return this.operation(collectionName, '--create', data);
+  },
+
+  // Read records
+  async read(collectionName: string, filter: any = {}): Promise<any> {
+    return this.operation(collectionName, '--read', filter);
+  },
+
+  // Update record
+  async update(collectionName: string, filter: any, update: any): Promise<any> {
+    return this.operation(collectionName, '--update', { filter, update });
+  },
+
+  // Delete record
+  async delete(collectionName: string, filter: any): Promise<any> {
+    return this.operation(collectionName, '--delete', filter);
+  },
+
+  // Verify record
+  async verify(collectionName: string, data: any): Promise<any> {
+    return this.operation(collectionName, '--verify', data);
+  },
+
+  // Append data to record
+  async append(collectionName: string, existing: any, append: any): Promise<any> {
+    return this.operation(collectionName, '--append', { existing, append });
+  },
+
+  // Update specific field
+  async updateField(collectionName: string, existing: any, field: string, value: any): Promise<any> {
+    return this.operation(collectionName, '--update-field', { existing, field, value });
+  },
+
+  // Delete specific field
+  async deleteField(collectionName: string, existing: any, field: string): Promise<any> {
+    return this.operation(collectionName, '--delete-field', { existing, field });
+  }
+};
+
+// VornifyPay Integration
+export const vornifyPay = {
+  // Create one-time payment
+  async createPayment(paymentData: {
+    amount: number;
+    currency: string;
+    product_data: {
+      name: string;
+      product_id: string;
+      description: string;
+      customer_name: string;
+      email: string;
+      phone?: string;
+    };
+  }): Promise<any> {
+    try {
+      const response = await fetch(VORNIFY_PAY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          command: 'payment',
+          data: {
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            payment_type: 'onetime',
+            product_data: paymentData.product_data
+          }
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.status) {
+        throw new Error(result.error || 'Payment creation failed');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('VornifyPay payment error:', error);
+      throw error;
+    }
+  },
+
+  // Create subscription
+  async createSubscription(subscriptionData: {
+    customer_email: string;
+    amount: string;
+    currency: string;
+    trial_days?: number;
+    billing_interval: 'month' | 'year';
+    product_data: {
+      name: string;
+      description: string;
+      customer_name: string;
+      features?: string[];
+      metadata?: any;
+    };
+  }): Promise<any> {
+    try {
+      const response = await fetch(VORNIFY_PAY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          command: 'create_subscription',
+          data: subscriptionData
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.status) {
+        throw new Error(result.error || 'Subscription creation failed');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('VornifyPay subscription error:', error);
+      throw error;
+    }
+  },
+
+  // Verify payment
+  async verifyPayment(paymentIntentId: string): Promise<any> {
+    try {
+      const response = await fetch(VORNIFY_PAY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          command: 'verify',
+          data: {
+            payment_intent_id: paymentIntentId
+          }
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.status) {
+        throw new Error(result.error || 'Payment verification failed');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('VornifyPay verification error:', error);
+      throw error;
+    }
+  }
+};
+
 // Utility functions
 export const apiUtils = {
   // Get API base URL
@@ -425,5 +607,7 @@ export default {
   contact: contactApi,
   auth: authApi,
   admin: adminApi,
+  vornifyDB,
+  vornifyPay,
   utils: apiUtils,
 }; 

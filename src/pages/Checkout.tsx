@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProductSource } from '@/models/Product';
 import { emailService } from '@/lib/emailTemplates';
-import { ordersApi } from '@/lib/api';
+import { orderService, paymentService } from '@/lib/peakModeService';
 import { useApiMutation } from '@/hooks/useApi';
 
 interface CartItem {
@@ -165,8 +165,9 @@ const Checkout = () => {
     setIsSubmitting(true);
     
     try {
-      // Create order in backend
+      // Create order in VornifyDB
       const orderData = {
+        id: `order_${Date.now()}`,
         items: cartItems.map(item => ({
           productId: item.id.toString(),
           name: item.name,
@@ -187,10 +188,14 @@ const Checkout = () => {
           country: formData.country
         },
         paymentMethod: formData.paymentMethod,
-        total: calculateFinalTotal()
+        total: calculateFinalTotal(),
+        status: 'pending',
+        orderNumber: `PM-${Date.now().toString().slice(-8)}`,
+        created_at: new Date().toISOString(),
+        isPrivate: false
       };
 
-      await createOrder(ordersApi.createOrder, orderData);
+      await createOrder(orderService.createOrder, orderData);
       
       // Save form data to localStorage for thank you page
       localStorage.setItem('checkoutFormData', JSON.stringify(formData));

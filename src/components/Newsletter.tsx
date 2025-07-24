@@ -5,12 +5,18 @@ import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { addSubscriber, sendSubscriptionConfirmationEmail } from '@/lib/vornifyDB';
+import { Link } from 'react-router-dom';
+import { useAdminContent } from '@/contexts/AdminContext';
+import { emailService } from '@/lib/emailTemplates';
 
 const Newsletter = () => {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.3,
   });
+  
+  // Get newsletter content from admin configuration
+  const { content: newsletterContent } = useAdminContent('newsletter');
   
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,8 +43,11 @@ const Newsletter = () => {
       const result = await addSubscriber(email);
       
       if (result.success || result.status) {
-        // Then send confirmation email
-        await sendSubscriptionConfirmationEmail(email);
+        // Send Peak Mode newsletter confirmation email
+        await emailService.sendNewsletterSubscription({
+          email,
+          name: email.split('@')[0] // Use email prefix as name if not provided
+        });
         
         setIsSuccess(true);
         toast({
@@ -73,10 +82,10 @@ const Newsletter = () => {
             Stay Updated
           </span>
           <h2 className="mt-6 text-3xl md:text-4xl lg:text-5xl font-bold">
-            Join The Peak Mode Movement
+            {(newsletterContent as any)?.title || "Join The Peak Mode Movement"}
           </h2>
           <p className="mt-6 text-white/70 text-lg">
-            Don't miss out! Limited-time offers and exclusive releases—straight to your inbox. Sign up now!
+            {(newsletterContent as any)?.subtitle || "Don't miss out! Limited-time offers and exclusive releases—straight to your inbox. Sign up now!"}
           </p>
           
           <form onSubmit={handleSubmit} className="mt-10 flex flex-col sm:flex-row gap-4">
@@ -114,7 +123,15 @@ const Newsletter = () => {
           </form>
           
           <p className="mt-4 text-sm text-white/50">
-            By subscribing, you agree to our Privacy Policy and consent to receive updates from our company.
+            {(newsletterContent as any)?.privacyPolicyText || "By subscribing, you agree to our Privacy Policy and consent to receive updates from our company."}
+            {' '}
+            <Link 
+              to="/privacy-policy" 
+              className="text-white hover:text-white/80 underline transition-colors duration-300"
+            >
+              Privacy Policy
+            </Link>
+            {' '}and consent to receive updates from our company.
           </p>
           
           <div className="mt-8 flex justify-center gap-4">

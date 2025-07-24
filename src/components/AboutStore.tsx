@@ -5,12 +5,16 @@ import { ArrowRight, Award, Clock, Package, Shield, Leaf, MessageCircle, RotateC
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
+import { useAdminContent } from '@/contexts/AdminContext';
 
 const AboutStore = () => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   
-  // Rotating text phrases
-  const rotatingTexts = [
+  // Get about content from admin configuration
+  const { content: aboutContent } = useAdminContent('about');
+  
+  // Rotating text phrases from admin config or fallback
+  const rotatingTexts = (aboutContent as any)?.rotatingTexts || [
     "A mode You enter.",
     "A mindset You wear."
   ];
@@ -96,10 +100,10 @@ const AboutStore = () => {
             >
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                    Peak Mode — Not Just Apparel.
+                  <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                    {(aboutContent as any)?.title || "Peak Mode — Not Just Apparel."}
                     <br />
-                    <div className="relative overflow-hidden h-[1.2em]">
+                    <div className="relative overflow-hidden h-[1.4em] md:h-[1.2em]">
                       {rotatingTexts.map((text, index) => (
                         <span 
                           key={index}
@@ -120,11 +124,11 @@ const AboutStore = () => {
                 </div>
                 
                 <p className="text-xl font-semibold text-black">
-                  You weren't made to blend in. You were made to evolve.
+                  {(aboutContent as any)?.subtitle || "You weren't made to blend in. You were made to evolve."}
                 </p>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  At Peak Mode, we don't follow trends — we follow truth. The quiet truth of those who train in silence, grow through discomfort, and show up when no one's watching.
+                  {(aboutContent as any)?.description || "At Peak Mode, we don't follow trends — we follow truth. The quiet truth of those who train in silence, grow through discomfort, and show up when no one's watching."}
                 </p>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">

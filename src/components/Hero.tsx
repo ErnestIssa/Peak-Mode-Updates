@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAdminContent } from '@/contexts/AdminContext';
 
 const Hero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Array of background images - fitness focused
-  const backgroundImages = [
+  // Get hero content from admin configuration
+  const { content: heroContent } = useAdminContent('hero');
+  
+  // Use admin-configured background images or fallback to defaults
+  const backgroundImages = (heroContent as any)?.backgroundImages || [
     "https://wallpapercave.com/wp/wp12031320.jpg",
     "https://t3.ftcdn.net/jpg/01/19/59/74/360_F_119597487_SnvLBdheEGOxu05rMQ5tCzo250cRrTz9.jpg",
     "https://miro.medium.com/v2/resize:fit:1400/0*ZhonbGa006Yiq4M_"
@@ -68,15 +72,15 @@ const Hero = () => {
           </div>
           
           <h1 className="mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter">
-            NO LIMITS.<br />JUST PEAKS.
+            {(heroContent as any)?.title || "NO LIMITS.\nJUST PEAKS."}
           </h1>
           
           <div className="mt-10 flex space-x-4">
             <Link 
-              to="/shop" 
+              to={(heroContent as any)?.ctaLink || "/shop"}
               className="bg-white text-black px-5 py-2 font-medium tracking-wide hover:bg-white/90 transition-all duration-300 flex items-center space-x-2 group"
             >
-              <span>Shop Now</span>
+              <span>{(heroContent as any)?.ctaText || "Shop Now"}</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link 

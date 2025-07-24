@@ -9,6 +9,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import PeakModePopup from "./components/PeakModePopup";
 import SupportPopup from "./components/SupportPopup";
 import GlobalWishlistModal from "./components/GlobalWishlistModal";
+import { AdminProvider } from "./contexts/AdminContext";
 import { usePeakModePopup } from "./hooks/usePeakModePopup";
 import { useSupportPopup } from "./hooks/useSupportPopup";
 import { useScrollToTop } from "./hooks/useScrollToTop";
@@ -28,6 +29,11 @@ import TestProductDetail from "./pages/TestProductDetail";
 import TestProduct from "./pages/TestProduct";
 import FAQ from "./pages/FAQ";
 import Reviews from "./pages/Reviews";
+import ThankYou from "./pages/ThankYou";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DataProtection from "./pages/DataProtection";
+import CookiePolicy from "./pages/CookiePolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +67,11 @@ const AppContent = () => {
         <Route path="/test-product" element={<TestProduct />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/thank-you" element={<ThankYou />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/data-protection" element={<DataProtection />} />
+        <Route path="/cookie-policy" element={<CookiePolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -90,16 +101,18 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <LoadingScreen isLoading={isLoading} onLoadingComplete={handleLoadingComplete} />
-        <BrowserRouter>
-          <AppContent />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      <AdminProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <LoadingScreen isLoading={isLoading} onLoadingComplete={handleLoadingComplete} />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AdminProvider>
+    </QueryClientProvider>
+  );
 };
 
 export default App;

@@ -6,6 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProductSource } from '@/models/Product';
 import { emailService } from '@/lib/emailTemplates';
+import { ordersApi } from '@/lib/api';
+import { useApiMutation } from '@/hooks/useApi';
 
 interface CartItem {
   id: number | string;
@@ -73,6 +75,7 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
   const [discountApplied, setDiscountApplied] = useState(false);
+  const { mutate: createOrder, loading } = useApiMutation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -161,8 +164,34 @@ const Checkout = () => {
     
     setIsSubmitting(true);
     
-    // Simulate checkout process
-    setTimeout(async () => {
+    try {
+      // Create order in backend
+      const orderData = {
+        items: cartItems.map(item => ({
+          productId: item.id.toString(),
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          size: item.size || 'N/A',
+          color: item.color || 'N/A',
+          image: item.image
+        })),
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          country: formData.country
+        },
+        paymentMethod: formData.paymentMethod,
+        total: calculateFinalTotal()
+      };
+
+      await createOrder(ordersApi.createOrder, orderData);
+      
       // Save form data to localStorage for thank you page
       localStorage.setItem('checkoutFormData', JSON.stringify(formData));
       
@@ -191,7 +220,11 @@ const Checkout = () => {
       
       // Redirect to thank you page
       navigate('/thank-you');
-    }, 2000);
+    } catch (error) {
+      console.error('Order creation error:', error);
+      toast.error('Failed to create order. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   if (cartItems.length === 0) {

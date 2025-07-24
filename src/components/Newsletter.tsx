@@ -4,10 +4,11 @@ import { ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { addSubscriber, sendSubscriptionConfirmationEmail } from '@/lib/vornifyDB';
 import { Link } from 'react-router-dom';
 import { useAdminContent } from '@/contexts/AdminContext';
 import { emailService } from '@/lib/emailTemplates';
+import { newsletterApi } from '@/lib/api';
+import { useApiMutation } from '@/hooks/useApi';
 
 const Newsletter = () => {
   const { ref, inView } = useInView({
@@ -22,6 +23,7 @@ const Newsletter = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
+  const { mutate: subscribe, loading } = useApiMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,29 +41,25 @@ const Newsletter = () => {
     setIsSuccess(false);
     
     try {
-      // First add subscriber to database
-      const result = await addSubscriber(email);
+      // Subscribe to newsletter using backend API
+      await subscribe(newsletterApi.subscribe, email);
       
-      if (result.success || result.status) {
-        // Send Peak Mode newsletter confirmation email
-        await emailService.sendNewsletterSubscription({
-          email,
-          name: email.split('@')[0] // Use email prefix as name if not provided
-        });
-        
-        setIsSuccess(true);
-        toast({
-          title: "Success!",
-          description: "You've been added to our newsletter",
-        });
-        setEmail('');
-        // Reset success state after 3 seconds
-        setTimeout(() => {
-          setIsSuccess(false);
-        }, 3000);
-      } else {
-        throw new Error(result.error || 'Failed to subscribe');
-      }
+      // Send Peak Mode newsletter confirmation email
+      await emailService.sendNewsletterSubscription({
+        email,
+        name: email.split('@')[0] // Use email prefix as name if not provided
+      });
+      
+      setIsSuccess(true);
+      toast({
+        title: "Success!",
+        description: "You've been added to our newsletter",
+      });
+      setEmail('');
+      // Reset success state after 3 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
     } catch (error) {
       console.error('Subscription error:', error);
       toast({

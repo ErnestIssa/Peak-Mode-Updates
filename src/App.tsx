@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet-async';
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import PeakModePopup from "./components/PeakModePopup";
@@ -93,7 +94,20 @@ const AppContent = () => {
 };
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    // Check if this is a fresh session
+    const hasSeenLoading = sessionStorage.getItem('peakModeLoadingSeen');
+    const isFreshSession = !hasSeenLoading;
+    
+    if (isFreshSession) {
+      // Mark that we've seen the loading screen in this session
+      sessionStorage.setItem('peakModeLoadingSeen', 'true');
+      return true;
+    }
+    
+    // If not a fresh session, skip loading screen
+    return false;
+  });
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
@@ -101,16 +115,18 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AdminProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <LoadingScreen isLoading={isLoading} onLoadingComplete={handleLoadingComplete} />
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </TooltipProvider>
-      </AdminProvider>
+      <HelmetProvider>
+        <AdminProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <LoadingScreen isLoading={isLoading} onLoadingComplete={handleLoadingComplete} />
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </TooltipProvider>
+        </AdminProvider>
+      </HelmetProvider>
     </QueryClientProvider>
   );
 };

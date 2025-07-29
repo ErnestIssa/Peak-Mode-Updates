@@ -80,7 +80,8 @@ const AboutStore = () => {
     }
   ];
 
-  const athleteImages = [
+  // Get gallery images from admin configuration or use defaults
+  const galleryImages = (aboutContent as any)?.galleryImages || [
     "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
@@ -214,6 +215,8 @@ const AboutStore = () => {
                   </Link>
                 </div>
               </div>
+
+
             </div>
 
             {/* Right side - Image Gallery */}
@@ -221,14 +224,14 @@ const AboutStore = () => {
               <div className="space-y-4">
                 <div className="h-1/2 overflow-hidden rounded-lg">
                   <img 
-                    src={athleteImages[0]} 
+                    src={galleryImages[0]} 
                     alt="Athlete training" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="h-1/2 overflow-hidden rounded-lg">
                   <img 
-                    src={athleteImages[1]} 
+                    src={galleryImages[1]} 
                     alt="Athlete in gym" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
@@ -237,14 +240,14 @@ const AboutStore = () => {
               <div className="space-y-4">
                 <div className="h-1/2 overflow-hidden rounded-lg">
                   <img 
-                    src={athleteImages[2]} 
+                    src={galleryImages[2]} 
                     alt="Athlete running" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="h-1/2 overflow-hidden rounded-lg">
                   <img 
-                    src={athleteImages[3]} 
+                    src={galleryImages[3]} 
                     alt="Athlete lifting" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />

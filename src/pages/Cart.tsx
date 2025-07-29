@@ -1,11 +1,14 @@
 
 import { useEffect, useState } from 'react';
+import SEOHead from '@/components/SEOHead';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ArrowLeft, Shield, Truck, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProductSource } from '@/models/Product';
+import { cartService } from '@/lib/peakModeService';
+import { useApiData, useApiMutation } from '@/hooks/useApi';
 
 interface CartItem {
   id: number | string;
@@ -24,17 +27,47 @@ const Cart = () => {
   const [cartTotal, setCartTotal] = useState(0);
   const [discountCode, setDiscountCode] = useState('');
   
+  // Fetch cart from backend
+  const { data: backendCart, loading: cartLoading, error: cartError } = useApiData(
+    () => cartService.getCart(),
+    []
+  );
+  
+  // Cart mutations
+  const { mutate: updateCartItem, loading: updatingCart } = useApiMutation();
+  const { mutate: removeCartItem, loading: removingItem } = useApiMutation();
+  const { mutate: clearCartBackend, loading: clearingCart } = useApiMutation();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
     loadCartItems();
-    
+  }, [backendCart]);
 
+  // Listen for cart updates from ProductCard
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      loadCartItems();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
   }, []);
   
   const loadCartItems = () => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      const items = JSON.parse(savedCart);
+    // Use backend cart if available, otherwise fall back to localStorage
+    if (backendCart && backendCart.items) {
+      const items = backendCart.items.map((item: any) => ({
+        id: item.productId || item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        size: item.size || null,
+        color: item.color || null,
+        quantity: item.quantity,
+        currency: item.currency || 'SEK',
+        source: item.source || 'backend'
+      }));
+      
       setCartItems(items);
       
       // Calculate total
@@ -43,48 +76,94 @@ const Cart = () => {
       }, 0);
       
       setCartTotal(total);
+    } else {
+      // Fallback to localStorage
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        const items = JSON.parse(savedCart);
+        setCartItems(items);
+        
+        // Calculate total
+        const total = items.reduce((sum: number, item: CartItem) => {
+          return sum + (item.price * item.quantity);
+        }, 0);
+        
+        setCartTotal(total);
+      }
     }
   };
   
-  const updateQuantity = (index: number, newQuantity: number) => {
+  const updateQuantity = async (index: number, newQuantity: number) => {
     if (newQuantity < 1) return;
     
-    const updatedItems = [...cartItems];
-    updatedItems[index].quantity = newQuantity;
+    const item = cartItems[index];
     
-    setCartItems(updatedItems);
-    localStorage.setItem('cart', JSON.stringify(updatedItems));
-    
-    // Recalculate total
-    const total = updatedItems.reduce((sum, item) => {
-      return sum + (item.price * item.quantity);
-    }, 0);
-    
-    setCartTotal(total);
+    try {
+      // Update in backend
+      await cartService.updateCartItem(String(item.id), newQuantity);
+      
+      // Update local state
+      const updatedItems = [...cartItems];
+      updatedItems[index].quantity = newQuantity;
+      
+      setCartItems(updatedItems);
+      
+      // Recalculate total
+      const total = updatedItems.reduce((sum, item) => {
+        return sum + (item.price * item.quantity);
+      }, 0);
+      
+      setCartTotal(total);
+      
+      toast.success("Cart updated");
+    } catch (error) {
+      toast.error("Failed to update cart");
+      console.error('Error updating cart:', error);
+    }
   };
   
-  const removeItem = (index: number) => {
-    const updatedItems = [...cartItems];
-    updatedItems.splice(index, 1);
+  const removeItem = async (index: number) => {
+    const item = cartItems[index];
     
-    setCartItems(updatedItems);
-    localStorage.setItem('cart', JSON.stringify(updatedItems));
-    
-    // Recalculate total
-    const total = updatedItems.reduce((sum, item) => {
-      return sum + (item.price * item.quantity);
-    }, 0);
-    
-    setCartTotal(total);
-    
-    toast.success("Item removed from cart");
+    try {
+      // Remove from backend
+      await cartService.removeFromCart(String(item.id));
+      
+      // Update local state
+      const updatedItems = [...cartItems];
+      updatedItems.splice(index, 1);
+      
+      setCartItems(updatedItems);
+      
+      // Recalculate total
+      const total = updatedItems.reduce((sum, item) => {
+        return sum + (item.price * item.quantity);
+      }, 0);
+      
+      setCartTotal(total);
+      
+      toast.success("Item removed from cart");
+    } catch (error) {
+      toast.error("Failed to remove item");
+      console.error('Error removing item:', error);
+    }
   };
   
-  const clearCart = () => {
-    setCartItems([]);
-    setCartTotal(0);
-    localStorage.removeItem('cart');
-    toast.success("Cart cleared");
+  const clearCart = async () => {
+    try {
+      // Clear from backend
+      await cartService.clearCart();
+      
+      // Update local state
+      setCartItems([]);
+      setCartTotal(0);
+      localStorage.removeItem('cart');
+      
+      toast.success("Cart cleared");
+    } catch (error) {
+      toast.error("Failed to clear cart");
+      console.error('Error clearing cart:', error);
+    }
   };
 
   const applyDiscountCode = () => {
@@ -128,6 +207,11 @@ const Cart = () => {
 
   return (
     <Layout>
+      <SEOHead 
+        title="Your Cart - Peak Mode" 
+        description="Review your cart items and proceed to checkout. Ready to elevate your mindset?" 
+        keywords="cart, checkout, peak mode, mindset gear" 
+      />
       <div className="peak-container py-8 md:py-20 min-h-screen max-w-7xl mx-auto">
 
         {/* Cart Header */}

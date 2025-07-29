@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 import { Mail, MapPin, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { sendContactMessage, sendContactConfirmationEmail } from "@/lib/vornifyDB";
+import { contactService } from "@/lib/peakModeService";
 import { trackFormData, clearFormData } from "@/lib/userInteractions";
 
 const Contact = () => {
@@ -50,17 +50,13 @@ const Contact = () => {
     setIsSuccess(false);
     
     try {
-      // First send message to database
-      const result = await sendContactMessage(
-        formData.name,
-        formData.email,
-        formData.subject,
-        formData.message
-      );
-      
-      if (result.success || result.status) {
-        // Then send confirmation email
-        await sendContactConfirmationEmail(formData.name, formData.email);
+      // Send message using contact service
+      await contactService.sendMessage({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message
+      });
         
         setIsSuccess(true);
         toast({
@@ -83,9 +79,6 @@ const Contact = () => {
         setTimeout(() => {
           setIsSuccess(false);
         }, 3000);
-      } else {
-        throw new Error(result.error || 'Failed to send message');
-      }
     } catch (error) {
       console.error('Message submission error:', error);
       toast({
@@ -284,7 +277,7 @@ const Contact = () => {
                   <h3 className="text-lg font-medium mb-4">Follow Us</h3>
                   <div className="flex space-x-4">
                     <a 
-                      href="https://www.tiktok.com/@peakmode" 
+                      href="https://www.tiktok.com/@peakmode.co?_t=ZN-8yK5XPNYEr8&_r=1" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"
@@ -298,7 +291,7 @@ const Contact = () => {
                       </svg>
                     </a>
                     <a 
-                      href="https://www.instagram.com/peakmode" 
+                      href="https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

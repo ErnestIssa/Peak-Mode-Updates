@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import SEOHead from '../components/SEOHead';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import Newsletter from '../components/Newsletter';
 import { useLocation } from 'react-router-dom';
 import { UnifiedProduct, ProductSource } from '@/models/Product';
+import { productService } from '@/lib/peakModeService';
+import { useApiData } from '@/hooks/useApi';
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   
-  const isLoading = false;
-  const hasError = false;
-  
   const location = useLocation();
+  
+  // Fetch products from backend
+  const { data: products, loading: isLoading, error: hasError } = useApiData(
+    productService.getAllProducts,
+    []
+  );
   
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -27,147 +33,24 @@ const Shop = () => {
     { name: 'T-Shirts', value: 'shirt' },
     { name: 'Hoodies', value: 'hoodie' },
     { name: 'Athletic Wear', value: 'athletic' },
-    { name: 'Accessories', value: 'accessory' }
+    { name: 'Accessories', value: 'accessory' },
+    { name: 'Sports Bras', value: 'bra' },
+    { name: 'Leggings', value: 'leggings' },
+    { name: 'Jackets', value: 'jacket' }
   ];
 
-  // Test products for development
-  const testProducts: UnifiedProduct[] = [
-    {
-      id: 'test-1',
-      originalId: 'test-1',
-      name: 'Peak Mode Performance Hoodie',
-      price: '599 SEK',
-      currency: 'SEK',
-      category: 'Hoodies',
-      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=600&fit=crop',
-      isNew: true,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-2',
-      originalId: 'test-2',
-      name: 'Elite Training T-Shirt',
-      price: '299 SEK',
-      currency: 'SEK',
-      category: 'Shirts',
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-3',
-      originalId: 'test-3',
-      name: 'Athletic Performance Shorts',
-      price: '399 SEK',
-      currency: 'SEK',
-      category: 'Athletic Wear',
-      image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=600&fit=crop',
-      isNew: true,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-4',
-      originalId: 'test-4',
-      name: 'Premium Workout Leggings',
-      price: '499 SEK',
-      currency: 'SEK',
-      category: 'Athletic Wear',
-      image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-5',
-      originalId: 'test-5',
-      name: 'Peak Mode Logo Sweatshirt',
-      price: '449 SEK',
-      currency: 'SEK',
-      category: 'Hoodies',
-      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-6',
-      originalId: 'test-6',
-      name: 'Performance Tank Top',
-      price: '249 SEK',
-      currency: 'SEK',
-      category: 'Shirts',
-      image: 'https://images.unsplash.com/photo-1506629905607-13e6f5c2b1ce?w=400&h=600&fit=crop',
-      isNew: true,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-7',
-      originalId: 'test-7',
-      name: 'Athletic Compression Shirt',
-      price: '349 SEK',
-      currency: 'SEK',
-      category: 'Shirts',
-      image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-8',
-      originalId: 'test-8',
-      name: 'Peak Mode Training Jacket',
-      price: '699 SEK',
-      currency: 'SEK',
-      category: 'Hoodies',
-      image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=600&fit=crop',
-      isNew: true,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-9',
-      originalId: 'test-9',
-      name: 'Performance Sports Bra',
-      price: '399 SEK',
-      currency: 'SEK',
-      category: 'Athletic Wear',
-      image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-10',
-      originalId: 'test-10',
-      name: 'Elite Training Pants',
-      price: '549 SEK',
-      currency: 'SEK',
-      category: 'Athletic Wear',
-      image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-11',
-      originalId: 'test-11',
-      name: 'Peak Mode Classic Tee',
-      price: '279 SEK',
-      currency: 'SEK',
-      category: 'Shirts',
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=600&fit=crop',
-      isNew: false,
-      source: 'test' as ProductSource
-    },
-    {
-      id: 'test-12',
-      originalId: 'test-12',
-      name: 'Premium Athletic Hoodie',
-      price: '649 SEK',
-      currency: 'SEK',
-      category: 'Hoodies',
-      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=600&fit=crop',
-      isNew: true,
-      source: 'test' as ProductSource
-    }
-  ];
-
-  // All products now come from test data
-  const allProducts = [...testProducts];
+  // Convert backend products to UnifiedProduct format
+  const allProducts: UnifiedProduct[] = products?.map((product: any) => ({
+    id: product.id || product._id,
+    originalId: product.originalId || product.id || product._id,
+    name: product.name,
+    price: `${product.price} ${product.currency || 'SEK'}`,
+    currency: product.currency || 'SEK',
+    category: product.category,
+    image: product.image,
+    isNew: product.isNew || false,
+    source: (product.source as ProductSource) || 'backend'
+  })) || [];
 
   // Apply category filter
   let filteredProducts = activeCategory 
@@ -177,12 +60,20 @@ const Shop = () => {
   // Apply search filter if exists
   if (searchQuery) {
     filteredProducts = filteredProducts.filter(p => 
-      p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
 
   return (
     <div className="min-h-screen">
+      <SEOHead 
+        title="Shop Collection - Peak Mode"
+        description="Browse our complete collection of premium performance apparel, athletic wear, and accessories. Find the perfect gear for your fitness journey."
+        keywords="shop, collection, performance apparel, athletic wear, fitness clothing, workout clothes, gym wear, peak mode"
+        image="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1200&h=630&fit=crop"
+        url="https://peakmode.com/shop"
+      />
       <Navbar />
       <main>
         <div className="peak-container pt-32 pb-16">
@@ -233,11 +124,17 @@ const Shop = () => {
             ) : hasError && filteredProducts.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-red-500">Failed to load products. Please try again later.</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-4 px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors"
+                >
+                  Retry
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 mt-8">
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} {...product} />
+                  <ProductCard key={String(product.id)} {...product} id={String(product.id)} originalId={String(product.originalId)} />
                 ))}
                 {filteredProducts.length === 0 && (
                   <div className="col-span-full text-center py-12">

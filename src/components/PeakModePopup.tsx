@@ -12,14 +12,11 @@ const PeakModePopup: React.FC<PeakModePopupProps> = ({ isVisible, onClose }) => 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Prevent background scrolling when popup is open
+  // Allow background scrolling when popup is open
   useEffect(() => {
-    if (isVisible) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
+    // Remove any overflow restrictions to allow background scrolling
+    document.body.style.overflow = '';
+    
     return () => {
       document.body.style.overflow = '';
     };
@@ -43,29 +40,24 @@ const PeakModePopup: React.FC<PeakModePopupProps> = ({ isVisible, onClose }) => 
     }, 3000);
   };
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+  // Remove overlay click handler - only X button should close the popup
 
   if (!isVisible) return null;
 
   return (
     <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-center justify-end p-2 md:p-4"
-      onClick={handleOverlayClick}
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9999] flex items-center justify-end p-2 md:p-4 pointer-events-none"
     >
-      <div 
-        className={cn(
-          "bg-white w-[280px] md:w-[500px] h-auto min-h-[200px] md:h-72 transform transition-all duration-700 ease-out rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row",
-          isVisible ? "translate-x-0" : "translate-x-full"
-        )}
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-        }}
-      >
+              <div 
+          className={cn(
+            "bg-white w-[280px] md:w-[500px] h-auto min-h-[200px] md:h-72 transform transition-all duration-700 ease-out rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row pointer-events-auto",
+            isVisible ? "translate-x-0" : "translate-x-full"
+          )}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+          }}
+        >
         {/* Close Button */}
         <button
           onClick={onClose}

@@ -61,6 +61,7 @@ export interface ContentManagement {
     description: string;
     rotatingTexts: string[];
     image: string;
+    galleryImages: string[];
     features: Array<{
       title: string;
       description: string;
@@ -192,9 +193,9 @@ export const defaultAdminConfig: AdminConfig = {
       address: "Stockholm, Sweden"
     },
     socialMedia: {
-      instagram: "https://instagram.com/peakmode",
-      facebook: "https://facebook.com/peakmode",
-      tiktok: "https://tiktok.com/@peakmode"
+          instagram: "https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr",
+    facebook: "https://facebook.com/peakmode",
+    tiktok: "https://www.tiktok.com/@peakmode.co?_t=ZN-8yK5XPNYEr8&_r=1"
     },
     businessHours: "Mon-Fri: 9AM-6PM",
     shippingInfo: {
@@ -226,6 +227,12 @@ export const defaultAdminConfig: AdminConfig = {
         "A mindset You wear."
       ],
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      galleryImages: [
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+      ],
       features: [
         {
           title: "Designed for both the gym and the grind outside it",

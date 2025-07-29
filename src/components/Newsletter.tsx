@@ -43,17 +43,17 @@ const Newsletter = () => {
     try {
       // Subscribe to newsletter using Peak Mode service
       await subscribe(newsletterService.subscribe, email);
-      
-      setIsSuccess(true);
-      toast({
-        title: "Success!",
-        description: "You've been added to our newsletter",
-      });
-      setEmail('');
-      // Reset success state after 3 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 3000);
+        
+        setIsSuccess(true);
+        toast({
+          title: "Success!",
+          description: "You've been added to our newsletter",
+        });
+        setEmail('');
+        // Reset success state after 3 seconds
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
     } catch (error) {
       console.error('Subscription error:', error);
       toast({

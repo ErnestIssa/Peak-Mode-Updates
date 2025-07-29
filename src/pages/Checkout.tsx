@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import SEOHead from '@/components/SEOHead';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield, Truck, CreditCard, Lock, CheckCircle } from 'lucide-react';
@@ -259,6 +260,7 @@ const Checkout = () => {
 
   return (
     <Layout>
+      <SEOHead title="Checkout" description="Complete your order and start your journey with PEAK MODE" />
       <div className="w-full px-2 md:px-8 py-4 md:py-20 min-h-screen overflow-x-hidden" style={{ maxWidth: '100vw' }}>
 
         {/* Checkout Header */}

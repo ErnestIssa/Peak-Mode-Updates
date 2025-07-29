@@ -10,7 +10,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export class AdminService {
   private static instance: AdminService;
-  private baseUrl: string = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  private baseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
 
   private constructor() {}
 

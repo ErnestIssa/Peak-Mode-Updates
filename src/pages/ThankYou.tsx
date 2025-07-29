@@ -96,7 +96,7 @@ const ThankYou = () => {
     {
       name: 'Instagram',
       icon: Instagram,
-      url: 'https://instagram.com/peakmode',
+              url: 'https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr',
       color: 'bg-gradient-to-r from-purple-500 to-pink-500'
     },
     {
@@ -108,7 +108,7 @@ const ThankYou = () => {
     {
       name: 'TikTok',
       icon: Instagram, // Using Instagram icon as placeholder for TikTok
-      url: 'https://tiktok.com/@peakmode',
+              url: 'https://www.tiktok.com/@peakmode.co?_t=ZN-8yK5XPNYEr8&_r=1',
       color: 'bg-black'
     }
   ];

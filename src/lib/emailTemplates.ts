@@ -175,9 +175,9 @@ const generateEmailHTML = (content: string): string => {
         
         <div class="footer">
           <div class="social-links">
-            <a href="https://instagram.com/peakmode">Instagram</a> |
+            <a href="https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr">Instagram</a> |
             <a href="https://facebook.com/peakmode">Facebook</a> |
-            <a href="https://tiktok.com/@peakmode">TikTok</a>
+            <a href="https://www.tiktok.com/@peakmode.co?_t=ZN-8yK5XPNYEr8&_r=1">TikTok</a>
           </div>
           <div>© 2024 Peak Mode. All rights reserved.</div>
           <div>Stockholm, Sweden</div>
@@ -220,7 +220,7 @@ export const getNewsletterSubscriptionEmail = (data: EmailData): EmailTemplate =
     </div>
     
     <div style="margin-top: 30px;">
-      <a href="https://instagram.com/peakmode" class="cta-button">Follow us on Instagram</a>
+      <a href="https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr" class="cta-button">Follow us on Instagram</a>
       <a href="https://peakmode.com/shop" class="cta-button">Visit the Store</a>
     </div>
   `;
@@ -242,7 +242,7 @@ No limits. Just peaks.
 Talk soon,
 Team Peak Mode
 
-Follow us on Instagram: https://instagram.com/peakmode
+Follow us on Instagram: https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr
 Visit the Store: https://peakmode.com/shop
   `;
 

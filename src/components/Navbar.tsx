@@ -120,13 +120,13 @@ const Navbar = () => {
 
   return (
     <>
-      <header 
-        className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
-          textColor,
-          isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
-        )}
-      >
+    <header 
+      className={cn(
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full',
+        textColor,
+        isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+      )}
+    >
       <nav className="peak-container flex items-center justify-between h-20">
         {/* Logo */}
         <Link 
@@ -252,59 +252,59 @@ const Navbar = () => {
         }}
       />
     )}
-    
+      
     {/* Mobile Menu Dropdown - Outside header */}
-    <div 
-      className={cn(
+      <div 
+        className={cn(
         'fixed top-20 left-0 right-0 bg-white shadow-lg z-[70] transition-all duration-300 md:hidden overflow-hidden',
         mobileMenuOpen ? 'max-h-[70vh] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
-      )}
-    >
-      <div className="flex flex-col divide-y divide-gray-100">
-        {navLinks.map((link, index) => {
-          const isActive = window.location.pathname === link.href;
-          return (
-            <Link 
-              key={link.name} 
-              to={link.href} 
-              className={cn(
-                "py-4 px-6 font-medium transition-all",
-                isActive 
-                  ? "bg-secondary text-foreground" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-foreground"
-              )}
-              style={{ 
-                animationDelay: `${index * 50}ms`,
-                animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
-              }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <div className="flex items-center justify-between">
-                <span>{link.name}</span>
-                {isActive && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
+        )}
+      >
+        <div className="flex flex-col divide-y divide-gray-100">
+          {navLinks.map((link, index) => {
+            const isActive = window.location.pathname === link.href;
+            return (
+              <Link 
+                key={link.name} 
+                to={link.href} 
+                className={cn(
+                  "py-4 px-6 font-medium transition-all",
+                  isActive 
+                    ? "bg-secondary text-foreground" 
+                    : "text-gray-600 hover:bg-gray-50 hover:text-foreground"
                 )}
-              </div>
-            </Link>
-          );
-        })}
-        
-        <button 
-          className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
-          onClick={() => {
-            setSearchModalOpen(true);
-            setMobileMenuOpen(false);
-          }}
-          style={{ 
+                style={{ 
+                  animationDelay: `${index * 50}ms`,
+                  animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+                }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{link.name}</span>
+                  {isActive && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+          
+          <button 
+            className="py-4 px-6 text-left font-medium text-gray-600 hover:bg-gray-50 hover:text-foreground transition-all"
+            onClick={() => {
+              setSearchModalOpen(true);
+              setMobileMenuOpen(false);
+            }}
+            style={{ 
             animationDelay: `${(navLinks.length + 1) * 50}ms`,
-            animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
-          }}
-        >
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            <span>Search</span>
-          </div>
-        </button>
+              animation: mobileMenuOpen ? 'slide-up 0.3s forwards' : 'none' 
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              <span>Search</span>
+            </div>
+          </button>
       </div>
     </div>
     </>

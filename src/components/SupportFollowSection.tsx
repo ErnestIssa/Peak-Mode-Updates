@@ -6,8 +6,8 @@ const SupportFollowSection = () => {
 
   const handleSocialMediaClick = (platform: string) => {
     const socialMediaUrls = {
-      tiktok: 'https://www.tiktok.com/@peakmode',
-      instagram: 'https://www.instagram.com/peakmode',
+      tiktok: 'https://www.tiktok.com/@peakmode.co?_t=ZN-8yK5XPNYEr8&_r=1',
+      instagram: 'https://www.instagram.com/peakmode1?igsh=dWc3aTQwMncxbzJ5&utm_source=qr',
       facebook: 'https://www.facebook.com/peakmode'
     };
 

@@ -2,7 +2,7 @@
 // Centralized API communication layer for backend integration
 
 // Environment-based API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://peakmode-backend.onrender.com';
 const VORNIFY_DB_URL = 'https://api.vornify.se/api/vornifydb';
 const VORNIFY_PAY_URL = 'https://api.vornify.se/api/vornifypay';
 const VORNIFY_EMAIL_URL = 'https://api.vornify.se/api/vornifyemail';

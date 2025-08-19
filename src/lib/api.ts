@@ -431,7 +431,10 @@ export const vornifyDB = {
 
   // Update record
   async update(collectionName: string, filter: any, update: any): Promise<any> {
-    return this.operation(collectionName, '--update', { filter, update });
+    return this.operation(collectionName, '--update', {
+      query: filter,
+      updateData: update
+    });
   },
 
   // Delete record
@@ -451,7 +454,11 @@ export const vornifyDB = {
 
   // Update specific field
   async updateField(collectionName: string, existing: any, field: string, value: any): Promise<any> {
-    return this.operation(collectionName, '--update-field', { existing, field, value });
+    return this.operation(collectionName, '--update-field', {
+      query: existing,
+      field: field,
+      value: value
+    });
   },
 
   // Delete specific field

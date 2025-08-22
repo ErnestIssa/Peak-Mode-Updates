@@ -6,9 +6,7 @@ import { ArrowLeft, Shield, Truck, CreditCard, Lock, CheckCircle } from 'lucide-
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProductSource } from '@/models/Product';
-import { emailService } from '@/lib/emailTemplates';
-import { orderService, paymentService } from '@/lib/peakModeService';
-import { useApiMutation } from '@/hooks/useApi';
+import { orderService } from '@/lib/peakModeService';
 
 interface CartItem {
   id: number | string;
@@ -76,14 +74,11 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
   const [discountApplied, setDiscountApplied] = useState(false);
-  const { mutate: createOrder, loading } = useApiMutation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
     loadCartItems();
     calculateCosts();
-    
-
   }, []);
 
   const loadCartItems = () => {
@@ -157,80 +152,79 @@ const Checkout = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.email || !formData.firstName || !formData.lastName || 
-        !formData.address || !formData.city || !formData.postalCode) {
-      toast.error('Please fill in all required fields');
+    if (!validateForm()) {
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // Create order in VornifyDB
+      // Create order using peakModeService (with backend fallback)
       const orderData = {
-        id: `order_${Date.now()}`,
-        items: cartItems.map(item => ({
-          productId: item.id.toString(),
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          size: item.size || 'N/A',
-          color: item.color || 'N/A',
-          image: item.image
-        })),
-        shippingAddress: {
+        customer: {
+          email: formData.email,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
           address: formData.address,
           city: formData.city,
           postalCode: formData.postalCode,
-          country: formData.country
+          country: formData.country,
+          phone: formData.phone
         },
+        items: cartItems.map(item => ({
+          id: `item_${Date.now()}_${Math.random()}`,
+          productId: String(item.id),
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          currency: item.currency || 'SEK'
+        })),
+        total: cartTotal + shippingCost + tax,
+        shipping: shippingCost,
+        tax: tax,
+        status: 'pending' as const,
         paymentMethod: formData.paymentMethod,
-        total: calculateFinalTotal(),
-        status: 'pending',
-        orderNumber: `PM-${Date.now().toString().slice(-8)}`,
-        created_at: new Date().toISOString(),
-        isPrivate: false
+        shippingMethod: formData.shippingMethod
       };
-
-      await createOrder(orderService.createOrder, orderData);
+      
+      const newOrder = await orderService.createOrder(orderData);
       
       // Save form data to localStorage for thank you page
       localStorage.setItem('checkoutFormData', JSON.stringify(formData));
       
-      // Send order confirmation email
-      await emailService.sendOrderConfirmation({
-        email: formData.email,
-        name: `${formData.firstName} ${formData.lastName}`,
-        orderId: `PM-${Date.now().toString().slice(-8)}`,
-        products: cartItems.map(item => ({
-          name: item.name,
-          size: item.size || 'N/A',
-          color: item.color || 'N/A',
-          quantity: item.quantity,
-          price: item.price
-        })),
-        total: calculateFinalTotal(),
-        shippingAddress: `${formData.address}, ${formData.city} ${formData.postalCode}, ${formData.country}`
-      });
+      // For local development, we'll just show a success message
+      // In a real backend, you would send an email here
+      toast.success('Order placed successfully!');
       
-      // Clear cart after successful order
+      // Clear cart
       localStorage.removeItem('cart');
       
-      // Show success message
-      toast.success('Order placed successfully! Your peak is waiting.');
-      setIsSubmitting(false);
+      // Navigate to thank you page
+      navigate('/thank-you', { 
+        state: { 
+          orderId: newOrder.id,
+          orderTotal: newOrder.total 
+        } 
+      });
       
-      // Redirect to thank you page
-      navigate('/thank-you');
     } catch (error) {
       console.error('Order creation error:', error);
       toast.error('Failed to create order. Please try again.');
+    } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const validateForm = () => {
+    if (!formData.email || !formData.firstName || !formData.lastName || 
+        !formData.address || !formData.city || !formData.postalCode) {
+      toast.error('Please fill in all required fields');
+      return false;
+    }
+    return true;
   };
 
   if (cartItems.length === 0) {

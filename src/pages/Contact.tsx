@@ -6,7 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { Mail, MapPin, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { contactService } from "@/lib/peakModeService";
-import { trackFormData, clearFormData } from "@/lib/userInteractions";
+import { trackFormData, clearFormData } from "../lib/userInteractions";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -30,7 +30,7 @@ const Contact = () => {
     setFormData(newFormData);
     
     // Track form data for reload navigation
-    trackFormData(newFormData);
+    trackFormData('contact', newFormData);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,12 +50,13 @@ const Contact = () => {
     setIsSuccess(false);
     
     try {
-      // Send message using contact service
+      // Send message using peakModeService (with backend fallback)
       await contactService.sendMessage({
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
-        message: formData.message
+        message: formData.message,
+        status: 'new' as const
       });
         
         setIsSuccess(true);
@@ -73,7 +74,7 @@ const Contact = () => {
         });
         
         // Clear form data tracking
-        clearFormData();
+        clearFormData('contact');
         
         // Reset success state after 3 seconds
         setTimeout(() => {

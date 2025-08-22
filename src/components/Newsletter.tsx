@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { useAdminContent } from '@/contexts/AdminContext';
-import { emailService } from '@/lib/emailTemplates';
 import { newsletterService } from '@/lib/peakModeService';
-import { useApiMutation } from '@/hooks/useApi';
 
 const Newsletter = () => {
   const { ref, inView } = useInView({
@@ -23,7 +21,6 @@ const Newsletter = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
-  const { mutate: subscribe, loading } = useApiMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +38,8 @@ const Newsletter = () => {
     setIsSuccess(false);
     
     try {
-      // Subscribe to newsletter using Peak Mode service
-      await subscribe(newsletterService.subscribe, email);
+      // Subscribe to newsletter using peakModeService (with backend fallback)
+      await newsletterService.subscribe(email);
         
         setIsSuccess(true);
         toast({

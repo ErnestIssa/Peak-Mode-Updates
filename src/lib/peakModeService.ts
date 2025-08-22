@@ -1,492 +1,434 @@
-// Peak Mode Service - Complete Integration
-// This service handles all Peak Mode operations with VornifyDB, VornifyPay, and Email
+// Peak Mode Service - Main Service Layer
+// Integrates with backend API with fallback to local data
 
-import { vornifyDB, vornifyPay } from './api';
-import { emailService } from './emailTemplates';
+import { api } from './api';
+import { localService } from './localService';
 
-// Product Management
+// Configuration
+const USE_BACKEND = import.meta.env.VITE_ENABLE_MOCK_DATA !== 'true';
+const API_TIMEOUT = 5000; // 5 seconds
+const IS_DEVELOPMENT = import.meta.env.DEV;
+
+// Helper function to check if backend is available
+async function isBackendAvailable(): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+    
+    await api.health.check();
+    clearTimeout(timeoutId);
+    return true;
+  } catch (error) {
+    // Only log warnings in development
+    if (IS_DEVELOPMENT) {
+      console.warn('Backend not available, falling back to local data:', error);
+    }
+    return false;
+  }
+}
+
+// Helper function for safe logging
+const safeLog = (level: 'warn' | 'error', message: string, error?: any) => {
+  if (IS_DEVELOPMENT) {
+    if (level === 'warn') {
+      console.warn(message, error);
+    } else {
+      console.error(message, error);
+    }
+  }
+};
+
+// Product Service
 export const productService = {
-  // Get all products
   async getAllProducts() {
-    try {
-      const result = await vornifyDB.read('products', {});
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      return [];
-    }
-  },
-
-  // Get product by ID
-  async getProduct(id: string) {
-    try {
-      const result = await vornifyDB.read('products', { id });
-      return result.data?.[0] || null;
-    } catch (error) {
-      console.error('Error fetching product:', error);
-      return null;
-    }
-  },
-
-  // Get products by category
-  async getProductsByCategory(category: string) {
-    try {
-      const result = await vornifyDB.read('products', { category });
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching products by category:', error);
-      return [];
-    }
-  },
-
-  // Get featured products
-  async getFeaturedProducts() {
-    try {
-      const result = await vornifyDB.read('products', { featured: true });
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching featured products:', error);
-      return [];
-    }
-  },
-
-  // Search products
-  async searchProducts(query: string) {
-    try {
-      const allProducts = await this.getAllProducts();
-      return allProducts.filter((product: any) =>
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.description.toLowerCase().includes(query.toLowerCase())
-      );
-    } catch (error) {
-      console.error('Error searching products:', error);
-      return [];
-    }
-  }
-};
-
-// Cart Management
-export const cartService = {
-  // Get user's cart
-  async getCart(userId?: string) {
-    try {
-      const filter = userId ? { userId } : {};
-      const result = await vornifyDB.read('carts', filter);
-      return result.data?.[0] || { items: [], total: 0, itemCount: 0 };
-    } catch (error) {
-      console.error('Error fetching cart:', error);
-      return { items: [], total: 0, itemCount: 0 };
-    }
-  },
-
-  // Add item to cart
-  async addToCart(item: any, userId?: string) {
-    try {
-      const currentCart = await this.getCart(userId);
-      const existingItemIndex = currentCart.items.findIndex(
-        (cartItem: any) => 
-          cartItem.productId === item.productId && 
-          cartItem.size === item.size && 
-          cartItem.color === item.color
-      );
-
-      if (existingItemIndex >= 0) {
-        currentCart.items[existingItemIndex].quantity += item.quantity;
-      } else {
-        currentCart.items.push(item);
-      }
-
-      currentCart.total = currentCart.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
-      currentCart.itemCount = currentCart.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
-
-      const cartData = {
-        id: currentCart.id || `cart_${Date.now()}`,
-        userId,
-        items: currentCart.items,
-        total: currentCart.total,
-        itemCount: currentCart.itemCount,
-        updated_at: new Date().toISOString(),
-        isPrivate: false
-      };
-
-      const result = await vornifyDB.create('carts', cartData);
-      return result.data;
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      throw error;
-    }
-  },
-
-  // Update cart item quantity
-  async updateCartItem(itemId: string, quantity: number, userId?: string) {
-    try {
-      const currentCart = await this.getCart(userId);
-      const itemIndex = currentCart.items.findIndex((item: any) => item.id === itemId);
-      
-      if (itemIndex >= 0) {
-        if (quantity <= 0) {
-          currentCart.items.splice(itemIndex, 1);
-        } else {
-          currentCart.items[itemIndex].quantity = quantity;
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.products.getAll();
+          return result.data || [];
         }
-        
-        currentCart.total = currentCart.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
-        currentCart.itemCount = currentCart.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
-
-        const cartData = {
-          id: currentCart.id,
-          userId,
-          items: currentCart.items,
-          total: currentCart.total,
-          itemCount: currentCart.itemCount,
-          updated_at: new Date().toISOString(),
-          isPrivate: false
-        };
-
-        const result = await vornifyDB.create('carts', cartData);
-        return result.data;
+      } catch (error) {
+        safeLog('warn', 'Backend product fetch failed, using local data:', error);
       }
-    } catch (error) {
-      console.error('Error updating cart item:', error);
-      throw error;
     }
+    
+    // Fallback to local data
+    return localService.products.getAll();
   },
-
-  // Remove item from cart
-  async removeFromCart(itemId: string, userId?: string) {
-    return this.updateCartItem(itemId, 0, userId);
-  },
-
-  // Clear cart
-  async clearCart(userId?: string) {
-    try {
-      const currentCart = await this.getCart(userId);
-      const cartData = {
-        id: currentCart.id,
-        userId,
-        items: [],
-        total: 0,
-        itemCount: 0,
-        updated_at: new Date().toISOString(),
-        isPrivate: false
-      };
-
-      const result = await vornifyDB.create('carts', cartData);
-      return result.data;
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      throw error;
+  
+  async getProductById(id: string) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.products.getById(id);
+          return result.data?.[0] || null;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend product fetch failed, using local data:', error);
+      }
     }
+    
+    // Fallback to local data
+    return localService.products.getById(id);
+  },
+  
+  async createProduct(data: any) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.products.create(data);
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend product creation failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.products.create(data);
+  },
+  
+  async updateProduct(id: string, data: any) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.products.update(id, data);
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend product update failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.products.update(id, data);
+  },
+  
+  async deleteProduct(id: string) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.products.delete(id);
+          return result.success;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend product deletion failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.products.delete(id);
   }
 };
 
-// Order Management
+// Cart Service
+export const cartService = {
+  async getCart(userId?: string) {
+    if (USE_BACKEND && userId) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.carts.getByUser(userId);
+          return result.data?.[0] || { items: [] };
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend cart fetch failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return { items: localService.cart.get() };
+  },
+  
+  async updateCartItem(userId: string, productId: string, quantity: number) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          // Get current cart
+          const cart = await this.getCart(userId);
+          const updatedItems = cart.items.map((item: any) => 
+            item.productId === productId ? { ...item, quantity } : item
+          );
+          
+          const result = await api.db.carts.update(cart.id || userId, { items: updatedItems });
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend cart update failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.cart.updateItem(productId, quantity);
+  },
+  
+  async removeCartItem(userId: string, productId: string) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const cart = await this.getCart(userId);
+          const updatedItems = cart.items.filter((item: any) => item.productId !== productId);
+          
+          const result = await api.db.carts.update(cart.id || userId, { items: updatedItems });
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend cart item removal failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.cart.remove(productId);
+  },
+  
+  async clearCart(userId: string) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.carts.update(userId, { items: [] });
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend cart clear failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.cart.clear();
+  }
+};
+
+// Order Service
 export const orderService = {
-  // Create new order
-  async createOrder(orderData: any) {
-    try {
-      const order = {
-        id: `order_${Date.now()}`,
-        ...orderData,
-        status: 'pending',
-        orderNumber: `PM-${Date.now().toString().slice(-8)}`,
-        created_at: new Date().toISOString(),
-        isPrivate: false
-      };
-
-      const result = await vornifyDB.create('orders', order);
-      
-      // Send order confirmation email
-      await emailService.sendOrderConfirmation({
-        email: orderData.shippingAddress.email,
-        name: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
-        orderId: order.orderNumber,
-        products: orderData.items,
-        total: orderData.total,
-        shippingAddress: `${orderData.shippingAddress.address}, ${orderData.shippingAddress.city} ${orderData.shippingAddress.postalCode}, ${orderData.shippingAddress.country}`
-      });
-
-      return result.data;
-    } catch (error) {
-      console.error('Error creating order:', error);
-      throw error;
-    }
-  },
-
-  // Get user's orders
-  async getUserOrders(userId?: string) {
-    try {
-      const filter = userId ? { userId } : {};
-      const result = await vornifyDB.read('orders', filter);
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      return [];
-    }
-  },
-
-  // Get single order
-  async getOrder(orderId: string) {
-    try {
-      const result = await vornifyDB.read('orders', { id: orderId });
-      return result.data?.[0] || null;
-    } catch (error) {
-      console.error('Error fetching order:', error);
-      return null;
-    }
-  },
-
-  // Update order status
-  async updateOrderStatus(orderId: string, status: string) {
-    try {
-      const order = await this.getOrder(orderId);
-      if (order) {
-        const result = await vornifyDB.update('orders', { id: orderId }, { status, updated_at: new Date().toISOString() });
-        return result.data;
+  async createOrder(data: any) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.orders.create(data);
+          
+          // Send confirmation email
+          try {
+            await api.email.sendOrderConfirmation(result.data);
+          } catch (emailError) {
+            safeLog('warn', 'Email sending failed:', emailError);
+          }
+          
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend order creation failed, using local data:', error);
       }
-    } catch (error) {
-      console.error('Error updating order status:', error);
-      throw error;
     }
+    
+    // Fallback to local data
+    return localService.createOrder(data);
+  },
+  
+  async getOrders(filters: any = {}) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.orders.getAll();
+          return result.data || [];
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend orders fetch failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.orders.getAll();
+  },
+  
+  async getOrderById(id: string) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.orders.getById(id);
+          return result.data?.[0] || null;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend order fetch failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.orders.getById(id);
+  },
+  
+  async updateOrderStatus(id: string, status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.orders.updateStatus(id, status);
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend order status update failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.orders.updateStatus(id, status);
   }
 };
 
-// Newsletter Management
+// Newsletter Service
 export const newsletterService = {
-  // Subscribe to newsletter
-  async subscribe(email: string, name?: string) {
-    try {
-      const subscription = {
-        id: `sub_${Date.now()}`,
-        email,
-        name: name || email.split('@')[0],
-        subscribed: true,
-        created_at: new Date().toISOString(),
-        isPrivate: false
-      };
-
-      const result = await vornifyDB.create('newsletter_subscriptions', subscription);
-      
-      // Send confirmation email
-      await emailService.sendNewsletterSubscription({
-        email,
-        name: name || email.split('@')[0]
-      });
-
-      return result.data;
-    } catch (error) {
-      console.error('Error subscribing to newsletter:', error);
-      throw error;
+  async subscribe(email: string) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.newsletter.subscribe({
+            email,
+            subscribed: true,
+            createdAt: new Date().toISOString()
+          });
+          
+          // Send welcome email
+          try {
+            await api.email.sendNewsletterWelcome(email);
+          } catch (emailError) {
+            safeLog('warn', 'Welcome email sending failed:', emailError);
+          }
+          
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend newsletter subscription failed, using local data:', error);
+      }
     }
+    
+    // Fallback to local data
+    return localService.newsletter.subscribe(email);
   },
-
-  // Unsubscribe from newsletter
-  async unsubscribe(email: string) {
-    try {
-      const result = await vornifyDB.update('newsletter_subscriptions', { email }, { subscribed: false, updated_at: new Date().toISOString() });
-      return result.data;
-    } catch (error) {
-      console.error('Error unsubscribing from newsletter:', error);
-      throw error;
+  
+  async getSubscribers(filters: any = {}) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.newsletter.getAll();
+          return result.data || [];
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend subscribers fetch failed, using local data:', error);
+      }
     }
-  },
-
-  // Check subscription status
-  async checkSubscription(email: string) {
-    try {
-      const result = await vornifyDB.read('newsletter_subscriptions', { email });
-      const subscription = result.data?.[0];
-      return { subscribed: subscription?.subscribed || false };
-    } catch (error) {
-      console.error('Error checking subscription:', error);
-      return { subscribed: false };
-    }
+    
+    // Fallback to local data
+    return localService.newsletter.getAllSubscribers();
   }
 };
 
-// Contact Management
+// Contact Service
 export const contactService = {
-  // Send contact message
-  async sendMessage(messageData: {
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-  }) {
-    try {
-      const message = {
-        id: `contact_${Date.now()}`,
-        ...messageData,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        isPrivate: false
-      };
-
-      const result = await vornifyDB.create('contact_messages', message);
-      
-      // Send acknowledgment email
-      await emailService.sendSupportAcknowledgment({
-        email: messageData.email,
-        name: messageData.name,
-        message: messageData.message
-      });
-
-      return result.data;
-    } catch (error) {
-      console.error('Error sending contact message:', error);
-      throw error;
+  async sendMessage(data: any) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.contact.create({
+            ...data,
+            status: 'new',
+            createdAt: new Date().toISOString()
+          });
+          
+          // Send acknowledgment email
+          try {
+            await api.email.sendContactAcknowledgment(data);
+          } catch (emailError) {
+            safeLog('warn', 'Acknowledgment email sending failed:', emailError);
+          }
+          
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend contact message creation failed, using local data:', error);
+      }
     }
+    
+    // Fallback to local data
+    return localService.contact.addMessage(data);
+  },
+  
+  async getMessages(filters: any = {}) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.contact.getAll();
+          return result.data || [];
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend messages fetch failed, using local data:', error);
+      }
+    }
+    
+    // Fallback to local data
+    return localService.contact.getAllMessages();
   },
 
-  // Get contact messages (admin only)
-  async getMessages() {
-    try {
-      const result = await vornifyDB.read('contact_messages', {});
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching contact messages:', error);
-      return [];
+  async updateStatus(id: string, status: 'new' | 'read' | 'replied') {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.db.contact.updateStatus(id, status);
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend message status update failed, using local data:', error);
+      }
     }
+    
+    // Fallback to local data
+    return localService.contact.updateStatus(id, status);
   }
 };
 
-// Payment Management
+// Payment Service
 export const paymentService = {
-  // Create one-time payment
-  async createPayment(paymentData: {
-    amount: number;
-    currency: string;
-    product_data: {
-      name: string;
-      product_id: string;
-      description: string;
-      customer_name: string;
-      email: string;
-      phone?: string;
-    };
-  }) {
-    try {
-      const result = await vornifyPay.createPayment(paymentData);
-      return result;
-    } catch (error) {
-      console.error('Error creating payment:', error);
-      throw error;
-    }
-  },
-
-  // Create subscription
-  async createSubscription(subscriptionData: {
-    customer_email: string;
-    amount: string;
-    currency: string;
-    trial_days?: number;
-    billing_interval: 'month' | 'year';
-    product_data: {
-      name: string;
-      description: string;
-      customer_name: string;
-      features?: string[];
-      metadata?: any;
-    };
-  }) {
-    try {
-      const result = await vornifyPay.createSubscription(subscriptionData);
-      return result;
-    } catch (error) {
-      console.error('Error creating subscription:', error);
-      throw error;
-    }
-  },
-
-  // Verify payment
-  async verifyPayment(paymentIntentId: string) {
-    try {
-      const result = await vornifyPay.verifyPayment(paymentIntentId);
-      return result;
-    } catch (error) {
-      console.error('Error verifying payment:', error);
-      throw error;
-    }
-  }
-};
-
-// Admin Management
-export const adminService = {
-  // Get admin configuration
-  async getAdminConfig() {
-    try {
-      const result = await vornifyDB.read('admin_config', {});
-      return result.data?.[0] || {};
-    } catch (error) {
-      console.error('Error fetching admin config:', error);
-      return {};
-    }
-  },
-
-  // Update admin configuration
-  async updateAdminConfig(config: any) {
-    try {
-      const existingConfig = await this.getAdminConfig();
-      if (existingConfig.id) {
-        const result = await vornifyDB.update('admin_config', { id: existingConfig.id }, config);
-        return result.data;
-      } else {
-        const result = await vornifyDB.create('admin_config', {
-          id: `config_${Date.now()}`,
-          ...config,
-          created_at: new Date().toISOString(),
-          isPrivate: false
-        });
-        return result.data;
+  async processPayment(paymentData: any) {
+    if (USE_BACKEND) {
+      try {
+        const backendAvailable = await isBackendAvailable();
+        if (backendAvailable) {
+          const result = await api.pay.processPayment(paymentData);
+          return result.data;
+        }
+      } catch (error) {
+        safeLog('warn', 'Backend payment processing failed:', error);
+        throw error; // Don't fallback for payments
       }
-    } catch (error) {
-      console.error('Error updating admin config:', error);
-      throw error;
     }
-  },
-
-  // Get content by section
-  async getContent(section: string) {
-    try {
-      const result = await vornifyDB.read('content', { section });
-      return result.data?.[0] || {};
-    } catch (error) {
-      console.error('Error fetching content:', error);
-      return {};
-    }
-  },
-
-  // Update content
-  async updateContent(section: string, data: any) {
-    try {
-      const existingContent = await this.getContent(section);
-      if (existingContent.id) {
-        const result = await vornifyDB.update('content', { id: existingContent.id }, data);
-        return result.data;
-      } else {
-        const result = await vornifyDB.create('content', {
-          id: `content_${Date.now()}`,
-          section,
-          ...data,
-          created_at: new Date().toISOString(),
-          isPrivate: false
-        });
-        return result.data;
-      }
-    } catch (error) {
-      console.error('Error updating content:', error);
-      throw error;
-    }
+    
+    // No fallback for payments - must use backend
+    throw new Error('Payment processing requires backend connection');
   }
 };
 
 // Export all services
-export default {
+export const services = {
   products: productService,
   cart: cartService,
   orders: orderService,
   newsletter: newsletterService,
   contact: contactService,
-  payments: paymentService,
-  admin: adminService
-}; 
+  payment: paymentService
+};
+
+export default services; 

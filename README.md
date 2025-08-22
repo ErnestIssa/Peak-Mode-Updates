@@ -1,69 +1,88 @@
-# Welcome to your Lovable project
+# Peak Mode - Local Development Setup
 
-## Project info
+This is a local development version of the Peak Mode e-commerce frontend with integrated admin panel. All external API connections have been removed and replaced with local mock data for development purposes.
 
-**URL**: https://lovable.dev/projects/b2c2e695-7170-4d63-864f-561e769e2cb2
+## Features
 
-## How can I edit this code?
+- **Main Frontend**: Complete e-commerce site with product catalog, cart, checkout
+- **Admin Panel**: Full admin dashboard accessible at `/admin`
+- **Local Data**: Mock data for products, orders, customers, and more
+- **No External Dependencies**: Runs completely locally without backend connections
 
-There are several ways of editing your application.
+## Quick Start
 
-**Use Lovable**
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b2c2e695-7170-4d63-864f-561e769e2cb2) and start prompting.
+### Installation
+```bash
+npm install
+```
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Development
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Admin Access
+Navigate to `/admin` and use these credentials:
+- **Username**: `admin`
+- **Password**: `admin123`
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/          # Reusable UI components
+├── pages/              # Page components
+│   ├── Admin.tsx      # Admin dashboard
+│   ├── Home.tsx       # Homepage
+│   ├── Shop.tsx       # Product catalog
+│   └── ...            # Other pages
+├── lib/
+│   └── localService.ts # Local data service (mock data)
+├── hooks/              # Custom React hooks
+├── contexts/           # React contexts
+└── models/             # TypeScript interfaces
+```
 
-## What technologies are used for this project?
+## Admin Dashboard Features
 
-This project is built with .
+- **Products Management**: View, edit, delete products
+- **Order Management**: Track orders and update statuses
+- **Customer Management**: View customer information
+- **Newsletter Subscribers**: Manage email subscriptions
+- **Contact Messages**: Handle customer inquiries
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Local Data
 
-## How can I deploy this project?
+The application uses in-memory mock data stored in `src/lib/localService.ts`. This includes:
 
-Simply open [Lovable](https://lovable.dev/projects/b2c2e695-7170-4d63-864f-561e769e2cb2) and click on Share -> Publish.
+- Sample products with images, prices, and descriptions
+- Mock orders with customer details
+- Customer profiles and newsletter subscriptions
+- Contact message inquiries
 
-## I want to use a custom domain - is that possible?
+## Building for Production
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+```bash
+npm run build
+```
+
+## Future Backend Integration
+
+This project is designed to be easily connected to a backend API in the future. The local service structure mirrors what would be expected from a real API, making the transition straightforward.
+
+## Development Notes
+
+- All data is stored in memory and resets on page refresh
+- No persistent storage - this is for development/demo purposes only
+- The admin panel is fully functional with local data
+- UI components use shadcn/ui and Tailwind CSS
+
+## License
+
+This project is for development purposes only.

@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProductSource } from '@/models/Product';
 import { cartService } from '@/lib/peakModeService';
-import { useApiData, useApiMutation } from '@/hooks/useApi';
 
 interface CartItem {
   id: number | string;
@@ -27,21 +26,21 @@ const Cart = () => {
   const [cartTotal, setCartTotal] = useState(0);
   const [discountCode, setDiscountCode] = useState('');
   
-  // Fetch cart from backend
-  const { data: backendCart, loading: cartLoading, error: cartError } = useApiData(
-    () => cartService.getCart(),
-    []
-  );
+  // For now, we'll use localStorage since we don't have a backend cart service
+  // const { data: backendCart, loading: cartLoading, error: cartError } = useApiData(
+  //   () => cartService.getCart(),
+  //   []
+  // );
   
-  // Cart mutations
-  const { mutate: updateCartItem, loading: updatingCart } = useApiMutation();
-  const { mutate: removeCartItem, loading: removingItem } = useApiMutation();
-  const { mutate: clearCartBackend, loading: clearingCart } = useApiMutation();
+  // Cart mutations - simplified for local development
+  // const { mutate: updateCartItem, loading: updatingCart } = useApiMutation();
+  // const { mutate: removeCartItem, loading: removingItem } = useApiMutation();
+  // const { mutate: clearCartBackend, loading: clearingCart } = useApiMutation();
   
   useEffect(() => {
     window.scrollTo(0, 0);
     loadCartItems();
-  }, [backendCart]);
+  }, []);
 
   // Listen for cart updates from ProductCard
   useEffect(() => {
@@ -54,20 +53,10 @@ const Cart = () => {
   }, []);
   
   const loadCartItems = () => {
-    // Use backend cart if available, otherwise fall back to localStorage
-    if (backendCart && backendCart.items) {
-      const items = backendCart.items.map((item: any) => ({
-        id: item.productId || item.id,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-        size: item.size || null,
-        color: item.color || null,
-        quantity: item.quantity,
-        currency: item.currency || 'SEK',
-        source: item.source || 'backend'
-      }));
-      
+    // For local development, use localStorage
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      const items = JSON.parse(savedCart);
       setCartItems(items);
       
       // Calculate total
@@ -76,20 +65,6 @@ const Cart = () => {
       }, 0);
       
       setCartTotal(total);
-    } else {
-      // Fallback to localStorage
-      const savedCart = localStorage.getItem('cart');
-      if (savedCart) {
-        const items = JSON.parse(savedCart);
-        setCartItems(items);
-        
-        // Calculate total
-        const total = items.reduce((sum: number, item: CartItem) => {
-          return sum + (item.price * item.quantity);
-        }, 0);
-        
-        setCartTotal(total);
-      }
     }
   };
   
@@ -99,26 +74,27 @@ const Cart = () => {
     const item = cartItems[index];
     
     try {
-      // Update in backend
-      await cartService.updateCartItem(String(item.id), newQuantity);
+      // Update in cart service
+      await cartService.updateCartItem('local-user', String(item.id), newQuantity);
       
       // Update local state
       const updatedItems = [...cartItems];
       updatedItems[index].quantity = newQuantity;
-      
       setCartItems(updatedItems);
       
-      // Recalculate total
-      const total = updatedItems.reduce((sum, item) => {
+      // Update total
+      const newTotal = updatedItems.reduce((sum: number, item: CartItem) => {
         return sum + (item.price * item.quantity);
       }, 0);
+      setCartTotal(newTotal);
       
-      setCartTotal(total);
+      // Update localStorage
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
       
-      toast.success("Cart updated");
+      toast.success('Cart updated');
     } catch (error) {
-      toast.error("Failed to update cart");
       console.error('Error updating cart:', error);
+      toast.error('Failed to update cart');
     }
   };
   
@@ -126,43 +102,45 @@ const Cart = () => {
     const item = cartItems[index];
     
     try {
-      // Remove from backend
-      await cartService.removeFromCart(String(item.id));
+      // Remove from cart service
+      await cartService.removeCartItem('local-user', String(item.id));
       
       // Update local state
-      const updatedItems = [...cartItems];
-      updatedItems.splice(index, 1);
-      
+      const updatedItems = cartItems.filter((_, i) => i !== index);
       setCartItems(updatedItems);
       
-      // Recalculate total
-      const total = updatedItems.reduce((sum, item) => {
+      // Update total
+      const newTotal = updatedItems.reduce((sum: number, item: CartItem) => {
         return sum + (item.price * item.quantity);
       }, 0);
+      setCartTotal(newTotal);
       
-      setCartTotal(total);
+      // Update localStorage
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
       
-      toast.success("Item removed from cart");
+      toast.success('Item removed from cart');
     } catch (error) {
-      toast.error("Failed to remove item");
       console.error('Error removing item:', error);
+      toast.error('Failed to remove item');
     }
   };
   
   const clearCart = async () => {
     try {
-      // Clear from backend
-      await cartService.clearCart();
+      // Clear from cart service
+      await cartService.clearCart('local-user');
       
       // Update local state
       setCartItems([]);
       setCartTotal(0);
+      
+      // Clear localStorage
       localStorage.removeItem('cart');
       
-      toast.success("Cart cleared");
+      toast.success('Cart cleared');
     } catch (error) {
-      toast.error("Failed to clear cart");
       console.error('Error clearing cart:', error);
+      toast.error('Failed to clear cart');
     }
   };
 

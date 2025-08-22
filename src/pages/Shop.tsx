@@ -7,20 +7,35 @@ import Newsletter from '../components/Newsletter';
 import { useLocation } from 'react-router-dom';
 import { UnifiedProduct, ProductSource } from '@/models/Product';
 import { productService } from '@/lib/peakModeService';
-import { useApiData } from '@/hooks/useApi';
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   
   const location = useLocation();
   
-  // Fetch products from backend
-  const { data: products, loading: isLoading, error: hasError } = useApiData(
-    productService.getAllProducts,
-    []
-  );
-  
+  // Fetch products from peakModeService (with backend fallback)
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedProducts = await productService.getAllProducts();
+        setProducts(fetchedProducts);
+        setHasError(false);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadProducts();
+  }, []);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const search = searchParams.get('search');
@@ -39,7 +54,7 @@ const Shop = () => {
     { name: 'Jackets', value: 'jacket' }
   ];
 
-  // Convert backend products to UnifiedProduct format
+  // Convert local products to UnifiedProduct format
   const allProducts: UnifiedProduct[] = products?.map((product: any) => ({
     id: product.id || product._id,
     originalId: product.originalId || product.id || product._id,
@@ -47,9 +62,9 @@ const Shop = () => {
     price: `${product.price} ${product.currency || 'SEK'}`,
     currency: product.currency || 'SEK',
     category: product.category,
-    image: product.image,
-    isNew: product.isNew || false,
-    source: (product.source as ProductSource) || 'backend'
+    image: product.images?.[0] || product.image || '/placeholder.svg',
+    isNew: product.new || false,
+    source: 'local' as ProductSource
   })) || [];
 
   // Apply category filter

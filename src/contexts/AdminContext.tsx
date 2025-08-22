@@ -3,7 +3,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AdminConfig, defaultAdminConfig } from '@/lib/adminConfig';
-import { adminService } from '@/lib/adminService';
 
 interface AdminContextType {
   config: AdminConfig;
@@ -12,6 +11,7 @@ interface AdminContextType {
   refreshConfig: () => Promise<void>;
   updateConfig: (updates: Partial<AdminConfig>) => Promise<boolean>;
   updateContent: (section: string, data: any) => Promise<boolean>;
+  content: any; // For backward compatibility
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -22,12 +22,17 @@ interface AdminProviderProps {
 
 export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   const [config, setConfig] = useState<AdminConfig>(defaultAdminConfig);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load admin configuration on mount
+  // For local development, we'll use the default config
   useEffect(() => {
-    loadConfig();
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const loadConfig = async () => {
@@ -35,8 +40,8 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      const adminConfig = await adminService.getAdminConfig();
-      setConfig(adminConfig);
+      // For local development, use default config
+      setConfig(defaultAdminConfig);
     } catch (err) {
       console.error('Failed to load admin config:', err);
       setError('Failed to load site configuration');
@@ -53,13 +58,13 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 
   const updateConfig = async (updates: Partial<AdminConfig>): Promise<boolean> => {
     try {
-      const success = await adminService.updateAdminConfig(updates);
-      if (success) {
-        // Update local state
-        setConfig(prev => ({ ...prev, ...updates }));
-        return true;
-      }
-      return false;
+      // For local development, just update local state
+      setConfig(prev => ({ ...prev, ...updates }));
+      
+      // Save to localStorage for persistence
+      localStorage.setItem('adminConfig', JSON.stringify({ ...config, ...updates }));
+      
+      return true;
     } catch (err) {
       console.error('Failed to update config:', err);
       return false;
@@ -68,17 +73,34 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 
   const updateContent = async (section: string, data: any): Promise<boolean> => {
     try {
-      const success = await adminService.updateContent(section, data);
-      if (success) {
-        // Refresh config to get updated data
-        await refreshConfig();
-        return true;
+      // For local development, update the content section
+      const updatedConfig = { ...config };
+      
+      if (section === 'newsletter') {
+        updatedConfig.content.newsletter = { ...updatedConfig.content.newsletter, ...data };
+      } else if (section === 'hero') {
+        updatedConfig.content.hero = { ...updatedConfig.content.hero, ...data };
+      } else if (section === 'about') {
+        updatedConfig.content.about = { ...updatedConfig.content.about, ...data };
       }
-      return false;
+      
+      setConfig(updatedConfig);
+      
+      // Save to localStorage
+      localStorage.setItem('adminConfig', JSON.stringify(updatedConfig));
+      
+      return true;
     } catch (err) {
       console.error('Failed to update content:', err);
       return false;
     }
+  };
+
+  // For backward compatibility with existing components
+  const content = {
+    newsletter: config.content.newsletter,
+    hero: config.content.hero,
+    about: config.content.about
   };
 
   const value: AdminContextType = {
@@ -88,6 +110,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     refreshConfig,
     updateConfig,
     updateContent,
+    content
   };
 
   return (
@@ -98,7 +121,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 };
 
 // Hook to use admin context
-export const useAdmin = (): AdminContextType => {
+export const useAdmin = () => {
   const context = useContext(AdminContext);
   if (context === undefined) {
     throw new Error('useAdmin must be used within an AdminProvider');
@@ -106,21 +129,16 @@ export const useAdmin = (): AdminContextType => {
   return context;
 };
 
-// Hook to access specific content sections
-export const useAdminContent = (section: keyof AdminConfig['content']) => {
-  const { config, updateContent } = useAdmin();
+// Hook for backward compatibility
+export const useAdminContent = (section: string) => {
+  const context = useContext(AdminContext);
+  if (context === undefined) {
+    throw new Error('useAdminContent must be used within an AdminProvider');
+  }
   
-  const getContent = () => {
-    return config.content[section];
-  };
-
-  const updateSection = async (data: any) => {
-    return await updateContent(section, data);
-  };
-
   return {
-    content: getContent(),
-    updateContent: updateSection,
+    content: context.content[section as keyof typeof context.content] || {},
+    updateContent: (data: any) => context.updateContent(section, data)
   };
 };
 

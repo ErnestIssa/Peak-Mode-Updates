@@ -10,6 +10,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import PeakModePopup from "./components/PeakModePopup";
 import SupportPopup from "./components/SupportPopup";
 import GlobalWishlistModal from "./components/GlobalWishlistModal";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { AdminProvider } from "./contexts/AdminContext";
 import { usePeakModePopup } from "./hooks/usePeakModePopup";
 import { useSupportPopup } from "./hooks/useSupportPopup";
@@ -35,6 +36,7 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DataProtection from "./pages/DataProtection";
 import CookiePolicy from "./pages/CookiePolicy";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,7 +67,7 @@ const AppContent = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/test-product/:id" element={<TestProductDetail />} />
-        <Route path="/test-product" element={<TestProduct />} />
+                <Route path="/test-product" element={<TestProduct />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/thank-you" element={<ThankYou />} />
@@ -73,8 +75,9 @@ const AppContent = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/data-protection" element={<DataProtection />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+        <Route path="/admin" element={<Admin />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
         </Routes>
       
       <PeakModePopup 
@@ -97,37 +100,34 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(() => {
     // Check if this is a fresh session
     const hasSeenLoading = sessionStorage.getItem('peakModeLoadingSeen');
-    const isFreshSession = !hasSeenLoading;
-    
-    if (isFreshSession) {
-      // Mark that we've seen the loading screen in this session
-      sessionStorage.setItem('peakModeLoadingSeen', 'true');
-      return true;
-    }
-    
-    // If not a fresh session, skip loading screen
-    return false;
+    return !hasSeenLoading;
   });
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
+    sessionStorage.setItem('peakModeLoadingSeen', 'true');
   };
 
+  if (isLoading) {
+    return <LoadingScreen isLoading={isLoading} onLoadingComplete={handleLoadingComplete} />;
+  }
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <AdminProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <LoadingScreen isLoading={isLoading} onLoadingComplete={handleLoadingComplete} />
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
-          </TooltipProvider>
-        </AdminProvider>
-      </HelmetProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>
+          <AdminProvider>
+            <TooltipProvider>
+              <BrowserRouter>
+                <AppContent />
+                <Toaster />
+                <Sonner />
+              </BrowserRouter>
+            </TooltipProvider>
+          </AdminProvider>
+        </HelmetProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
